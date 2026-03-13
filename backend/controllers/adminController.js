@@ -1,0 +1,224 @@
+const User = require('../models/User');
+const Payment = require('../models/Payment');
+
+// Generate sequential student ID
+const generateStudentId = async () => {
+  const last = await User.findOne({ userType: "student" }, 'userId').sort({ userId: -1 });
+  const lastNum = last ? parseInt(last.userId.slice(3), 10) : 0;
+  return `STU${(lastNum + 1).toString().padStart(4, '0')}`;
+};
+
+// Dashboard Stats
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const [totalStudents, activeStudents] = await Promise.all([
+      User.countDocuments({ userType: 'student' }),
+      User.countDocuments({ userType: 'student', status: 'active' })
+    ]);
+
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    
+    const monthlyRevenue = await Payment.aggregate([
+      { $match: { createdAt: { $gte: startOfMonth }, status: 'completed' } },
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    res.json({
+      success: true,
+      stats: { totalStudents, activeStudents, monthlyRevenue: monthlyRevenue[0]?.total || 0 }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get All Students
+exports.getAllStudents = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status, search, studentType } = req.query;
+    let query = { userType: 'student' };
+    
+    if (status && status !== 'all') query.status = status;
+    if (studentType && studentType !== 'all') query.studentCategory = studentType;
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } },
+        { userId: { $regex: search, $options: 'i' } }
+      ];
+    }
+    
+    const students = await User.find(query).limit(limit * 1).skip((page - 1) * limit).sort({ createdAt: -1 }).select('-password');
+    const count = await User.countDocuments(query);
+    
+    res.json({ success: true, count, totalPages: Math.ceil(count / limit), currentPage: page, students });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Create Student
+exports.addStudent = async (req, res) => {
+  try {
+    const { name, email, phone, totalFees, admissionDate, studentType = "academy", membershipDuration = "1_month" } = req.body;
+    
+    if (await User.findOne({ email })) {
+      return res.status(400).json({ success: false, error: 'User already exists' });
+    }
+    
+    const admission = admissionDate ? new Date(admissionDate) : new Date();
+    
+    const student = await User.create({
+      name, email, phone, password: phone || "password123", userType: "student",
+      studentCategory: studentType, admissionDate: admission, membershipDuration, status: 'active',
+      financials: { amount: totalFees || 0, paid: 0, due: totalFees || 0 }
+    });
+    
+    res.status(201).json({ success: true, message: 'Student added successfully', student });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Update Student
+exports.updateStudent = async (req, res) => {
+  try {
+    const student = await User.findOne({ _id: req.params.id, userType: 'student' });
+    if (!student) return res.status(404).json({ success: false, error: 'Student not found' });
+    
+    Object.keys(req.body).forEach(key => {
+      if (key !== '_id' && key !== '__v') {
+        if (key === 'studentType') {
+          student.studentCategory = req.body[key];
+        } else if (key === 'totalFees') {
+          student.financials.amount = req.body[key];
+        } else if (key === 'paidFees') {
+          student.financials.paid = req.body[key];
+        } else {
+          student[key] = req.body[key];
+        }
+      }
+    });
+    
+    student.financials.due = student.financials.amount - student.financials.paid;
+    await student.save();
+    
+    res.json({ success: true, message: 'Student updated successfully', student });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Delete Student
+exports.deleteStudent = async (req, res) => {
+  try {
+    const student = await User.findOne({ _id: req.params.id, userType: 'student' });
+    if (!student) return res.status(404).json({ success: false, error: 'Student not found' });
+    
+    await student.deleteOne();
+    res.json({ success: true, message: 'Student deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Active Students
+exports.getActiveStudents = async (req, res) => {
+  try {
+    const students = await User.find({ userType: 'student', status: 'active' }).sort({ admissionDate: -1 }).select('-password');
+    res.json({ success: true, count: students.length, students });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Expiring Students
+exports.getExpiringStudents = async (req, res) => {
+  try {
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    
+    const students = await User.find({ userType: 'student', status: 'active' }).select('-password');
+    
+    const studentsWithDaysLeft = students.map(student => {
+      const expiryDate = new Date(student.admissionDate);
+      const months = { '1_month': 1, '2_months': 2, '3_months': 3 };
+      expiryDate.setMonth(expiryDate.getMonth() + (months[student.membershipDuration] || 1));
+      
+      return {
+        ...student.toObject(),
+        expiryDate,
+        daysLeft: Math.ceil((expiryDate - new Date()) / (1000 * 60 * 60 * 24))
+      };
+    }).filter(student => {
+      return student.expiryDate <= thirtyDaysFromNow && student.expiryDate >= new Date();
+    }).sort((a, b) => a.expiryDate - b.expiryDate);
+    
+    res.json({ success: true, count: studentsWithDaysLeft.length, students: studentsWithDaysLeft });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Renew Membership
+exports.renewMembership = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { duration = '1_month' } = req.body;
+    
+    const student = await User.findOne({ _id: id, userType: 'student' });
+    if (!student) return res.status(404).json({ success: false, error: 'Student not found' });
+    
+    student.admissionDate = new Date();
+    student.membershipDuration = duration;
+    student.status = 'active';
+    await student.save();
+    
+    res.json({ success: true, message: `Membership renewed for ${duration.replace('_', ' ')}`, student });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Student Types Stats
+exports.getStudentTypes = async (req, res) => {
+  try {
+    const types = await User.aggregate([
+      { $match: { userType: 'student' } },
+      { $group: { _id: '$studentCategory', count: { $sum: 1 } } }
+    ]);
+    res.json({ success: true, types });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Staff Management
+exports.getAllStaff = async (req, res) => {
+  try {
+    const staff = await User.find({ userType: 'staff' }).select('-password');
+    res.json({ success: true, staff });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+exports.addStaff = async (req, res) => {
+  try {
+    const { name, email, password, staffRole, phone } = req.body;
+    
+    if (await User.findOne({ email })) {
+      return res.status(400).json({ success: false, error: 'User already exists' });
+    }
+    
+    const user = await User.create({ 
+      name, email, password, userType: 'staff', staffRole: staffRole || 'teacher', phone 
+    });
+    
+    res.status(201).json({ success: true, message: 'Staff added successfully', staff: user });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
