@@ -34,7 +34,7 @@ const AllStudents = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/admin/students', {
+      const res = await axios.get('${globalThis.API_URL}/admin/students', {
         params: { search: searchTerm, status: statusFilter !== 'all' ? statusFilter : undefined, studentCategory: categoryFilter !== 'all' ? categoryFilter : undefined },
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -48,7 +48,7 @@ const AllStudents = () => {
     if (!window.confirm(`Delete ${name}?`)) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.delete(`http://localhost:5000/api/admin/students/${id}`, { 
+      const res = await axios.delete(`${globalThis.API_URL}/admin/students/${id}`, { 
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) { alert('Deleted!'); fetchStudents(); }

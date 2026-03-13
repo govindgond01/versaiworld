@@ -43,11 +43,11 @@ const useDashboardData = (dashboardType = 'academy') => {
       // Fetch user data based on type
       let userResponse;
       if (dashboardType === 'staff') {
-        userResponse = await axios.get(`http://localhost:5000/api/staff/${userId}`, {
+        userResponse = await axios.get(`${globalThis.API_URL}/staff/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
       } else {
-        userResponse = await axios.get(`http://localhost:5000/api/admin/students/${userId}`, {
+        userResponse = await axios.get(`${globalThis.API_URL}/admin/students/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
       }
@@ -160,7 +160,7 @@ const useDashboardData = (dashboardType = 'academy') => {
 
       // Fetch attendance
       try {
-        const attendanceResponse = await axios.get(`http://localhost:5000/api/attendance/monthly/${userId}`, {
+        const attendanceResponse = await axios.get(`${globalThis.API_URL}/attendance/monthly/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -183,7 +183,7 @@ const useDashboardData = (dashboardType = 'academy') => {
 
       // Fetch activities
       try {
-        const paymentsResponse = await axios.get(`http://localhost:5000/api/payments/my-payments`, {
+        const paymentsResponse = await axios.get(`${globalThis.API_URL}/payments/my-payments`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -218,7 +218,7 @@ const useDashboardData = (dashboardType = 'academy') => {
       const token = localStorage.getItem('token');
       const userId = userData?._id || localStorage.getItem('userId');
 
-      const response = await axios.post('http://localhost:5000/api/attendance/mark', 
+      const response = await axios.post('${globalThis.API_URL}/attendance/mark', 
         { userId, status, userType: dashboardType },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

@@ -112,7 +112,7 @@ const ExportData = () => {
     try {
       setFetchingFilters(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/export/categories', {
+      const res = await axios.get('${globalThis.API_URL}/export/categories', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -185,7 +185,7 @@ const ExportData = () => {
       }
 
       const res = await axios.post(
-        `http://localhost:5000/api/export/${formData.dataType}`,
+        `${globalThis.API_URL}/export/${formData.dataType}`,
         payload,
         config
       );

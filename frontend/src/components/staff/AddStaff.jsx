@@ -65,7 +65,7 @@ const AddStaff = () => {
           accountNumber: formData.accountNumber, bankName: formData.bankName, ifsc: formData.ifsc
         }
       };
-      const res = await axios.post('http://localhost:5000/api/staff', staffData, {
+      const res = await axios.post('${globalThis.API_URL}/staff', staffData, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) {

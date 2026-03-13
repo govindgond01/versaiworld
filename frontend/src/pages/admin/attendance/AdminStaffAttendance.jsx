@@ -33,7 +33,7 @@ const AdminStaffAttendance = () => {
       const token = localStorage.getItem('token');
 
       const usersRes = await axios.get(
-        'http://localhost:5000/api/staff',
+        '${globalThis.API_URL}/staff',
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
@@ -42,7 +42,7 @@ const AdminStaffAttendance = () => {
 
       const dateStr = selectedDate.toISOString().split('T')[0];
       const attendanceRes = await axios.get(
-        `http://localhost:5000/api/attendance/all?date=${dateStr}`,
+        `${globalThis.API_URL}/attendance/all?date=${dateStr}`,
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
 
@@ -88,13 +88,13 @@ const AdminStaffAttendance = () => {
 
       if (existing) {
         await axios.put(
-          `http://localhost:5000/api/attendance/${existing._id}`,
+          `${globalThis.API_URL}/attendance/${existing._id}`,
           { status: editStatus },
           { headers: { 'Authorization': `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          'http://localhost:5000/api/attendance/user',
+          '${globalThis.API_URL}/attendance/user',
           { userId: selectedUser._id, status: editStatus, date: dateStr },
           { headers: { 'Authorization': `Bearer ${token}` } }
         );

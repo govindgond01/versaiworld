@@ -33,7 +33,7 @@ const StaffStats = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/staff/stats', {
+      const res = await axios.get('${globalThis.API_URL}/staff/stats', {
         params: { timeFilter, departmentFilter },
         headers: { 'Authorization': `Bearer ${token}` }
       });

@@ -40,7 +40,7 @@ const AllStaff = () => {
         status: statusFilter !== 'all' ? statusFilter : '',
         staffRole: roleFilter !== 'all' ? roleFilter : ''
       };
-      const res = await axios.get('http://localhost:5000/api/staff', {
+      const res = await axios.get('${globalThis.API_URL}/staff', {
         params, headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) {
@@ -62,7 +62,7 @@ const AllStaff = () => {
     if (!window.confirm(`Delete ${name}?`)) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/staff/${id}`, {
+      await axios.delete(`${globalThis.API_URL}/staff/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       alert('Deleted!');
@@ -73,7 +73,7 @@ const AllStaff = () => {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/staff/export', {
+      const res = await axios.get('${globalThis.API_URL}/staff/export', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) {

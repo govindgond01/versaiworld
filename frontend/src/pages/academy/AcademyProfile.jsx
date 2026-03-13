@@ -26,7 +26,7 @@ const AcademyProfile = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const res = await axios.get(`http://localhost:5000/api/admin/students/${userId}`, {
+      const res = await axios.get(`${globalThis.API_URL}/admin/students/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -63,7 +63,7 @@ const AcademyProfile = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.put(
-        `http://localhost:5000/api/admin/students/${userId}`,
+        `${globalThis.API_URL}/admin/students/${userId}`,
         formData,
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

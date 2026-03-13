@@ -24,7 +24,7 @@ const StaffPayments = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const userRes = await axios.get(`http://localhost:5000/api/staff/${userId}`, {
+      const userRes = await axios.get(`${globalThis.API_URL}/staff/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -37,7 +37,7 @@ const StaffPayments = () => {
         });
       }
 
-      const paymentsRes = await axios.get(`http://localhost:5000/api/payments/user/${userId}`, {
+      const paymentsRes = await axios.get(`${globalThis.API_URL}/payments/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

@@ -45,7 +45,7 @@ const AttendancePage = ({
             if (!token) return;
 
             const res = await axios.get(
-                'http://localhost:5000/api/attendance/my-today',
+                '${globalThis.API_URL}/attendance/my-today',
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 
@@ -64,7 +64,7 @@ const AttendancePage = ({
             const token = localStorage.getItem('token');
 
             const res = await axios.post(
-                'http://localhost:5000/api/attendance/mark',
+                '${globalThis.API_URL}/attendance/mark',
                 { status },
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
@@ -88,7 +88,7 @@ const AttendancePage = ({
             const year = new Date().getFullYear();
 
             const res = await axios.get(
-                `http://localhost:5000/api/attendance/my-all?year=${year}`,
+                `${globalThis.API_URL}/attendance/my-all?year=${year}`,
                 { headers: { 'Authorization': `Bearer ${token}` } }
             );
 

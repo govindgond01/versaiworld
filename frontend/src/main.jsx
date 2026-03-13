@@ -1,14 +1,15 @@
-// main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom'; // ✅ ADD THIS
+import { BrowserRouter } from 'react-router-dom'; 
 import { Provider } from 'react-redux';
 import store from './store/store';
 import App from './App';
 import './index.css';
-import axios from 'axios';  // ✅ YEH IMPORT KARO
+import axios from 'axios';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+globalThis.API_URL = API_URL;
 
-// ✅ YEH 3 LINES ADD KARO - TOKEN SET HOGA!
+
 const token = localStorage.getItem('token');
 if (token) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -18,7 +19,7 @@ if (token) {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
-      <BrowserRouter> {/* ✅ WRAP App with BrowserRouter */}
+      <BrowserRouter> 
         <App />
       </BrowserRouter>
     </Provider>

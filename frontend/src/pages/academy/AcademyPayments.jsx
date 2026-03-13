@@ -24,7 +24,7 @@ const AcademyPayments = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const userRes = await axios.get(`http://localhost:5000/api/admin/students/${userId}`, {
+      const userRes = await axios.get(`${globalThis.API_URL}/admin/students/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -37,7 +37,7 @@ const AcademyPayments = () => {
         });
       }
 
-      const paymentsRes = await axios.get(`http://localhost:5000/api/payments/user/${userId}`, {
+      const paymentsRes = await axios.get(`${globalThis.API_URL}/payments/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

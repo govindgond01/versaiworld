@@ -65,7 +65,7 @@ const SystemSettings = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/settings', {
+      const res = await axios.get('${globalThis.API_URL}/settings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) setSettings(res.data.data);
@@ -80,7 +80,7 @@ const SystemSettings = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/settings', settings, {
+      await axios.put('${globalThis.API_URL}/settings', settings, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       toast.success('Settings saved successfully');

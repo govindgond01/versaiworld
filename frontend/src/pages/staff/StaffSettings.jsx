@@ -18,7 +18,7 @@ const StaffSettings = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const res = await axios.get('http://localhost:5000/api/users/settings', {
+      const res = await axios.get('${globalThis.API_URL}/users/settings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -37,7 +37,7 @@ const StaffSettings = () => {
       setSaving(true);
       const token = localStorage.getItem('token');
       
-      await axios.put('http://localhost:5000/api/users/settings', newSettings, {
+      await axios.put('${globalThis.API_URL}/users/settings', newSettings, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

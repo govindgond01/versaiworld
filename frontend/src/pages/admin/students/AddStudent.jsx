@@ -58,7 +58,7 @@ const AddStudent = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:5000/api/admin/students',
+        '${globalThis.API_URL}/admin/students',
         { 
           ...formData, 
           totalFees: parseFloat(formData.totalFees) || 5000,

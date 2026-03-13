@@ -34,7 +34,7 @@ const ViewStaff = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/staff/${id}`, {
+      const res = await axios.get(`${globalThis.API_URL}/staff/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) setStaff(res.data.staff);
@@ -49,7 +49,7 @@ const ViewStaff = () => {
     if (!window.confirm(`Delete ${staff?.name}?`)) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/staff/${id}`, {
+      await axios.delete(`${globalThis.API_URL}/staff/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       toast.success('Staff deleted');

@@ -26,7 +26,7 @@ const ExpiringSoon = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/admin/students/expiring-soon', {
+      const res = await axios.get('${globalThis.API_URL}/admin/students/expiring-soon', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) {
@@ -60,7 +60,7 @@ const ExpiringSoon = () => {
     if (!window.confirm(`Renew ${name} for 1 month?`)) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/admin/students/${id}/renew`, 
+      await axios.patch(`${globalThis.API_URL}/admin/students/${id}/renew`, 
         { duration: '1_month' },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

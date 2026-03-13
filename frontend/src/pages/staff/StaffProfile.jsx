@@ -25,7 +25,7 @@ const StaffProfile = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const res = await axios.get(`http://localhost:5000/api/staff/${userId}`, {
+      const res = await axios.get(`${globalThis.API_URL}/staff/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -62,7 +62,7 @@ const StaffProfile = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.put(
-        `http://localhost:5000/api/staff/${userId}`,
+        `${globalThis.API_URL}/staff/${userId}`,
         formData,
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

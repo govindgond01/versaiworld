@@ -30,7 +30,7 @@ const AcademyDashboard = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const userRes = await axios.get(`http://localhost:5000/api/admin/students/${userId}`, {
+      const userRes = await axios.get(`${globalThis.API_URL}/admin/students/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -49,7 +49,7 @@ const AcademyDashboard = () => {
         }
       }
 
-      const attendanceRes = await axios.get(`http://localhost:5000/api/attendance/monthly/${userId}`, {
+      const attendanceRes = await axios.get(`${globalThis.API_URL}/attendance/monthly/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -61,7 +61,7 @@ const AcademyDashboard = () => {
         setAttendanceData(processed);
       }
 
-      const paymentsRes = await axios.get(`http://localhost:5000/api/payments/user/${userId}`, {
+      const paymentsRes = await axios.get(`${globalThis.API_URL}/payments/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -86,7 +86,7 @@ const AcademyDashboard = () => {
   const handleMarkAttendance = async (status) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/attendance/mark', 
+      await axios.post('${globalThis.API_URL}/attendance/mark', 
         { userId, status, date: new Date() },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );

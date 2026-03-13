@@ -54,7 +54,7 @@ const EditStudent = () => {
       try {
         setFetching(true);
         const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5000/api/admin/students/${id}`, {
+        const res = await axios.get(`${globalThis.API_URL}/admin/students/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -99,7 +99,7 @@ const EditStudent = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put(`http://localhost:5000/api/admin/students/${id}`, {
+      const res = await axios.put(`${globalThis.API_URL}/admin/students/${id}`, {
         ...formData, 
         totalFees: parseFloat(formData.totalFees) || 0,
         paidFees: parseFloat(formData.paidFees) || 0,

@@ -37,7 +37,7 @@ const EditStaff = () => {
     try {
       setFetching(true);
       const token = localStorage.getItem('token');
-      const res = await axios.get(`http://localhost:5000/api/staff/${id}`, {
+      const res = await axios.get(`${globalThis.API_URL}/staff/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success && res.data.staff) {
@@ -76,7 +76,7 @@ const EditStaff = () => {
         status: formData.status, department: formData.department, address: formData.address,
         bankDetails: { accountNumber: formData.accountNumber, bankName: formData.bankName, ifsc: formData.ifsc }
       };
-      const res = await axios.put(`http://localhost:5000/api/staff/${id}`, updateData, {
+      const res = await axios.put(`${globalThis.API_URL}/staff/${id}`, updateData, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.data.success) {

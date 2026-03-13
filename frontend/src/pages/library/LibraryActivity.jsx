@@ -22,7 +22,7 @@ const LibraryActivity = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const res = await axios.get(`http://localhost:5000/api/library/activities/${userId}`, {
+      const res = await axios.get(`${globalThis.API_URL}/library/activities/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

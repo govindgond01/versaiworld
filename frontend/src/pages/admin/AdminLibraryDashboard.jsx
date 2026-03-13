@@ -15,7 +15,7 @@ const AdminLibraryDashboard = () => {
   });
   
   const api = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: '${globalThis.API_URL}',
     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
   });
 

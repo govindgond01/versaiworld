@@ -22,7 +22,7 @@ const StaffActivity = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const paymentsRes = await axios.get(`http://localhost:5000/api/payments/user/${userId}`, {
+      const paymentsRes = await axios.get(`${globalThis.API_URL}/payments/user/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

@@ -28,7 +28,7 @@ const ViewStudent = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5000/api/admin/students/${id}`, {
+        const res = await axios.get(`${globalThis.API_URL}/admin/students/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.data.success) setStudent(res.data.student);

@@ -41,7 +41,7 @@ const AdminStaffDashboard = () => {
     
     console.log('Fetching with token:', token); // 👈 DEBUG
     
-    const response = await axios.get('http://localhost:5000/api/staff/dashboard-stats', {
+    const response = await axios.get('${globalThis.API_URL}/staff/dashboard-stats', {
       headers: { 
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
