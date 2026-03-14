@@ -15,7 +15,7 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-white">
       <Header toggleSidebar={toggleSidebar} />
       
       <div className="flex pt-16">
@@ -30,7 +30,7 @@ const MainLayout = () => {
         </div>
         
         {/* Main Content Area */}
-        <div className="flex-1 md:ml-[300px] min-h-[calc(100vh-4rem)]">
+        <div className="flex-1 md:ml-[300px] min-h-[calc(100vh-4rem)] bg-gray-100">
           <div className="pt-2 px-4 md:px-6 lg:px-8">
             <Outlet />
           </div>
