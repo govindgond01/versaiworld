@@ -31,7 +31,10 @@ const SignUpPage = () => {
     setError("");
 
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/register`, {
+      // ✅ FIXED: Environment variable used
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -264,7 +267,7 @@ const SignUpPage = () => {
                   </label>
                 </div>
 
-                {/* Submit Button - EXACTLY like login */}
+                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -284,7 +287,7 @@ const SignUpPage = () => {
                 </button>
               </form>
 
-              {/* Bottom Link - EXACTLY like login */}
+              {/* Bottom Link */}
               <div className="text-center mt-6 pt-6 border-t border-gray-200">
                 <p className="text-gray-600 text-sm">
                   Already have an account?{' '}

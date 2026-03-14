@@ -40,14 +40,17 @@ const useDashboardData = (dashboardType = 'academy') => {
         return;
       }
 
+      // ✅ API Base URL from environment variable
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
       // Fetch user data based on type
       let userResponse;
       if (dashboardType === 'staff') {
-        userResponse = await axios.get(`http://localhost:5000/api/staff/${userId}`, {
+        userResponse = await axios.get(`${API_URL}/staff/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
       } else {
-        userResponse = await axios.get(`http://localhost:5000/api/admin/students/${userId}`, {
+        userResponse = await axios.get(`${API_URL}/admin/students/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
       }
@@ -59,36 +62,28 @@ const useDashboardData = (dashboardType = 'academy') => {
           // Staff dashboard data
           setStats([
             { 
-            //   icon: <FaRupeeSign className="w-6 h-6" />, 
               label: "Salary", 
               value: `₹${user.salary?.toLocaleString() || 0}`,
               detail: `Paid: ₹${user.paidSalary || 0}`,
               bgColor: "bg-blue-100",
-            //   iconColor: "text-blue-600"
             },
             { 
-            //   icon: <MdWarning className="w-6 h-6" />, 
               label: "Due Salary", 
               value: `₹${user.dueSalary?.toLocaleString() || 0}`,
               detail: user.dueSalary > 0 ? "Pending" : "Cleared",
               bgColor: user.dueSalary > 0 ? "bg-red-100" : "bg-green-100",
-            //   iconColor: user.dueSalary > 0 ? "text-red-600" : "text-green-600"
             },
             { 
-            //   icon: <FaClock className="w-6 h-6" />, 
               label: "Attendance", 
               value: `${user.attendance?.percentage || 0}%`,
               detail: `Present: ${user.attendance?.present || 0}`,
               bgColor: "bg-purple-100",
-            //   iconColor: "text-purple-600"
             },
             { 
-            //   icon: <FaBook className="w-6 h-6" />, 
               label: "Classes", 
               value: "4",
               detail: "Today's schedule",
               bgColor: "bg-green-100",
-            //   iconColor: "text-green-600"
             },
           ]);
 
@@ -109,36 +104,28 @@ const useDashboardData = (dashboardType = 'academy') => {
 
           setStats([
             { 
-            //   icon: <FaRupeeSign className="w-6 h-6" />, 
               label: "Total Fees", 
               value: `₹${totalFees.toLocaleString()}`,
               detail: `Course: ${user.course || 'N/A'}`,
               bgColor: "bg-blue-100",
-            //   iconColor: "text-blue-600"
             },
             { 
-            //   icon: <FaWallet className="w-6 h-6" />, 
               label: "Paid Fees", 
               value: `₹${paidFees.toLocaleString()}`,
               detail: totalFees > 0 ? `${((paidFees/totalFees)*100).toFixed(1)}% paid` : '0%',
               bgColor: "bg-green-100",
-            //   iconColor: "text-green-600"
             },
             { 
-            //   icon: <MdWarning className="w-6 h-6" />, 
               label: "Due Fees", 
               value: `₹${dueFees.toLocaleString()}`,
               detail: dueFees > 0 ? "Pending" : "Fully paid",
               bgColor: dueFees > 0 ? "bg-red-100" : "bg-green-100",
-            //   iconColor: dueFees > 0 ? "text-red-600" : "text-green-600"
             },
             { 
-            //   icon: <FaClock className="w-6 h-6" />, 
               label: "Attendance", 
               value: `${attendancePercent}%`,
               detail: `Present: ${presentDays} | Absent: ${absentDays}`,
               bgColor: "bg-purple-100",
-            //   iconColor: "text-purple-600"
             },
           ]);
 
@@ -160,7 +147,7 @@ const useDashboardData = (dashboardType = 'academy') => {
 
       // Fetch attendance
       try {
-        const attendanceResponse = await axios.get(`http://localhost:5000/api/attendance/monthly/${userId}`, {
+        const attendanceResponse = await axios.get(`${API_URL}/attendance/monthly/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -183,7 +170,7 @@ const useDashboardData = (dashboardType = 'academy') => {
 
       // Fetch activities
       try {
-        const paymentsResponse = await axios.get(`http://localhost:5000/api/payments/my-payments`, {
+        const paymentsResponse = await axios.get(`${API_URL}/payments/my-payments`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -217,8 +204,9 @@ const useDashboardData = (dashboardType = 'academy') => {
     try {
       const token = localStorage.getItem('token');
       const userId = userData?._id || localStorage.getItem('userId');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-      const response = await axios.post('http://localhost:5000/api/attendance/mark', 
+      const response = await axios.post(`${API_URL}/attendance/mark`, 
         { userId, status, userType: dashboardType },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
