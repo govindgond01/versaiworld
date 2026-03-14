@@ -5,7 +5,7 @@ import {
 } from 'react-icons/fa';
 import {
   FiUsers, FiUserCheck, FiTrendingUp, FiCreditCard,
-  FiRefreshCw, FiArrowRight, FiDollarSign, FiActivity
+  FiRefreshCw, FiArrowRight, FiActivity
 } from 'react-icons/fi';
 import {
   MdLocalLibrary, MdWarning, MdPerson, MdWork
@@ -105,7 +105,7 @@ const AdminStaffDashboard = () => {
     { title: "Total Staff", value: stats.totalStaff, icon: <FiUsers className="text-2xl" />, color: "bg-blue-500", bg: "bg-blue-100", text: "text-blue-600" },
     { title: "Active Staff", value: stats.activeStaff, icon: <FiUserCheck className="text-2xl" />, color: "bg-green-500", bg: "bg-green-100", text: "text-green-600" },
     { title: "Total Salary", value: formatCurrency(stats.totalSalary), icon: <FaRupeeSign className="text-2xl" />, color: "bg-purple-500", bg: "bg-purple-100", text: "text-purple-600" },
-    { title: "Avg Salary", value: formatCurrency(stats.avgSalary), icon: <FiDollarSign className="text-2xl" />, color: "bg-orange-500", bg: "bg-orange-100", text: "text-orange-600" }
+    { title: "Avg Salary", value: formatCurrency(stats.avgSalary), icon: <FaRupeeSign className="text-2xl" />, color: "bg-orange-500", bg: "bg-orange-100", text: "text-orange-600" }
   ];
 
   return (
