@@ -110,8 +110,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   if (isOpen === undefined) {
     return (
-      <div className="w-[280px] h-screen bg-white border-r border-gray-200 overflow-y-auto fixed left-0 top-0">
-        <div className="mt-2 md:mt-15 py-5 px-3 pb-20">
+      <div className="h-screen bg-white border-r border-gray-200 overflow-y-auto">
+        <div className="pt-2 pr-2 pb-20">
           {menuData.map((section, idx) => (
             <div key={idx} className="mb-4">
               {section.sectionTitle && (
@@ -200,7 +200,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     <>
       {isOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose} />}
       <div className={`
-        fixed top-0 left-0 h-screen w-[280px] bg-white z-50
+        fixed top-0 left-0 h-screen w-[300px] bg-white z-50
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         md:hidden overflow-y-auto

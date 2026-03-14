@@ -30,7 +30,6 @@ const LoginPage = () => {
     setError("");
 
     try {
-      // ✅ FIXED: Environment variable use किया
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       
       const response = await fetch(`${API_URL}/auth/login`, {

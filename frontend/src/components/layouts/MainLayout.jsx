@@ -19,8 +19,8 @@ const MainLayout = () => {
       <Header toggleSidebar={toggleSidebar} />
       
       <div className="flex pt-16">
-        {/* Desktop Sidebar - Fixed 250px width */}
-        <div className="hidden md:block fixed top-16 left-0 w-[280px] h-[calc(100vh-4rem)] bg-white z-10 border-t border-zinc-200">
+        {/* left side sidebar */}
+        <div className="hidden md:block fixed left-8 w-[300px] h-[calc(100vh-4rem)] bg-white z-10 border-t border-zinc-200">
           <Sidebar />
         </div>
         
@@ -30,7 +30,7 @@ const MainLayout = () => {
         </div>
         
         {/* Main Content Area */}
-        <div className="flex-1 md:ml-[280px] min-h-[calc(100vh-4rem)]">
+        <div className="flex-1 md:ml-[300px] min-h-[calc(100vh-4rem)]">
           <div className="pt-2 px-4 md:px-6 lg:px-8">
             <Outlet />
           </div>

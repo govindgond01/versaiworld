@@ -265,16 +265,16 @@ const Header = ({ toggleSidebar }) => {
   };
 
   return (
-    <div className='bg-white fixed top-0 z-50 w-full shadow-sm'>
+     <div className='bg-white fixed top-0 z-50 w-full shadow-sm px-4 md:px-6 lg:px-8'>
       <div className='h-16'>
         <div className='flex h-full items-center'>
           {/* Logo Section */}
-          <div className='w-[280px] h-full border-r border-zinc-200 hidden md:flex items-center pl-8'>
+          <div className='w-[300px] h-full border-r border-zinc-200 hidden md:flex items-center'>
             <img className='h-10' src={logoImg} alt="Logo" />
           </div>
 
           {/* Mobile Left */}
-          <div className='flex items-center md:hidden pl-4'>
+          <div className='flex items-center md:hidden'>
             <button
               onClick={toggleSidebar}
               className='p-2 rounded-lg hover:bg-zinc-100 mr-2'
@@ -284,9 +284,9 @@ const Header = ({ toggleSidebar }) => {
             <img className='h-8' src={logoImg} alt="Logo" />
           </div>
 
-          <div className='flex flex-1 items-center justify-between px-4 md:px-6 lg:px-8'>
+          <div className='flex flex-1 items-center justify-end md:justify-between'>
             {/* Search Bar */}
-            <div className='flex-1 max-w-xl relative'>
+            <div className='flex-1 max-w-xl relative pl-2 hidden md:block'>
               <div className='relative'>
                 <FiSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
                 <input
@@ -318,12 +318,11 @@ const Header = ({ toggleSidebar }) => {
                         setSearchTerm('');
                       }}
                     >
-                      <div className={`p-2 rounded-lg ${
-                        result.type === 'user' ? 'bg-blue-100' :
-                        result.type === 'payment' || result.type === 'salary' ? 'bg-green-100' :
-                        result.type === 'attendance' ? 'bg-yellow-100' :
-                        result.type === 'book' ? 'bg-purple-100' : 'bg-gray-100'
-                      }`}>
+                      <div className={`p-2 rounded-lg ${result.type === 'user' ? 'bg-blue-100' :
+                          result.type === 'payment' || result.type === 'salary' ? 'bg-green-100' :
+                            result.type === 'attendance' ? 'bg-yellow-100' :
+                              result.type === 'book' ? 'bg-purple-100' : 'bg-gray-100'
+                        }`}>
                         {getResultIcon(result.type)}
                       </div>
                       <div className="flex-1">
@@ -344,7 +343,7 @@ const Header = ({ toggleSidebar }) => {
             {/* Right Section */}
             <div className='flex items-center gap-3 ml-4'>
               {/* Notification Bell */}
-              <button 
+              <button
                 onClick={handleNotificationClick}
                 className='relative p-2 rounded-lg hover:bg-zinc-100 transition'
               >
@@ -357,18 +356,26 @@ const Header = ({ toggleSidebar }) => {
               </button>
 
               {/* User Profile Dropdown */}
+              {/* User Profile Dropdown */}
               <div className='relative'>
-                {/* 👇 ADDED: ref for button */}
+                {/* Button */}
                 <button
                   ref={buttonRef}
-                  onClick={toggleDropdown}
+                  onClick={(e) => {
+                    // Simple - screen size check kar lo
+                    if (window.innerWidth < 768) {
+                      handleProfileClick(); // Mobile par direct profile
+                    } else {
+                      toggleDropdown(); // Desktop par dropdown
+                    }
+                  }}
                   className='flex items-center gap-2 hover:bg-zinc-50 rounded-lg p-1 transition'
                 >
                   <div className='flex items-center'>
                     {getProfileImageUrl() ? (
-                      <img 
-                        className='h-10 w-10 rounded-full border-2 border-gray-200 object-cover' 
-                        src={getProfileImageUrl()} 
+                      <img
+                        className='h-10 w-10 rounded-full border-2 border-gray-200 object-cover'
+                        src={getProfileImageUrl()}
                         alt={user?.name}
                         onError={(e) => {
                           e.target.onerror = null;
@@ -389,53 +396,37 @@ const Header = ({ toggleSidebar }) => {
                   <FiChevronDown className='w-4 h-4 text-gray-500 hidden md:block' />
                 </button>
 
-                {/* 👇 ADDED: ref for dropdown */}
+                {/* Dropdown - only for desktop */}
                 {showDropdown && (
-                  <div 
+                  <div
                     ref={dropdownRef}
-                    className='absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50'
+                    className='absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 hidden md:block'
                   >
+                    
                     <div className='px-4 py-3 border-b border-gray-200'>
-                      <p className='font-medium text-gray-900'>{user?.name}</p>
-                      <p className='text-sm text-gray-500'>{user?.email}</p>
+                      <p className='font-medium text-gray-900 text-sm'>{user?.name}</p>
+                      <p className='text-xs text-gray-500 truncate'>{user?.email}</p>
                     </div>
 
                     <div className='py-2'>
-                      {/* Profile - Role Based */}
-                      <button
-                        onClick={handleProfileClick}
-                        className='w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3'
-                      >
+                      <button onClick={handleProfileClick} className='w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3'>
                         <FiUser className='w-4 h-4 text-gray-500' />
-                        <span>My Profile</span>
+                        <span className='text-sm'>My Profile</span>
                       </button>
-
-                      {/* Settings - Role Based */}
-                      <button
-                        onClick={handleSettingsClick}
-                        className='w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3'
-                      >
+                      <button onClick={handleSettingsClick} className='w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3'>
                         <FiSettings className='w-4 h-4 text-gray-500' />
-                        <span>Settings</span>
+                        <span className='text-sm'>Settings</span>
                       </button>
-
-                      {/* Help - Role Based */}
-                      <button
-                        onClick={handleHelpClick}
-                        className='w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3'
-                      >
+                      <button onClick={handleHelpClick} className='w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3'>
                         <FiHelpCircle className='w-4 h-4 text-gray-500' />
-                        <span>Help & Support</span>
+                        <span className='text-sm'>Help & Support</span>
                       </button>
                     </div>
 
                     <div className='border-t border-gray-200 pt-2'>
-                      <button
-                        onClick={handleLogout}
-                        className='w-full px-4 py-2 text-left hover:bg-red-50 flex items-center gap-3 text-red-600'
-                      >
+                      <button onClick={handleLogout} className='w-full px-4 py-2 text-left hover:bg-red-50 flex items-center gap-3 text-red-600'>
                         <FiLogOut className='w-4 h-4' />
-                        <span>Logout</span>
+                        <span className='text-sm'>Logout</span>
                       </button>
                     </div>
                   </div>
