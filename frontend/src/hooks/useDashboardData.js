@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import api from '../services/api';
 
 const useDashboardData = (dashboardType = 'academy') => {
   const [loading, setLoading] = useState(true);
@@ -40,19 +40,14 @@ const useDashboardData = (dashboardType = 'academy') => {
         return;
       }
 
-      // ✅ API Base URL from environment variable
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      // ✅ No need to define API_URL - api instance handles baseURL
 
       // Fetch user data based on type
       let userResponse;
       if (dashboardType === 'staff') {
-        userResponse = await axios.get(`${API_URL}/staff/${userId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        userResponse = await api.get(`/staff/${userId}`);
       } else {
-        userResponse = await axios.get(`${API_URL}/admin/students/${userId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        userResponse = await api.get(`/admin/students/${userId}`);
       }
 
       if (userResponse.data.success) {
@@ -147,9 +142,7 @@ const useDashboardData = (dashboardType = 'academy') => {
 
       // Fetch attendance
       try {
-        const attendanceResponse = await axios.get(`${API_URL}/attendance/monthly/${userId}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const attendanceResponse = await api.get(`/attendance/monthly/${userId}`);
 
         if (attendanceResponse.data.success) {
           const today = new Date().toISOString().split('T')[0];
@@ -170,9 +163,7 @@ const useDashboardData = (dashboardType = 'academy') => {
 
       // Fetch activities
       try {
-        const paymentsResponse = await axios.get(`${API_URL}/payments/my-payments`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const paymentsResponse = await api.get('/payments/my-payments');
 
         if (paymentsResponse.data.success) {
           const payments = paymentsResponse.data.payments || [];
@@ -204,11 +195,9 @@ const useDashboardData = (dashboardType = 'academy') => {
     try {
       const token = localStorage.getItem('token');
       const userId = userData?._id || localStorage.getItem('userId');
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-      const response = await axios.post(`${API_URL}/attendance/mark`, 
-        { userId, status, userType: dashboardType },
-        { headers: { 'Authorization': `Bearer ${token}` } }
+      const response = await api.post('/attendance/mark', 
+        { userId, status, userType: dashboardType }
       );
 
       if (response.data.success) {
