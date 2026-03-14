@@ -8,7 +8,7 @@ import {
   FiCalendar, FiUsers
 } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
-import api from '../services/api';
+import api from '../../services/api';
 
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();

@@ -19,7 +19,7 @@ import {
 import {
   RiGovernmentLine, RiBankLine
 } from 'react-icons/ri';
-import api from '../../services/api';
+import api from '../../../services/api';
 
 const AllStudents = () => {
   const navigate = useNavigate();

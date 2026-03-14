@@ -7,7 +7,7 @@ import AdminAttendanceStats from '../../../components/admin/attendance/AdminAtte
 import AdminAttendanceFilters from '../../../components/admin/attendance/AdminAttendanceFilters';
 import AdminAttendanceTable from '../../../components/admin/attendance/AdminAttendanceTable';
 import AdminAttendanceEditor from '../../../components/admin/attendance/AdminAttendanceEditor';
-import api from '../../services/api';
+import api from '../../../services/api';
 
 const AdminAcademyAttendance = () => {
   const [loading, setLoading] = useState(true);

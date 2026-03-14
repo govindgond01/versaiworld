@@ -1,45 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 import { 
-  FaIndianRupeeSign,
-  FaUser,
-  FaUserTie,
-  FaBuilding,
-  FaSpinner
+  FaIndianRupeeSign, FaUser, FaUserTie, FaBuilding, FaSpinner
 } from 'react-icons/fa6';
 import { 
-  FiDollarSign,
-  FiCreditCard,
-  FiHash,
-  FiSearch,
-  FiCalendar
+  FiDollarSign, FiCreditCard, FiHash, FiSearch, FiCalendar
 } from 'react-icons/fi';
 import { 
-  MdPayment,
-  MdDescription,
-  MdClear,
-  MdRefresh,
-  MdLocalLibrary
+  MdPayment, MdDescription, MdClear, MdRefresh, MdLocalLibrary
 } from 'react-icons/md';
 import { 
-  BsCashStack,
-  BsBank2,
-  BsQrCode,
-  BsChevronDown,
-  BsPersonBadge,
-  BsPersonWorkspace
+  BsCashStack, BsBank2, BsQrCode, BsChevronDown, BsPersonWorkspace
 } from 'react-icons/bs';
 import { 
-  GiPayMoney,
-  GiReceiveMoney,
-  GiTeacher,
-  GiMoneyStack
+  GiPayMoney, GiReceiveMoney, GiTeacher, GiMoneyStack
 } from 'react-icons/gi';
 import { 
-  RiRefund2Line,
-  RiGovernmentLine,
-  RiBankLine
+  RiRefund2Line, RiGovernmentLine, RiBankLine
 } from 'react-icons/ri';
 
 const PaymentForm = ({ user, category, onPaymentSuccess }) => {
@@ -49,13 +27,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
   const [selectedUser, setSelectedUser] = useState(user || null);
   
   const userRole = localStorage.getItem('role');
-  const token = localStorage.getItem('token');
-
-  useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    }
-  }, [token]);
 
   const getDefaultPaymentType = () => {
     if (category === 'staff') return 'salary';
@@ -98,16 +69,16 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
       
       if (category === 'staff') {
         studentPromise = Promise.resolve({ data: { students: [] } });
-        staffPromise = axios.get(`/api/staff?search=${searchQuery}&limit=10`);
+        staffPromise = api.get(`/staff?search=${searchQuery}&limit=10`);
       } else if (category === 'academy') {
-        studentPromise = axios.get(`/api/admin/students?search=${searchQuery}&studentCategory=academy&limit=10`);
+        studentPromise = api.get(`/admin/students?search=${searchQuery}&studentCategory=academy&limit=10`);
         staffPromise = Promise.resolve({ data: { staff: [] } });
       } else if (category === 'library') {
-        studentPromise = axios.get(`/api/admin/students?search=${searchQuery}&studentCategory=library&limit=10`);
+        studentPromise = api.get(`/admin/students?search=${searchQuery}&studentCategory=library&limit=10`);
         staffPromise = Promise.resolve({ data: { staff: [] } });
       } else {
-        studentPromise = axios.get(`/api/admin/students?search=${searchQuery}&limit=10`);
-        staffPromise = axios.get(`/api/staff?search=${searchQuery}&limit=10`);
+        studentPromise = api.get(`/admin/students?search=${searchQuery}&limit=10`);
+        staffPromise = api.get(`/staff?search=${searchQuery}&limit=10`);
       }
 
       const [studentResponse, staffResponse] = await Promise.all([studentPromise, staffPromise]);
@@ -160,7 +131,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
         receiptNo: formData.receiptNo
       };
       
-      const response = await axios.post('/api/payments/add', paymentData);
+      const response = await api.post('/payments/add', paymentData);
       
       toast.success('Payment recorded successfully!');
       
@@ -211,7 +182,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
   const currentUserType = selectedUser?.userType || user?.userType || 
     (category === 'staff' ? 'staff' : 'student');
 
-  // Get category icon
   const getCategoryIcon = () => {
     if (category === 'academy') return <GiTeacher className="w-4 h-4" />;
     if (category === 'library') return <MdLocalLibrary className="w-4 h-4" />;
@@ -235,7 +205,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* User Selection */}
         {!user && userRole === 'admin' && (
           <div className="space-y-3">
             <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
@@ -296,7 +265,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
               )}
             </div>
 
-            {/* Selected User */}
             {selectedUser && (
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <div className="flex justify-between items-start">
@@ -328,9 +296,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
           </div>
         )}
 
-        {/* Form Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {/* Amount */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <FaIndianRupeeSign className="w-3.5 h-3.5" />
@@ -353,7 +319,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
             </div>
           </div>
 
-          {/* Payment Type */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <GiPayMoney className="w-3.5 h-3.5" />
@@ -381,7 +346,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
             </div>
           </div>
 
-          {/* Payment Method */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <RiBankLine className="w-3.5 h-3.5" />
@@ -409,7 +373,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
             </div>
           </div>
 
-          {/* Month */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <FiCalendar className="w-3.5 h-3.5" />
@@ -426,7 +389,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
             />
           </div>
 
-          {/* Description */}
           <div className="sm:col-span-2 space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <MdDescription className="w-3.5 h-3.5" />
@@ -443,7 +405,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
             />
           </div>
 
-          {/* Transaction ID */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <FiHash className="w-3.5 h-3.5" />
@@ -460,7 +421,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
             />
           </div>
 
-          {/* Receipt Number */}
           <div className="space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <MdRefresh className="w-3.5 h-3.5" />
@@ -478,7 +438,6 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="flex justify-end pt-4">
           <button
             type="submit"
