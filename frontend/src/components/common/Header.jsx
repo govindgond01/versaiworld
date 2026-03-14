@@ -253,13 +253,13 @@ const Header = ({ toggleSidebar }) => {
       }
     }
     
-    // CASE 2: String (local ya cloudinary URL)
     if (typeof user.profileImage === 'string') {
-      if (user.profileImage.startsWith('http')) {
-        return user.profileImage;
-      }
-      return `http://localhost:5000/uploads/${user.profileImage}`;
-    }
+  if (user.profileImage.startsWith('http')) {
+    return user.profileImage;
+  }
+  const baseURL = globalThis.API_URL?.replace('/api', '') || 'http://localhost:5000';
+  return `${baseURL}/uploads/${user.profileImage}`;
+}
     
     return null;
   };

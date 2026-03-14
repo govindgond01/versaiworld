@@ -1,4 +1,3 @@
-// Get image URL (handles both Cloudinary and legacy)
 export const getImageUrl = (user) => {
   if (!user?.profileImage) return null;
   
@@ -7,9 +6,9 @@ export const getImageUrl = (user) => {
     return user.profileImage.secure_url;
   }
   
-  // Legacy image (string)
   if (typeof user.profileImage === 'string') {
-    return `http://localhost:5000/uploads/${user.profileImage}`;
+    const baseURL = globalThis.API_URL?.replace('/api', '') || 'http://localhost:5000';
+    return `${baseURL}/uploads/${user.profileImage}`;
   }
   
   return null;
