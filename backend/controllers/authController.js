@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
       phone,
       studentCategory,
       staffRole,
-      cource
+      course
     } = req.body;
     
     // Validation
@@ -69,7 +69,7 @@ exports.register = async (req, res) => {
       userType,
       status: 'active',
       profileImage: req.body.profileImage || '',
-      cource: cource || ''
+      course: course || ''
     };
     
     // Add specific fields based on userType
@@ -98,7 +98,7 @@ exports.register = async (req, res) => {
       phone: user.phone,
       status: user.status,
       profileImage: user.profileImage,
-      cource: user.cource,
+      course: user.course,
       createdAt: user.createdAt
     };
     
@@ -185,7 +185,7 @@ exports.login = async (req, res) => {
       phone: user.phone,
       status: user.status,
       profileImage: user.profileImage,
-      cource: user.cource,
+      course: user.course,
       createdAt: user.createdAt
     };
     
@@ -244,7 +244,7 @@ exports.getMe = async (req, res) => {
       phone: user.phone,
       status: user.status,
       profileImage: user.profileImage,
-      cource: user.cource,
+      course: user.course,
       address: user.address,
       department: user.department,
       createdAt: user.createdAt,

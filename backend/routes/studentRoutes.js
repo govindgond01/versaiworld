@@ -11,7 +11,7 @@ router.get('/stats', protect, adminOnly, studentController.getStudentStats);
 router.get('/active', protect, adminOnly, studentController.getActiveStudents);
 router.get('/export', protect, adminOnly, studentController.exportStudents);
 router.get('/email/:email', protect, studentController.getStudentByEmail);
-router.get('/course/:cource', protect, studentController.getStudentsByCourse);
+router.get('/course/:course', protect, studentController.getStudentsByCourse);
 
 // ==========================================
 // ✅ DYNAMIC ROUTES - BAAD MEIN (LESS SPECIFIC)

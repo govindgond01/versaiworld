@@ -43,7 +43,7 @@ const AdminAcademyStudents = () => {
         paidFees: student.paidFees || student.financials?.paid || 0,
         feesDue: student.feesDue || student.financials?.due || 0,
         // Ensure course field exists
-        cource: student.cource || 'Not Set'
+        course: student.course || 'Not Set'
       }));
       
       setStudents(mappedStudents);
@@ -255,8 +255,8 @@ const AdminAcademyStudents = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="space-y-2">
-                          <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getCourseBadgeColor(student.cource)}`}>
-                            {student.cource || 'Not Set'}
+                          <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getCourseBadgeColor(student.course)}`}>
+                            {student.course || 'Not Set'}
                           </span>
                           <div>
                             <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
@@ -364,7 +364,7 @@ const AdminAcademyStudents = () => {
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-blue-700">Course:</span>
-                    <span className="font-semibold">{selectedStudent.cource || 'Not Set'}</span>
+                    <span className="font-semibold">{selectedStudent.course || 'Not Set'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-blue-700">Total Fees:</span>
