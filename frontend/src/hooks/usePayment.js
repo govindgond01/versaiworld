@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 export const usePayment = () => {
   const [loading, setLoading] = useState(false);
@@ -9,10 +9,7 @@ export const usePayment = () => {
     setLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('/api/payments/create', paymentData, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.post('/payments/create', paymentData);
       return response.data;
     } catch (err) {
       setError(err.response?.data?.error || 'Payment creation failed');
@@ -24,11 +21,7 @@ export const usePayment = () => {
 
   const confirmPayment = async (paymentId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('/api/payments/confirm', 
-        { paymentId },
-        { headers: { 'Authorization': `Bearer ${token}` } }
-      );
+      const response = await api.post('/payments/confirm', { paymentId });
       return response.data;
     } catch (err) {
       setError('Payment confirmation failed');
@@ -38,10 +31,7 @@ export const usePayment = () => {
 
   const getStudentPayments = async (studentId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/payments/student/${studentId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get(`/payments/student/${studentId}`);
       return response.data;
     } catch (err) {
       setError('Failed to fetch payments');

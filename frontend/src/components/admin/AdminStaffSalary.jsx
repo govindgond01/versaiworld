@@ -1,6 +1,5 @@
-// frontend/src/components/admin/AdminStaffSalary.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../services/api';  // ✅ Using api instance instead of axios
 import { toast } from 'react-hot-toast';
 
 const AdminStaffSalary = () => {
@@ -29,17 +28,12 @@ const AdminStaffSalary = () => {
 
   const fetchStaff = async () => {
     try {
-      const response = await axios.get('/api/staff', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const response = await api.get('/staff');  
       
-      // Your API returns staff array in response.data.staff
       const staffData = response.data.staff || [];
       
-      // Map data to match expected format
       const mappedStaff = staffData.map(staff => ({
         ...staff,
-        // Ensure all financial fields exist
         salary: staff.salary || staff.financials?.amount || 0,
         paidSalary: staff.paidSalary || staff.financials?.paid || 0,
         dueSalary: staff.dueSalary || staff.financials?.due || 0
@@ -58,12 +52,10 @@ const AdminStaffSalary = () => {
     if (!selectedStaff) return;
     
     try {
-      await axios.post('/api/payments/make', {
+      await api.post('/payments/make', {  // ✅ Using api instance
         userId: selectedStaff._id,
         ...paymentData,
         type: 'salary'
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
       toast.success('Payment successful');
@@ -88,10 +80,8 @@ const AdminStaffSalary = () => {
     if (!selectedStaff) return;
     
     try {
-      await axios.put(`/api/payments/update-total/${selectedStaff._id}`, {
+      await api.put(`/payments/update-total/${selectedStaff._id}`, {  // ✅ Using api instance
         totalAmount: updateData.salary
-      }, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       });
 
       toast.success('Salary updated successfully');
