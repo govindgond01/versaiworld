@@ -25,16 +25,17 @@ const AcademyDashboard = () => {
     try {
       setLoading(true);
       
-      const userRes = await api.get(`/admin/students/${userId}`);
+      // Use the profile endpoint instead of admin endpoint
+      const userRes = await api.get('/auth/profile');
 
       if (userRes.data.success) {
-        const data = userRes.data.student;
+        const data = userRes.data.user;
         setUserData(data);
         setStats({
-          totalFees: data.fees?.totalFee || 0,
-          paidFees: data.fees?.paidFee || 0,
-          dueFees: data.fees?.dueFee || 0,
-          attendance: data.attendance?.percentage || 0
+          totalFees: data.totalFees || 0,
+          paidFees: data.paidFees || 0,
+          dueFees: data.dueFees || 0,
+          attendance: 0 // Will be updated when attendance API is available
         });
         
         if (data.course) {
