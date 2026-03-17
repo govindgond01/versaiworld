@@ -354,7 +354,13 @@ const Header = ({ toggleSidebar }) => {
               <div className='relative'>
                 <button
                   ref={buttonRef}
-                  onClick={toggleDropdown}
+                  onClick={(e) => {
+                    if (window.innerWidth >= 768) {
+                      toggleDropdown();
+                    } else {
+                      handleProfileClick();
+                    }
+                  }}
                   className='flex items-center gap-2 hover:bg-zinc-50 rounded-lg p-1 transition'
                 >
                   <div className='flex items-center'>
@@ -380,13 +386,13 @@ const Header = ({ toggleSidebar }) => {
                     <p className='text-sm font-medium text-gray-900'>{user?.name || 'Loading...'}</p>
                     <p className='text-xs text-gray-500'>{getUserRoleDisplay()}</p>
                   </div>
-                  <FiChevronDown className='w-4 h-4 text-gray-500' />
+                  <FiChevronDown className='w-4 h-4 text-gray-500 hidden md:block' />
                 </button>
 
                 {showDropdown && (
                   <div
                     ref={dropdownRef}
-                    className='absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50'
+                    className='absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 hidden md:block'
                   >
                     <div className='px-4 py-3 border-b border-gray-200'>
                       <p className='font-medium text-gray-900 text-sm'>{user?.name}</p>
