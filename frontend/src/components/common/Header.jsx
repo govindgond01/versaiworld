@@ -335,20 +335,6 @@ const Header = ({ toggleSidebar }) => {
               )}
             </div>
 
-            {/* Mobile Search Bar */}
-            <div className='flex-1 md:hidden'>
-              <div className='relative'>
-                <FiSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4' />
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder={getSearchPlaceholder()}
-                  className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-700 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
-                />
-              </div>
-            </div>
-
             {/* Right Section */}
             <div className='flex items-center gap-3 ml-4'>
               {/* Notification Bell */}
@@ -364,46 +350,7 @@ const Header = ({ toggleSidebar }) => {
                 )}
               </button>
 
-              {/* Mobile Icons */}
-              <div className='flex items-center gap-2 md:hidden'>
-                <button
-                  onClick={handleNotificationClick}
-                  className='relative p-2 rounded-lg hover:bg-zinc-100 transition'
-                >
-                  <FiBell className='w-5 h-5 text-gray-700' />
-                  {notifications.unreadCount > 0 && (
-                    <span className='absolute top-1 right-1 min-w-[16px] h-[16px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center px-0.5'>
-                      {notifications.unreadCount > 99 ? '99+' : notifications.unreadCount}
-                    </span>
-                  )}
-                </button>
-                <div className='relative'>
-                  <button
-                    onClick={handleProfileClick}
-                    className='flex items-center gap-1 hover:bg-zinc-50 rounded-lg p-1 transition'
-                  >
-                    {getProfileImageUrl() ? (
-                      <img
-                        className='h-9 w-9 rounded-full border-2 border-gray-200 object-cover'
-                        src={getProfileImageUrl()}
-                        alt={user?.name}
-                        onError={() => {
-                          const target = event.target;
-                          target.onerror = null;
-                          target.style.display = 'none';
-                          target.parentNode.innerHTML = `<div class="h-9 w-9 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium border-2 border-gray-200">${getInitials(user?.name)}</div>`;
-                        }}
-                      />
-                    ) : (
-                      <div className='h-9 w-9 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium border-2 border-gray-200'>
-                        {user ? getInitials(user.name) : 'U'}
-                      </div>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* User Profile Dropdown */}
+              {/* User Profile */}
               <div className='relative'>
                 <button
                   ref={buttonRef}

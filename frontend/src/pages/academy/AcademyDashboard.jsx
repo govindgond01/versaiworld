@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaBook,FaCalendarAlt, FaClock, FaRupeeSign, FaUserCheck } from 'react-icons/fa';
+import { FaBook, FaCalendar, FaClock, FaRupeeSign, FaUserCheck } from 'react-icons/fa';
 import { GiTeacher } from 'react-icons/gi';
 import { toast } from 'react-hot-toast';
 
@@ -110,7 +110,7 @@ const AcademyDashboard = () => {
             <h2 className="text-lg font-semibold mb-4 md:mb-6">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-4 md:gap-6">
               <UserQuickAction icon={FaBook} label="Courses" path="/academy-dashboard/courses" color="blue" />
-              <UserQuickAction icon={FaCalendarAlt} label="Attendance" path="/academy-dashboard/attendance" color="green" />
+              <UserQuickAction icon={FaCalendar} label="Attendance" path="/academy-dashboard/attendance" color="green" />
               <UserQuickAction icon={FaRupeeSign} label="Pay Fees" path="/academy-dashboard/payments" color="purple" />
               <UserQuickAction icon={FaUserCheck} label="Profile" path="/academy-dashboard/profile" color="orange" />
             </div>
