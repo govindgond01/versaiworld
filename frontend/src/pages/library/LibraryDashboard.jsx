@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaBook, FaClock, FaRupeeSign, FaUserCheck, FaCalendarAlt } from 'react-icons/fa';
+import { FaBook, FaClock, FaRupeeSign, FaUserCheck } from 'react-icons/fa';
 import { MdLocalLibrary } from 'react-icons/md';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
