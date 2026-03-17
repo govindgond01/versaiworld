@@ -26,6 +26,9 @@ const uploadRoutes = require('./routes/uploadRoutes');
 // App
 const app = express();
 
+// Trust proxy for rate limiting (important for deployment)
+app.set('trust proxy', 1);
+
 // Security
 app.use(helmet({
   contentSecurityPolicy: false,
