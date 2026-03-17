@@ -239,12 +239,18 @@ UserSchema.pre("save", async function(next) {
     const key = `${this.userType}_${category}`;
     const prefix = prefixMap[key] || "USR";
     
-    // Count existing users with userId starting with this prefix
-    const count = await this.constructor.countDocuments({ 
-      userId: new RegExp(`^${prefix}`)
-    });
+    // Find the highest existing userId with this prefix
+    const lastUser = await this.constructor.findOne({ 
+      userId: new RegExp(`^${prefix}`) 
+    }).sort({ userId: -1 });
     
-    this.userId = `${prefix}${(count + 1).toString().padStart(4, '0')}`;
+    let nextNumber = 1;
+    if (lastUser && lastUser.userId) {
+      const lastNumber = parseInt(lastUser.userId.replace(prefix, ''));
+      nextNumber = lastNumber + 1;
+    }
+    
+    this.userId = `${prefix}${nextNumber.toString().padStart(4, '0')}`;
   }
   
   // Auto-calculate due amounts

@@ -13,8 +13,7 @@ const authLimiter = rateLimit({
     message: 'Too many authentication attempts, please try again later.'
   },
   standardHeaders: true,
-  legacyHeaders: false,
-  trustProxy: true
+  legacyHeaders: false
 });
 
 const loginLimiter = rateLimit({
@@ -25,8 +24,7 @@ const loginLimiter = rateLimit({
     message: 'Too many login attempts, please try again later.'
   },
   standardHeaders: true,
-  legacyHeaders: false,
-  trustProxy: true
+  legacyHeaders: false
 });
 
 const registerLimiter = rateLimit({
@@ -37,8 +35,7 @@ const registerLimiter = rateLimit({
     message: 'Too many registration attempts, please try again later.'
   },
   standardHeaders: true,
-  legacyHeaders: false,
-  trustProxy: true
+  legacyHeaders: false
 });
 
 const passwordResetLimiter = rateLimit({
@@ -49,8 +46,7 @@ const passwordResetLimiter = rateLimit({
     message: 'Too many password reset attempts, please try again later.'
   },
   standardHeaders: true,
-  legacyHeaders: false,
-  trustProxy: true
+  legacyHeaders: false
 });
 
 // Public routes
