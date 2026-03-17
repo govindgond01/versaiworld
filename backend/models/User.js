@@ -37,7 +37,7 @@ const UserSchema = new mongoose.Schema({
   // Education/Work
   course: { 
     type: String, 
-    enum: ["","RS-CIT","Excel","Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
+    enum: ["RS-CIT","Excel","Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
     required: function() {
     return this.studentCategory === 'academy'
   },

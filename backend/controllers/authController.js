@@ -79,13 +79,7 @@ exports.register = async (req, res) => {
     
     // Handle course for academy students
     if (userType === 'student' && studentCategory === 'academy') {
-      if (!course) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Course is required for academy students' 
-        });
-      }
-      userData.course = course;
+      userData.course = course || 'RS-CIT';  // Default to RS-CIT if not provided
     } else {
       userData.course = '';  // Staff/admin/library student ke liye empty string
     }

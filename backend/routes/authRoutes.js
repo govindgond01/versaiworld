@@ -27,6 +27,17 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+const registerLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Allow more registration attempts for testing
+  message: {
+    success: false,
+    message: 'Too many registration attempts, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // Limit each IP to 3 password reset requests per hour
@@ -39,7 +50,7 @@ const passwordResetLimiter = rateLimit({
 });
 
 // Public routes
-router.post('/register', authLimiter, register);
+router.post('/register', registerLimiter, register);
 router.post('/login', loginLimiter, login);
 router.post('/refresh-token', authLimiter, refreshToken);
 router.post('/forgot-password', passwordResetLimiter, forgotPassword);
