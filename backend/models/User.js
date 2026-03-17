@@ -21,23 +21,22 @@ const UserSchema = new mongoose.Schema({
       message: props => `${props.value} is not a valid phone number!`
     }
   },
-  profileImage: String,
   profileImage: {
-  public_id: { type: String },
-  secure_url: { type: String },
-  url: { type: String },
-  format: { type: String },
-  width: { type: Number },
-  height: { type: Number },
-  bytes: { type: Number },
-  uploadedAt: { type: Date, default: Date.now }
-},
+    public_id: { type: String },
+    secure_url: { type: String },
+    url: { type: String },
+    format: { type: String },
+    width: { type: Number },
+    height: { type: Number },
+    bytes: { type: Number },
+    uploadedAt: { type: Date, default: Date.now }
+  },
   userId: { type: String, unique: true, index: true },
   
   // Education/Work
   course: { 
     type: String, 
-    enum: ["RS-CIT","Excel","Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
+    enum: ["","RS-CIT","Excel","Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
     required: function() {
     return this.studentCategory === 'academy'
   },
