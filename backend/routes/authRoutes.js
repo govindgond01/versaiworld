@@ -14,6 +14,7 @@ const authLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  trustProxy: true
 });
 
 const loginLimiter = rateLimit({
@@ -25,6 +26,7 @@ const loginLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  trustProxy: true
 });
 
 const registerLimiter = rateLimit({
@@ -36,6 +38,7 @@ const registerLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  trustProxy: true
 });
 
 const passwordResetLimiter = rateLimit({
@@ -47,6 +50,7 @@ const passwordResetLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  trustProxy: true
 });
 
 // Public routes
