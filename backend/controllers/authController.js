@@ -581,3 +581,61 @@ exports.resetPassword = async (req, res) => {
     });
   }
 };
+
+// ✅ GET USER PROFILE
+exports.getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
+    }
+    
+    // Prepare response based on user type
+    const userResponse = {
+      id: user._id,
+      userId: user.userId,
+      name: user.name,
+      email: user.email,
+      role: user.userType,
+      phone: user.phone,
+      status: user.status,
+      profileImage: user.profileImage,
+      course: user.course,
+      address: user.address,
+      department: user.department,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
+    
+    // Add type-specific fields
+    if (user.userType === 'student') {
+      userResponse.studentCategory = user.studentCategory;
+      userResponse.membershipDuration = user.membershipDuration;
+      userResponse.admissionDate = user.admissionDate;
+      userResponse.expiryDate = user.endDate;
+      userResponse.fatherName = user.fatherName;
+      userResponse.dob = user.dob;
+      
+      // Financial info
+      userResponse.totalFees = user.financials?.amount || user.fees?.totalFee || 0;
+      userResponse.paidFees = user.financials?.paid || user.fees?.paidFee || 0;
+      userResponse.dueFees = user.financials?.due || user.fees?.dueFee || 0;
+    }
+    
+    res.json({
+      success: true,
+      user: userResponse
+    });
+  } catch (error) {
+    console.error('Profile error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error',
+      error: error.message 
+    });
+  }
+};
