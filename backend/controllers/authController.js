@@ -63,27 +63,39 @@ exports.register = async (req, res) => {
       });
     }
     
-    // Create user
+    // Create user data object
     const userData = {
       name,
       email,
-      password,
       phone: phone || '',
+      password,
       userType,
       status: 'active',
       isActive: true,
       profileImage: req.body.profileImage || '',
-      course: course || ''
+      studentCategory: userType === 'student' ? studentCategory : undefined,
+      staffRole: userType === 'staff' ? staffRole : undefined
     };
+    
+    // Handle course for academy students
+    if (userType === 'student' && studentCategory === 'academy') {
+      if (!course) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Course is required for academy students' 
+        });
+      }
+      userData.course = course;
+    } else {
+      userData.course = '';  // Staff/admin/library student ke liye empty string
+    }
     
     // Add specific fields based on userType
     if (userType === 'student') {
-      userData.studentCategory = studentCategory || 'academy';
       userData.membershipDuration = '1_month';
     }
     
     if (userType === 'staff') {
-      userData.staffRole = staffRole;
       userData.salaryType = 'monthly';
     }
     
