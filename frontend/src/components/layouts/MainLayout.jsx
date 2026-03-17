@@ -20,17 +20,17 @@ const MainLayout = () => {
       
       <div className="flex pt-16">
         {/* Desktop Sidebar */}
-        <div className="hidden lg:block fixed left-0 w-[300px] h-[calc(100vh-4rem)] bg-white z-10 border-r border-zinc-200">
+        <div className="hidden md:block fixed left-0 w-[300px] h-[calc(100vh-4rem)] bg-white z-10 border-r border-zinc-200">
           <Sidebar />
         </div>
         
         {/* Mobile Sidebar */}
-        <div className="lg:hidden">
+        <div className="md:hidden">
           <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
         </div>
         
         {/* Main Content Area */}
-        <div className="flex-1 lg:ml-[300px] min-h-[calc(100vh-4rem)] bg-gray-100">
+        <div className="flex-1 md:ml-[300px] min-h-[calc(100vh-4rem)] bg-gray-100">
           <div className="p-4 md:p-6">
             <Outlet />
           </div>
