@@ -11,6 +11,7 @@ const connectDB = require("./config/db");
 
 // Middleware
 const errorHandler = require("./middleware/errorMiddleware");
+const corsOptions = require("./config/corsConfig");
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -36,12 +37,7 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 
