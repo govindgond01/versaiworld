@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Payment = require('../models/Payment');
 
 // ==========================================
 // ✅ ADD PAYMENT - 100% WORKING
@@ -91,12 +92,27 @@ exports.addPayment = async (req, res) => {
       user.fees.paymentHistory.push(paymentData);
     }
     
+    // ✅ Create Payment record in standalone Payment collection
+    const paymentRecord = await Payment.create({
+      user: user._id,
+      amount: paymentData.amount,
+      type: paymentData.type,
+      paymentMethod: paymentData.paymentMethod,
+      transactionId: paymentData.transactionId,
+      receiptNo: paymentData.receiptNo,
+      month: paymentData.month,
+      description: paymentData.description,
+      status: paymentData.status,
+      recordedBy: paymentData.recordedBy
+    });
+    
     await user.save();
     
     res.status(200).json({
       success: true,
       message: "Payment recorded successfully",
-      payment: paymentData
+      payment: paymentData,
+      paymentId: paymentRecord._id
     });
     
   } catch (error) {

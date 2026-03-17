@@ -286,6 +286,32 @@ UserSchema.pre("save", async function(next) {
   typeof next === 'function' && next();
 });
 
+// ✅ BACKWARD COMPATIBILITY: Virtual 'financials' field
+// This provides the old 'financials' structure computed from 'fees'
+UserSchema.virtual('financials').get(function() {
+  if (this.userType === 'student') {
+    return {
+      amount: this.fees.totalFee || 0,
+      paid: this.fees.paidFee || 0,
+      due: this.fees.dueFee || 0,
+      paymentHistory: this.fees.paymentHistory || []
+    };
+  } else if (this.userType === 'staff') {
+    return {
+      amount: this.fees.salary || 0,
+      paid: this.fees.paidSalary || 0,
+      due: this.fees.dueSalary || 0,
+      paymentHistory: this.fees.paymentHistory || []
+    };
+  }
+  return {
+    amount: 0,
+    paid: 0,
+    due: 0,
+    paymentHistory: []
+  };
+});
+
 // Helper methods
 UserSchema.methods.comparePassword = async function(password) {
   return await bcrypt.compare(password, this.password);
