@@ -21,7 +21,7 @@ import libraryMenu from '../Data/libraryMenu';
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userRole = localStorage.getItem('userRole') || 'user';
+  const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
 
   const getMenuData = () => {

@@ -20,7 +20,7 @@ exports.getDashboardStats = async (req, res) => {
     startOfMonth.setDate(1);
     
     const monthlyRevenue = await Payment.aggregate([
-      { $match: { createdAt: { $gte: startOfMonth }, status: 'completed' } },
+      { $match: { createdAt: { $gte: startOfMonth }, status: 'paid' } },
       { $group: { _id: null, total: { $sum: '$amount' } } }
     ]);
 
@@ -73,7 +73,8 @@ exports.addStudent = async (req, res) => {
     const student = await User.create({
       name, email, phone, password: phone || "password123", userType: "student",
       studentCategory: studentType, admissionDate: admission, membershipDuration, status: 'active',
-      financials: { amount: totalFees || 0, paid: 0, due: totalFees || 0 }
+      financials: { amount: totalFees || 0, paid: 0, due: totalFees || 0 },
+      fees: { totalFee: totalFees || 0, paidFee: 0, dueFee: totalFees || 0, paymentHistory: [] }
     });
     
     res.status(201).json({ success: true, message: 'Student added successfully', student });

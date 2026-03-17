@@ -130,7 +130,7 @@ const Header = ({ toggleSidebar }) => {
   };
 
   const handleNotificationClick = () => {
-    const role = localStorage.getItem('userRole');
+    const role = localStorage.getItem('role');
     if (role === 'admin') {
       navigate('/admin-dashboard/notifications');
     } else if (role === 'staff') {
@@ -147,7 +147,7 @@ const Header = ({ toggleSidebar }) => {
 
   const handleProfileClick = () => {
     setShowDropdown(false);
-    const role = localStorage.getItem('userRole');
+    const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
     if (role === 'admin') {
@@ -165,7 +165,7 @@ const Header = ({ toggleSidebar }) => {
 
   const handleSettingsClick = () => {
     setShowDropdown(false);
-    const role = localStorage.getItem('userRole');
+    const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
     if (role === 'admin') {
@@ -183,7 +183,7 @@ const Header = ({ toggleSidebar }) => {
 
   const handleHelpClick = () => {
     setShowDropdown(false);
-    const role = localStorage.getItem('userRole');
+    const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
     if (role === 'admin') {
@@ -214,7 +214,7 @@ const Header = ({ toggleSidebar }) => {
   };
 
   const getSearchPlaceholder = () => {
-    const role = localStorage.getItem('userRole');
+    const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
     if (role === 'admin') return 'Search users, students, staff...';
