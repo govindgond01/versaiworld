@@ -152,10 +152,27 @@ exports.register = async (req, res) => {
     
   } catch (error) {
     console.error('Register error:', error);
+    
+    // Handle duplicate key errors
+    if (error.code === 11000) {
+      if (error.keyPattern && error.keyPattern.email) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email already exists'
+        });
+      }
+      if (error.keyPattern && error.keyPattern.userId) {
+        return res.status(400).json({
+          success: false,
+          message: 'User ID generation conflict. Please try again.'
+        });
+      }
+    }
+    
     res.status(500).json({ 
       success: false,
       message: 'Server error during registration',
-      error: error.message 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
