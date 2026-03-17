@@ -10,7 +10,7 @@ import {
   MdSchool, MdHistory
 } from 'react-icons/md';
 import { 
-  FaIndianRupeeSign, FaUserGraduate, FaSpinner, FaUserTie 
+  FaIndianRupeeSign, FaUserGraduate, FaUserTie 
 } from 'react-icons/fa6';
 import { 
   BsPersonWorkspace, BsPersonBadge, BsCashStack, BsBank2, BsQrCode 
@@ -23,6 +23,7 @@ import {
 } from 'react-icons/ri';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
+import Loader from '../common/Loader';
 
 const PaymentHistory = ({ userId, isAdmin = false }) => {
   const [payments, setPayments] = useState([]);
@@ -112,10 +113,10 @@ const PaymentHistory = ({ userId, isAdmin = false }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header Card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="p-5 sm:p-6">
+        <div className="p-4 md:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
             <div className="flex items-center gap-2">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -134,7 +135,7 @@ const PaymentHistory = ({ userId, isAdmin = false }) => {
 
           {/* Summary Cards */}
           {summary && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6">
               <div className="bg-blue-50 rounded-lg p-4 flex items-center justify-between">
                 <div>
                   <p className="text-xs text-gray-600">Total Amount</p>
@@ -180,7 +181,7 @@ const PaymentHistory = ({ userId, isAdmin = false }) => {
 
           {/* Filters */}
           {showFilters && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-gray-200">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
                   <FiFilter className="w-4 h-4" /> Filters
@@ -192,7 +193,7 @@ const PaymentHistory = ({ userId, isAdmin = false }) => {
                   <FiX className="w-3.5 h-3.5" /> Reset
                 </button>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <div>
                   <label className="flex items-center gap-1 text-xs font-medium text-gray-600 mb-1.5">
                     <MdPayments className="w-3.5 h-3.5" /> Payment Type
@@ -254,7 +255,7 @@ const PaymentHistory = ({ userId, isAdmin = false }) => {
         {loading ? (
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+              <Loader type="spinner" size="medium" />
               <p className="mt-3 text-sm text-gray-600">Loading payments...</p>
             </div>
           </div>

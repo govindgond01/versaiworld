@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   FaUsers, FaUserTie, FaRupeeSign, FaBuilding,
-  FaEnvelope, FaPhone, FaCalendar, FaSpinner
+  FaEnvelope, FaPhone, FaCalendar
 } from 'react-icons/fa';
 import {
   FiUsers, FiUserCheck, FiTrendingUp, FiCreditCard,
@@ -13,6 +13,7 @@ import {
 import {
   BsPersonWorkspace, BsCashStack, BsClock
 } from 'react-icons/bs';
+import Loader from '../../components/common/Loader';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import api from '../../services/api';
@@ -95,7 +96,7 @@ const AdminStaffDashboard = () => {
   if (loading) return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <Loader type="spinner" size="large" />
         <p className="mt-4 text-gray-600">Loading staff dashboard...</p>
       </div>
     </div>
@@ -109,19 +110,20 @@ const AdminStaffDashboard = () => {
   ];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Staff Management Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Staff Management Dashboard</h1>
           <p className="text-gray-600 mt-1">Overview of all staff members and their details</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={fetchDashboardData}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
           >
-            <FiRefreshCw className={loading ? 'animate-spin' : ''} /> Refresh
+            {loading ? <Loader type="inline" size="small" /> : <FiRefreshCw />}
+            Refresh
           </button>
           <button
             onClick={() => navigate('/admin-dashboard/staff/add')}
@@ -133,9 +135,9 @@ const AdminStaffDashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statsCards.map((stat, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm mb-1">{stat.title}</p>
@@ -150,13 +152,13 @@ const AdminStaffDashboard = () => {
       </div>
 
       {/* Salary Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {[
           { title: 'Paid Salary', value: formatCurrency(stats.paidSalary), icon: <FiTrendingUp />, bg: 'bg-green-50', text: 'text-green-600' },
           { title: 'Due Salary', value: formatCurrency(stats.dueSalary), icon: <MdWarning />, bg: 'bg-red-50', text: 'text-red-600' },
           { title: 'Departments', value: departments.length, icon: <FaBuilding />, bg: 'bg-blue-50', text: 'text-blue-600' }
         ].map((stat, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-600 text-sm mb-1">{stat.title}</p>
@@ -171,11 +173,11 @@ const AdminStaffDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Recent Staff */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4 md:mb-6">
               <div>
                 <h2 className="text-xl font-bold text-gray-800">Recent Staff Members</h2>
                 <p className="text-gray-600 text-sm">Latest staff additions</p>
@@ -221,8 +223,8 @@ const AdminStaffDashboard = () => {
           </div>
 
           {/* Departments */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Departments</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 md:mb-6">Departments</h2>
             <div className="space-y-4">
               {departments.length > 0 ? (
                 departments.map((dept, index) => (
@@ -250,10 +252,10 @@ const AdminStaffDashboard = () => {
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* Active Staff */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex justify-between items-center mb-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4 md:mb-6">
               <h2 className="text-xl font-bold text-gray-800">Active Staff</h2>
               <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
                 {activeStaffList.length} Active
@@ -291,8 +293,8 @@ const AdminStaffDashboard = () => {
           </div>
 
           {/* Quick Actions */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Quick Actions</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 md:mb-6">Quick Actions</h2>
             <div className="space-y-3">
               <button
                 onClick={() => navigate('/admin-dashboard/staff/add')}

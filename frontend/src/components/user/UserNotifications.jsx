@@ -3,7 +3,7 @@ import api from '../services/api';
 import { toast } from 'react-hot-toast';
 import { 
   FiBell, FiMail, FiMessageSquare, FiCheck,
-  FiTrash2, FiClock, FiLoader, FiRefreshCw
+  FiTrash2, FiClock, FiRefreshCw
 } from 'react-icons/fi';
 import { 
   MdWhatsapp, MdNotificationsActive, MdNotificationsOff 
@@ -11,6 +11,7 @@ import {
 import { 
   BsCheckCircle, BsXCircle, BsCalendar 
 } from 'react-icons/bs';
+import Loader from '../common/Loader';
 
 const UserNotifications = () => {
   const [loading, setLoading] = useState(true);
@@ -82,7 +83,7 @@ const UserNotifications = () => {
   if (loading && page === 1) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
-        <FiLoader className="w-8 h-8 text-purple-600 animate-spin" />
+        <Loader type="spinner" size="medium" />
       </div>
     );
   }

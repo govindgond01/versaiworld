@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
+import Loader from '../common/Loader';
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -45,8 +46,33 @@ const SignUpPage = () => {
       const data = await response.json();
 
       if (data.success) {
-        alert("Registration successful! Please login.");
-        navigate("/login");
+        // Store user data in localStorage (tokens are now in httpOnly cookies)
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        const userRole = data.user.userType || data.user.role;
+        localStorage.setItem("role", userRole);
+        
+        if (userRole === "student" && data.user.studentCategory) {
+          localStorage.setItem("studentCategory", data.user.studentCategory);
+        }
+        
+        localStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("username", data.user.name);
+        localStorage.setItem("userId", data.user.userId || data.user._id);
+
+        if (userRole === "admin" || userRole === "superAdmin") {
+          window.location.href = "/admin-dashboard";
+        } else if (userRole === "staff") {
+          window.location.href = "/staff-dashboard";
+        } else if (userRole === "student") {
+          if (data.user.studentCategory === "academy") {
+            window.location.href = "/academy-dashboard";
+          } else if (data.user.studentCategory === "library") {
+            window.location.href = "/library-dashboard";
+          } else {
+            window.location.href = "/login";
+          }
+        }
       } else {
         setError(data.message || "Registration failed.");
       }
@@ -62,9 +88,9 @@ const SignUpPage = () => {
     <div className="min-h-screen lg:h-screen login-form flex items-center justify-center p-4">
       <div className="w-full max-w-5xl bg-white rounded-xl shadow-xl overflow-hidden">
         <div className="flex">
-          <div className="w-full lg:w-1/2 p-4 md:p-5">
+          <div className="w-full lg:w-1/2 p-4 md:p-6">
             <div className="flex flex-col justify-center h-[100%]">
-              <div className="text-center mb-6">
+              <div className="text-center mb-4 md:mb-6">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
                   Create Your Account
                 </h1>
@@ -79,9 +105,9 @@ const SignUpPage = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 {/* Grid for Name & Email */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {/* Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -132,7 +158,7 @@ const SignUpPage = () => {
                 </div>
 
                 {/* Grid for Phone & Role */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   {/* Phone */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -183,7 +209,7 @@ const SignUpPage = () => {
                 </div>
 
                 {/* Password - Full Width */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -278,7 +304,7 @@ const SignUpPage = () => {
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <Loader type="inline" size="small" />
                       Creating Account...
                     </div>
                   ) : (

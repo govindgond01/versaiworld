@@ -5,7 +5,7 @@ import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 import UserStatsCard from '../../components/user/UserStatsCard';
-import UserLoading from '../../components/user/UserLoading';
+import Loader from '../../components/common/Loader';
 import UserEmptyState from '../../components/user/UserEmptyState';
 import UserPaymentCard from '../../components/user/UserPaymentCard';
 
@@ -52,19 +52,19 @@ const StaffPayments = () => {
     toast.success(`Receipt ${payment.receiptNo} downloaded`);
   };
 
-  if (loading) return <UserLoading />;
+  if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">My Salary</h1>
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4 md:mb-6">My Salary</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6">
         <UserStatsCard icon={FaRupeeSign} label="Total Salary" value={`₹${summary.total.toLocaleString()}`} color="blue" />
         <UserStatsCard icon={FaCheckCircle} label="Received" value={`₹${summary.paid.toLocaleString()}`} color="green" />
         <UserStatsCard icon={FaClock} label="Due" value={`₹${summary.due.toLocaleString()}`} color={summary.due > 0 ? 'red' : 'gray'} />
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 md:space-y-6">
         {payments.length === 0 ? (
           <UserEmptyState icon={BsPersonWorkspace} title="No payments found" description="No salary records found" />
         ) : (

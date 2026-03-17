@@ -4,7 +4,7 @@ import { FiActivity } from 'react-icons/fi';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 
-import UserLoading from '../../components/user/UserLoading';
+import Loader from '../../components/common/Loader';
 import UserEmptyState from '../../components/user/UserEmptyState';
 import UserActivityItem from '../../components/user/UserActivityItem';
 
@@ -41,7 +41,7 @@ const StaffActivity = () => {
     }
   };
 
-  if (loading) return <UserLoading />;
+  if (loading) return <Loader type="spinner" size="large" />;
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">

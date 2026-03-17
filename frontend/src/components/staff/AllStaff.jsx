@@ -4,7 +4,7 @@ import api from '../../services/api';
 import {
   FaEye, FaEdit, FaTrash, FaSearch, FaCheckCircle, FaTimesCircle,
   FaEnvelope, FaPhone, FaUserTie, FaRupeeSign, FaBuilding, FaCalendarAlt,
-  FaFilter, FaDownload, FaPlus, FaSpinner, FaArrowLeft, FaArrowRight,
+  FaFilter, FaDownload, FaPlus, FaArrowLeft, FaArrowRight,
   FaIdCard, FaUserGraduate, FaChartLine
 } from 'react-icons/fa';
 import {
@@ -14,6 +14,7 @@ import {
   BsPersonBadge, BsPersonWorkspace, BsCashStack, BsChevronDown,
   BsCalendar, BsEnvelope, BsTelephone, BsGraphUp
 } from 'react-icons/bs';
+import Loader from '../common/Loader';
 import {
   GiTeacher, GiPayMoney, GiExpense, GiReceiveMoney
 } from 'react-icons/gi';
@@ -94,35 +95,35 @@ const AllStaff = () => {
   const inputClass = "w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-4 md:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
-            <BsPersonWorkspace className="w-5 h-5 text-white" />
+          <div className="p-2 md:p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
+            <BsPersonWorkspace className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Staff Members</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Staff Members</h1>
             <p className="text-sm text-gray-600 flex items-center gap-1.5">
               <FaUserGraduate className="w-4 h-4" /> {totalStaff} total staff
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button onClick={() => navigate('/admin-dashboard/staff/add')} className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+          <button onClick={() => navigate('/admin-dashboard/staff/add')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             <FaPlus className="w-4 h-4" /> Add
           </button>
-          <button onClick={handleExport} className="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
+          <button onClick={handleExport} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
             <FaDownload className="w-4 h-4" /> Export
           </button>
-          <button onClick={() => navigate('/admin-dashboard/staff-dashboard')} className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700">
+          <button onClick={() => navigate('/admin-dashboard/staff-dashboard')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700">
             <FaChartLine className="w-4 h-4" /> Dashboard
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <form onSubmit={handleSearch} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+      <form onSubmit={handleSearch} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="lg:col-span-2 relative">
             <FaSearch className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
@@ -152,11 +153,11 @@ const AllStaff = () => {
             <BsChevronDown className="absolute right-3 top-3 text-gray-400 w-4 h-4" />
           </div>
           <div className="flex gap-2">
-            <button type="submit" className="flex-1 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
+            <button type="submit" className="flex-1 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2">
               <FaSearch className="w-4 h-4" /> Search
             </button>
             <button type="button" onClick={() => { setSearchTerm(''); setStatusFilter('all'); setRoleFilter('all'); setCurrentPage(1); }}
-              className="px-4 py-2.5 border border-gray-200 bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+              className="px-3 md:px-4 py-2 md:py-2.5 border border-gray-200 bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
               Clear
             </button>
           </div>
@@ -167,7 +168,7 @@ const AllStaff = () => {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="text-center"><FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" /><p className="mt-3">Loading...</p></div>
+            <div className="text-center"><Loader type="spinner" size="large" /><p className="mt-3">Loading...</p></div>
           </div>
         ) : !staff.length ? (
           <div className="text-center py-12"><p className="text-gray-500">No staff found</p></div>
@@ -294,15 +295,15 @@ const AllStaff = () => {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-6 py-4 border-t bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="px-4 md:px-6 py-3 md:py-4 border-t bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <p className="text-sm text-gray-600">Page {currentPage} of {totalPages} • {totalStaff} staff</p>
                 <div className="flex gap-2">
                   <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}
-                    className="flex items-center gap-1 px-4 py-2 border bg-white text-gray-700 text-sm rounded-lg disabled:opacity-50">
+                    className="flex items-center gap-1 px-3 md:px-4 py-2 border bg-white text-gray-700 text-sm rounded-lg disabled:opacity-50">
                     <FaArrowLeft className="w-3 h-3" /> Prev
                   </button>
                   <button onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}
-                    className="flex items-center gap-1 px-4 py-2 border bg-white text-gray-700 text-sm rounded-lg disabled:opacity-50">
+                    className="flex items-center gap-1 px-3 md:px-4 py-2 border bg-white text-gray-700 text-sm rounded-lg disabled:opacity-50">
                     Next <FaArrowRight className="w-3 h-3" />
                   </button>
                 </div>

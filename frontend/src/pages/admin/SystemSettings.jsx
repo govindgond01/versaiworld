@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import {
-  FiSettings, FiSave, FiRefreshCw, FiShield, FiMail,
+  FiSettings, FiSave, FiShield, FiMail,
   FiBell, FiLock, FiUsers, FiGlobe, FiMoon, FiSun,
   FiDollarSign, FiCalendar, FiClock, FiServer
 } from 'react-icons/fi';
@@ -13,6 +13,7 @@ import {
   BsToggleOn, BsToggleOff, BsChevronDown, BsShieldCheck,
   BsCreditCard, BsEnvelope, BsClockHistory
 } from 'react-icons/bs';
+import Loader from '../../components/common/Loader';
 import api from '../../services/api';
 
 const SystemSettings = () => {
@@ -104,7 +105,7 @@ const SystemSettings = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mx-auto"></div>
+          <Loader type="spinner" size="medium" />
           <p className="mt-3 text-gray-600">Loading settings...</p>
         </div>
       </div>
@@ -131,7 +132,7 @@ const SystemSettings = () => {
             <FiRefreshCw className="w-4 h-4" /> Refresh
           </button>
           <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50">
-            {saving ? <FiRefreshCw className="w-4 h-4 animate-spin" /> : <FiSave className="w-4 h-4" />}
+            {saving ? <Loader type="inline" size="small" /> : <FiSave className="w-4 h-4" />}
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </div>

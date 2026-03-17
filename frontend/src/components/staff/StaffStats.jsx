@@ -3,7 +3,7 @@ import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 import { 
   FaUsers, FaChartPie, FaUserTie, FaRupeeSign, 
-  FaBuilding, FaDownload, FaCalendar, FaSpinner,
+  FaBuilding, FaDownload, FaCalendar,
   FaCheckCircle, FaTimesCircle
 } from 'react-icons/fa';
 import { 
@@ -13,6 +13,7 @@ import {
   BsPersonWorkspace, BsCashStack, BsCalendar,
   BsBarChart, BsPieChart, BsChevronDown
 } from 'react-icons/bs';
+import Loader from '../common/Loader';
 import { GiTeacher } from 'react-icons/gi';
 import { 
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, 
@@ -80,7 +81,7 @@ const StaffStats = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <Loader type="spinner" size="large" />
           <p className="mt-3">Loading stats...</p>
         </div>
       </div>
@@ -120,7 +121,7 @@ const StaffStats = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-5">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
             { label: 'Time Period', value: timeFilter, set: setTimeFilter, icon: <FaCalendar className="w-4 h-4" />, options: ['all', 'month', 'quarter', 'year'] },
@@ -143,27 +144,27 @@ const StaffStats = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
-          { label: 'Total Staff', value: stats.total, icon: <FaUsers className="w-6 h-6" />, bg: 'bg-blue-100', text: 'text-blue-600' },
-          { label: 'Active', value: stats.active, icon: <FaCheckCircle className="w-6 h-6" />, bg: 'bg-green-100', text: 'text-green-600' },
-          { label: 'Inactive', value: stats.inactive, icon: <FaTimesCircle className="w-6 h-6" />, bg: 'bg-red-100', text: 'text-red-600' },
-          { label: 'Departments', value: departments.length, icon: <FaBuilding className="w-6 h-6" />, bg: 'bg-purple-100', text: 'text-purple-600' }
+          { label: 'Total Staff', value: stats.total, icon: <FaUsers className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-blue-100', text: 'text-blue-600' },
+          { label: 'Active', value: stats.active, icon: <FaCheckCircle className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-green-100', text: 'text-green-600' },
+          { label: 'Inactive', value: stats.inactive, icon: <FaTimesCircle className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-red-100', text: 'text-red-600' },
+          { label: 'Departments', value: departments.length, icon: <FaBuilding className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-purple-100', text: 'text-purple-600' }
         ].map((card, i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 flex items-center justify-between hover:shadow-md transition">
+          <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 md:p-5 flex items-center justify-between hover:shadow-md transition">
             <div>
               <p className="text-xs text-gray-500">{card.label}</p>
-              <p className="text-2xl font-bold mt-1">{card.value}</p>
+              <p className="text-xl md:text-2xl font-bold mt-1">{card.value}</p>
             </div>
-            <div className={`p-3 rounded-xl ${card.bg} ${card.text}`}>{card.icon}</div>
+            <div className={`p-2 md:p-3 rounded-xl ${card.bg} ${card.text}`}>{card.icon}</div>
           </div>
         ))}
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Role Distribution */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-5">
           <h3 className="font-semibold mb-4 flex items-center gap-2"><BsPieChart className="w-5 h-5 text-blue-600" /> Role Distribution</h3>
           <div className="h-64">
             {roleData.length ? (
@@ -180,7 +181,7 @@ const StaffStats = () => {
         </div>
 
         {/* Department Chart */}
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-5">
           <h3 className="font-semibold mb-4 flex items-center gap-2"><BsBarChart className="w-5 h-5 text-blue-600" /> Department Wise</h3>
           <div className="h-64">
             {deptData.length ? (

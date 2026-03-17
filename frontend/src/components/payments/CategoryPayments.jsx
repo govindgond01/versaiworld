@@ -8,7 +8,7 @@ import {
   MdWarning, MdPayments, MdLocalLibrary, MdSchool, MdPerson 
 } from 'react-icons/md';
 import { 
-  FaIndianRupeeSign, FaUserGraduate, FaSpinner, FaUserTie 
+  FaIndianRupeeSign, FaUserGraduate, FaUserTie 
 } from 'react-icons/fa6';
 import { 
   BsPersonWorkspace, BsPersonBadge, BsCashStack, BsClock 
@@ -20,6 +20,7 @@ import {
   RiGovernmentLine 
 } from 'react-icons/ri';
 import PaymentForm from './PaymentForm';
+import Loader from '../common/Loader';
 
 const CategoryPayments = ({ category }) => {
   const [loading, setLoading] = useState(true);
@@ -74,7 +75,7 @@ const CategoryPayments = ({ category }) => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <Loader type="spinner" size="medium" />
           <p className="mt-3 text-sm text-gray-600">Loading {category} payments...</p>
         </div>
       </div>
@@ -184,7 +185,8 @@ const CategoryPayments = ({ category }) => {
               <p className="text-sm text-gray-500 mt-1">All members are up to date!</p>
             </div>
           ) : (
-            <table className="min-w-full">
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
               <thead className="bg-gray-50">
                 <tr>
                   {['Name', 'User ID', 'Total', 'Paid', 'Due', 'Actions'].map(h => (
@@ -226,6 +228,7 @@ const CategoryPayments = ({ category }) => {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
 

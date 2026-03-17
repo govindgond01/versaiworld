@@ -4,6 +4,7 @@ import { FiUsers, FiUserCheck, FiAlertCircle, FiTrendingUp, FiClock, FiCreditCar
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';
+import Loader from '../../components/common/Loader';
 
 const AdminLibraryDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -149,27 +150,28 @@ const AdminLibraryDashboard = () => {
   if (loading) return (
     <div className="flex items-center justify-center h-screen">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+        <Loader type="spinner" size="large" />
         <p className="mt-4 text-gray-600">Loading library dashboard...</p>
       </div>
     </div>
   );
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Library Admin Dashboard</h1>
-          <p className="text-gray-600">Managing library members and subscriptions</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Library Admin Dashboard</h1>
+          <p className="text-gray-600 mt-1">Managing library members and subscriptions</p>
         </div>
         <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          <FiRefreshCw className={loading ? 'animate-spin' : ''} /> Refresh
+          {loading ? <Loader type="inline" size="small" /> : <FiRefreshCw />}
+          Refresh
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statsCards.map((stat, i) => (
-          <div key={i} className="bg-white rounded-xl shadow p-6 border border-gray-100">
+          <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-lg ${stat.color} text-white`}>{stat.icon}</div>
               <div className="text-right">
@@ -191,8 +193,8 @@ const AdminLibraryDashboard = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow border border-gray-100 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Library Monthly Revenue</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -206,7 +208,7 @@ const AdminLibraryDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow border border-gray-100 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Library Courses</h3>
           <div className="h-64">
             {data.courses?.length > 0 ? (
@@ -242,10 +244,10 @@ const AdminLibraryDashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-6 pb-4 border-b">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4 md:mb-6">
               <div>
                 <h2 className="text-xl font-bold text-gray-800">Recent Library Members</h2>
                 <p className="text-sm text-gray-500 mt-1">Latest library enrollments</p>
@@ -293,9 +295,9 @@ const AdminLibraryDashboard = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="space-y-4 md:space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4 md:mb-6">
               <h2 className="text-xl font-bold text-gray-800">Upcoming Renewals</h2>
               <span className="px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm">
                 {data.expiring.length} Due
@@ -326,8 +328,8 @@ const AdminLibraryDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow border border-gray-100 p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Library Quick Stats</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 md:mb-6">Library Quick Stats</h2>
             <div className="space-y-4">
               {quickStats.map((stat, i) => (
                 <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">

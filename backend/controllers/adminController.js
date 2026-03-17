@@ -222,3 +222,182 @@ exports.addStaff = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+// ========== SUPER ADMIN FUNCTIONS ==========
+
+// Get All Users (Super Admin)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search, role, status } = req.query;
+    let query = {};
+
+    if (role && role !== 'all') query.userType = role;
+    if (status && status !== 'all') query.status = status;
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } },
+        { userId: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const users = await User.find(query)
+      .select('-password -refreshToken -resetPasswordToken -resetPasswordExpires')
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 });
+
+    const count = await User.countDocuments(query);
+
+    res.json({
+      success: true,
+      count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      users
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Update User Role (Super Admin)
+exports.updateUserRole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { userType } = req.body;
+
+    const allowedRoles = ['superAdmin', 'admin', 'staff', 'student'];
+    if (!allowedRoles.includes(userType)) {
+      return res.status(400).json({ success: false, error: 'Invalid user type' });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    // Prevent changing superAdmin role unless current user is superAdmin
+    if (user.userType === 'superAdmin' && req.user.userType !== 'superAdmin') {
+      return res.status(403).json({ success: false, error: 'Cannot modify super admin role' });
+    }
+
+    user.userType = userType;
+    await user.save();
+
+    res.json({ success: true, message: 'User role updated successfully', user });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Block/Unblock User (Super Admin)
+exports.blockUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    // Prevent blocking superAdmin
+    if (user.userType === 'superAdmin') {
+      return res.status(403).json({ success: false, error: 'Cannot block super admin' });
+    }
+
+    user.isActive = isActive;
+    if (!isActive) {
+      user.status = 'suspended';
+    } else {
+      user.status = 'active';
+    }
+    await user.save();
+
+    res.json({
+      success: true,
+      message: `User ${isActive ? 'unblocked' : 'blocked'} successfully`,
+      user
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Delete User (Super Admin)
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    // Prevent deleting superAdmin
+    if (user.userType === 'superAdmin') {
+      return res.status(403).json({ success: false, error: 'Cannot delete super admin' });
+    }
+
+    await user.deleteOne();
+    res.json({ success: true, message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get Admin Stats (Super Admin)
+exports.getAdminStats = async (req, res) => {
+  try {
+    const [
+      totalUsers,
+      activeUsers,
+      superAdmins,
+      admins,
+      staff,
+      students,
+      blockedUsers,
+      recentLogins
+    ] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({ isActive: true }),
+      User.countDocuments({ userType: 'superAdmin' }),
+      User.countDocuments({ userType: 'admin' }),
+      User.countDocuments({ userType: 'staff' }),
+      User.countDocuments({ userType: 'student' }),
+      User.countDocuments({ isActive: false }),
+      User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } })
+    ]);
+
+    // Get recent activity (last 10 user actions)
+    const recentActivity = await User.find()
+      .select('name userType lastLogin createdAt')
+      .sort({ updatedAt: -1 })
+      .limit(10)
+      .then(users => users.map(user => ({
+        action: user.lastLogin ? 'User logged in' : 'User registered',
+        user: user.name,
+        timestamp: user.lastLogin || user.createdAt,
+        type: user.lastLogin ? 'login' : 'register'
+      })));
+
+    res.json({
+      success: true,
+      stats: {
+        totalUsers,
+        activeUsers,
+        superAdmins,
+        admins,
+        staff,
+        students,
+        blockedUsers,
+        recentLogins,
+        recentActivity
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};

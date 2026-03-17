@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import UserStatsCard from '../../components/user/UserStatsCard';
-import UserLoading from '../../components/user/UserLoading';
+import Loader from '../../components/common/Loader';
 import UserActivityItem from '../../components/user/UserActivityItem';
 import UserQuickAction from '../../components/user/UserQuickAction';
 // import UserAttendanceCalendar from '../../components/user/UserAttendanceCalendar';
@@ -82,26 +82,26 @@ const LibraryDashboard = () => {
     }
   };
 
-  if (loading) return <UserLoading />;
+  if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <div className="mb-6">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+      <div className="mb-4 md:mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Library Dashboard</h1>
         <p className="text-gray-600">Welcome back, {userData.name}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-6">
         <UserStatsCard icon={FaRupeeSign} label="Total Fees" value={`₹${stats.totalFees.toLocaleString()}`} color="blue" />
         <UserStatsCard icon={FaRupeeSign} label="Paid Fees" value={`₹${stats.paidFees.toLocaleString()}`} color="green" />
         <UserStatsCard icon={FaClock} label="Due Fees" value={`₹${stats.dueFees.toLocaleString()}`} color={stats.dueFees > 0 ? 'red' : 'gray'} />
         <UserStatsCard icon={FaUserCheck} label="Attendance" value={`${stats.attendance}%`} subValue="This month" color="purple" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold mb-4">My Books</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+            <h2 className="text-lg font-semibold mb-4 md:mb-6">My Books</h2>
             {books.length === 0 ? (
               <p className="text-gray-500">No books borrowed</p>
             ) : (
@@ -114,8 +114,8 @@ const LibraryDashboard = () => {
             )}
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+            <h2 className="text-lg font-semibold mb-4 md:mb-6">Recent Activity</h2>
             {activities.length === 0 ? (
               <p className="text-gray-500">No recent activity</p>
             ) : (
@@ -124,15 +124,15 @@ const LibraryDashboard = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* <UserAttendanceCalendar
             attendanceData={attendanceData}
             monthAttendance={stats.attendance}
             onMarkAttendance={handleMarkAttendance}
           /> */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+            <h2 className="text-lg font-semibold mb-4 md:mb-6">Quick Actions</h2>
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
               <UserQuickAction icon={FaBook} label="Books" path="/library-dashboard/books" color="blue" />
               <UserQuickAction icon={FaCalendarAlt} label="Attendance" path="/library-dashboard/attendance" color="green" />
               <UserQuickAction icon={FaRupeeSign} label="Pay Fees" path="/library-dashboard/payments" color="purple" />

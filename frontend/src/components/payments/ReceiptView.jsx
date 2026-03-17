@@ -3,6 +3,7 @@ import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FiDownload, FiPrinter } from 'react-icons/fi';
+import Loader from '../common/Loader';
 
 const ReceiptView = () => {
   const { userId, paymentId } = useParams();
@@ -76,7 +77,7 @@ const ReceiptView = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <Loader type="spinner" size="medium" />
           <p className="mt-2 text-gray-600">Loading receipt...</p>
         </div>
       </div>

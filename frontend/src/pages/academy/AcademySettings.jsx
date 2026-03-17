@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GiTeacher } from 'react-icons/gi';
 import { toast } from 'react-hot-toast';
 
-import UserLoading from '../../components/user/UserLoading';
+import Loader from '../../components/common/Loader';
 import UserSettingsForm from '../../components/user/UserSettingsForm';
 import api from '../../services/api';
 
@@ -44,7 +44,7 @@ const AcademySettings = () => {
     }
   };
 
-  if (loading) return <UserLoading />;
+  if (loading) return <Loader type="spinner" size="large" />;
 
   return (
     <div className="p-4 sm:p-6 max-w-3xl mx-auto">

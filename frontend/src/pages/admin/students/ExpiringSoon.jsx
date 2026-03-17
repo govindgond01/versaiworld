@@ -3,7 +3,7 @@ import api from '../../../services/api';
 import { 
   FaEnvelope, FaPhone, FaCalendarAlt, FaSync, FaWhatsapp, 
   FaExclamationTriangle, FaUserClock, FaUserGraduate, FaIdCard,
-  FaCheckCircle, FaSpinner, FaArrowRight
+  FaCheckCircle, FaArrowRight
 } from 'react-icons/fa';
 import { 
   MdWarning, MdLocalLibrary, MdSchool, MdRefresh 
@@ -14,6 +14,7 @@ import {
 import { 
   GiTeacher, GiPayMoney, GiExpense 
 } from 'react-icons/gi';
+import Loader from '../../../components/common/Loader';
 
 const ExpiringSoon = () => {
   const [students, setStudents] = useState([]);
@@ -82,7 +83,7 @@ const ExpiringSoon = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center"><FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" /><p className="mt-3">Loading...</p></div>
+        <div className="text-center"><Loader type="spinner" size="large" /><p className="mt-3">Loading...</p></div>
       </div>
     );
   }
@@ -103,7 +104,8 @@ const ExpiringSoon = () => {
           </div>
         </div>
         <button onClick={fetchExpiringStudents} className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 w-full sm:w-auto">
-          <FaSync className={loading ? 'animate-spin w-4 h-4' : 'w-4 h-4'} /> Refresh
+          {loading ? <Loader type="inline" size="small" /> : <FaSync className="w-4 h-4" />}
+          Refresh
         </button>
       </div>
 

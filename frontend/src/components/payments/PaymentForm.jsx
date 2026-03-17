@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 import { 
-  FaIndianRupeeSign, FaUser, FaUserTie, FaBuilding, FaSpinner
+  FaIndianRupeeSign, FaUser, FaUserTie, FaBuilding
 } from 'react-icons/fa6';
 import { 
   FiDollarSign, FiCreditCard, FiHash, FiSearch, FiCalendar
@@ -19,6 +19,7 @@ import {
 import { 
   RiRefund2Line, RiGovernmentLine, RiBankLine
 } from 'react-icons/ri';
+import Loader from '../common/Loader';
 
 const PaymentForm = ({ user, category, onPaymentSuccess }) => {
   const [loading, setLoading] = useState(false);
@@ -190,8 +191,8 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
   };
 
   return (
-    <div className="w-full p-5 sm:p-6">
-      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-gray-100">
+    <div className="w-full p-4 md:p-6">
+      <div className="flex items-center gap-2 mb-4 md:mb-6 pb-4 border-b border-gray-100">
         <div className="p-2 bg-blue-50 rounded-lg">
           <GiReceiveMoney className="w-5 h-5 text-blue-600" />
         </div>
@@ -204,9 +205,9 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
         )}
       </div>
       
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
         {!user && userRole === 'admin' && (
-          <div className="space-y-3">
+          <div className="space-y-4 md:space-y-6">
             <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700">
               <FaUser className="w-4 h-4 text-gray-500" />
               Select User <span className="text-red-500">*</span>
@@ -227,7 +228,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
               />
               {loading && searchQuery && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <FaSpinner className="w-4 h-4 text-blue-500 animate-spin" />
+                  <Loader type="inline" size="small" />
                 </div>
               )}
               
@@ -296,7 +297,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
           <div className="space-y-1.5">
             <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
               <FaIndianRupeeSign className="w-3.5 h-3.5" />
@@ -438,7 +439,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
           </div>
         </div>
 
-        <div className="flex justify-end pt-4">
+        <div className="flex justify-end pt-4 md:pt-6">
           <button
             type="submit"
             disabled={loading || (!selectedUser && !user)}
@@ -449,7 +450,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
           >
             {loading ? (
               <>
-                <FaSpinner className="w-4 h-4 animate-spin" />
+                <Loader type="inline" size="small" />
                 Processing...
               </>
             ) : (

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
-import { FiCamera, FiTrash2, FiLoader } from 'react-icons/fi';
+import { FiCamera, FiTrash2 } from 'react-icons/fi';
 import { getImageUrl, getInitials } from '../../utils/imageUtils';
+import Loader from './Loader';
 
 const ProfileImageUpload = ({ user, onImageUpdate, size = 'md' }) => {
   const [uploading, setUploading] = useState(false);
@@ -120,7 +121,7 @@ const ProfileImageUpload = ({ user, onImageUpdate, size = 'md' }) => {
 
       {uploading && (
         <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-          <FiLoader className="w-6 h-6 text-white animate-spin" />
+          <Loader type="inline" size="small" />
         </div>
       )}
     </div>

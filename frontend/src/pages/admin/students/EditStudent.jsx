@@ -4,7 +4,7 @@ import api from '../../../services/api';
 import { 
   FaArrowLeft, FaSave, FaUser, FaEnvelope, FaPhone, FaRupeeSign, 
   FaCalendarAlt, FaClock, FaBuilding, FaMapMarkerAlt, FaTag,
-  FaCheckCircle, FaTimesCircle, FaSpinner, FaBook, FaUserTie
+  FaCheckCircle, FaTimesCircle, FaBook, FaUserTie
 } from 'react-icons/fa';
 import { 
   MdLocalLibrary, MdWarning, MdSchool, MdPayment 
@@ -15,6 +15,7 @@ import {
 import { 
   GiTeacher, GiPayMoney, GiExpense 
 } from 'react-icons/gi';
+import Loader from '../../../components/common/Loader';
 
 const EditStudent = () => {
   const { id } = useParams();
@@ -126,7 +127,7 @@ const EditStudent = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <Loader type="spinner" size="large" />
           <p className="mt-3 text-gray-600">Loading...</p>
         </div>
       </div>
@@ -326,7 +327,7 @@ const EditStudent = () => {
         <div className="px-6 py-4 bg-gray-50 border-t flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-wrap gap-3">
             <button type="submit" disabled={loading} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
-              {loading ? <FaSpinner className="w-4 h-4 animate-spin" /> : <FaSave className="w-4 h-4" />}
+              {loading ? <Loader type="inline" size="small" /> : <FaSave className="w-4 h-4" />}
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
             <button type="button" onClick={() => navigate(`/admin-dashboard/students/${id}`)} className="px-6 py-2.5 border bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">

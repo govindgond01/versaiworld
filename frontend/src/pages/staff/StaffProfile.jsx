@@ -3,7 +3,7 @@ import { BsPersonWorkspace } from 'react-icons/bs';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 
-import UserLoading from '../../components/user/UserLoading';
+import Loader from '../../components/common/Loader';
 import ProfileImageUpload from '../../components/common/ProfileImageUpload';  // 👈 ADD THIS
 import { getImageUrl } from '../../utils/imageUtils';  // 👈 ADD THIS
 
@@ -69,7 +69,7 @@ const StaffProfile = () => {
     }
   };
 
-  if (loading) return <UserLoading />;
+  if (loading) return <Loader type="spinner" size="large" />;
 
   const imageUrl = getImageUrl(userData);
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GiTeacher } from 'react-icons/gi';
 import { toast } from 'react-hot-toast';
 
-import UserLoading from '../../components/user/UserLoading';
+import Loader from '../../components/common/Loader';
 import UserProfileInfo from '../../components/user/UserProfileInfo';
 import ProfileImageUpload from '../../components/common/ProfileImageUpload';
 import { getImageUrl } from '../../utils/imageUtils';
@@ -68,7 +68,7 @@ const AcademyProfile = () => {
     }
   };
 
-  if (loading) return <UserLoading />;
+  if (loading) return <Loader type="spinner" size="large" />;
 
   const imageUrl = getImageUrl(userData);
 

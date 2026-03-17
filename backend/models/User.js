@@ -45,9 +45,9 @@ const UserSchema = new mongoose.Schema({
   // Role Management
   userType: { 
     type: String, 
-    enum: ["admin", "student", "staff"], 
+    enum: ["superAdmin", "admin", "student", "staff"], 
     default: "student",
-    index: true 
+    index: true
   },
   studentCategory: { 
     type: String, 
@@ -137,6 +137,13 @@ const UserSchema = new mongoose.Schema({
     enum: ["active", "inactive", "suspended", "graduated", "left"], 
     default: "active" 
   },
+  
+  // Security fields
+  isActive: { type: Boolean, default: true },
+  lastLogin: Date,
+  loginAttempts: { type: Number, default: 0 },
+  lockUntil: Date, // Account lock timestamp
+  refreshToken: String, // For refresh token mechanism
   
   // Academic/Performance (Optional)
   attendance: {

@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoImg from "../../assets/logo.webp";
-import { 
-  FiSearch, FiMenu, FiBell, FiUser, 
+import {
+  FiSearch, FiMenu, FiBell, FiUser,
   FiLogOut, FiSettings, FiHelpCircle,
   FiChevronDown, FiBook, FiDollarSign,
   FiCalendar, FiUsers
 } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
+import Loader from './Loader';
 import api from '../../services/api';
 
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -22,7 +22,7 @@ const Header = ({ toggleSidebar }) => {
   const [notifications, setNotifications] = useState({
     unreadCount: 0
   });
-  
+
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -31,13 +31,12 @@ const Header = ({ toggleSidebar }) => {
     fetchNotificationCount();
   }, []);
 
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        dropdownRef.current && 
+        dropdownRef.current &&
         !dropdownRef.current.contains(event.target) &&
-        buttonRef.current && 
+        buttonRef.current &&
         !buttonRef.current.contains(event.target)
       ) {
         setShowDropdown(false);
@@ -67,7 +66,6 @@ const Header = ({ toggleSidebar }) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        setLoading(false);
         return;
       }
 
@@ -84,8 +82,6 @@ const Header = ({ toggleSidebar }) => {
       }
     } catch (error) {
       console.error('Failed to fetch user:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -107,7 +103,7 @@ const Header = ({ toggleSidebar }) => {
 
   const handleSearch = async () => {
     if (searchTerm.length < 2) return;
-    
+
     setSearchLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -142,17 +138,15 @@ const Header = ({ toggleSidebar }) => {
     }
   };
 
-  // 👇 MODIFIED: Toggle function
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
   };
 
-  // Role-based navigation
   const handleProfileClick = () => {
     setShowDropdown(false);
     const role = localStorage.getItem('userRole');
     const category = localStorage.getItem('studentCategory');
-    
+
     if (role === 'admin') {
       navigate('/admin-dashboard/profile');
     } else if (role === 'staff') {
@@ -170,7 +164,7 @@ const Header = ({ toggleSidebar }) => {
     setShowDropdown(false);
     const role = localStorage.getItem('userRole');
     const category = localStorage.getItem('studentCategory');
-    
+
     if (role === 'admin') {
       navigate('/admin-dashboard/settings');
     } else if (role === 'staff') {
@@ -188,7 +182,7 @@ const Header = ({ toggleSidebar }) => {
     setShowDropdown(false);
     const role = localStorage.getItem('userRole');
     const category = localStorage.getItem('studentCategory');
-    
+
     if (role === 'admin') {
       navigate('/admin-dashboard/help');
     } else if (role === 'staff') {
@@ -219,7 +213,7 @@ const Header = ({ toggleSidebar }) => {
   const getSearchPlaceholder = () => {
     const role = localStorage.getItem('userRole');
     const category = localStorage.getItem('studentCategory');
-    
+
     if (role === 'admin') return 'Search users, students, staff...';
     if (role === 'staff') return 'Search salary, attendance, students...';
     if (category === 'academy') return 'Search fees, courses, attendance...';
@@ -239,11 +233,9 @@ const Header = ({ toggleSidebar }) => {
     }
   };
 
-  // ✅ FIXED FUNCTION - SIRF YEH CHANGE KIYA HAI
   const getProfileImageUrl = () => {
     if (!user?.profileImage) return null;
-    
-    // CASE 1: Cloudinary object
+
     if (typeof user.profileImage === 'object' && user.profileImage !== null) {
       if (user.profileImage.secure_url) {
         return user.profileImage.secure_url;
@@ -252,15 +244,15 @@ const Header = ({ toggleSidebar }) => {
         return user.profileImage.url;
       }
     }
-    
+
     if (typeof user.profileImage === 'string') {
-  if (user.profileImage.startsWith('http')) {
-    return user.profileImage;
-  }
-  const baseURL = globalThis.API_URL?.replace('/api', '') || 'http://localhost:5000';
-  return `${baseURL}/uploads/${user.profileImage}`;
-}
-    
+      if (user.profileImage.startsWith('http')) {
+        return user.profileImage;
+      }
+      const baseURL = globalThis.API_URL?.replace('/api', '') || 'http://localhost:5000';
+      return `${baseURL}/uploads/${user.profileImage}`;
+    }
+
     return null;
   };
 
@@ -285,7 +277,7 @@ const Header = ({ toggleSidebar }) => {
           </div>
 
           <div className='flex flex-1 items-center justify-end md:justify-between'>
-            {/* Search Bar */}
+            {/* Desktop Search Bar */}
             <div className='flex-1 max-w-xl relative pl-2 hidden md:block'>
               <div className='relative'>
                 <FiSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
@@ -300,7 +292,7 @@ const Header = ({ toggleSidebar }) => {
                 />
                 {searchLoading && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                    <Loader type="inline" size="small" />
                   </div>
                 )}
               </div>
@@ -340,6 +332,20 @@ const Header = ({ toggleSidebar }) => {
               )}
             </div>
 
+            {/* Mobile Search Bar */}
+            <div className='flex-1 md:hidden'>
+              <div className='relative'>
+                <FiSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4' />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={getSearchPlaceholder()}
+                  className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-10 pr-4 text-sm text-gray-700 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                />
+              </div>
+            </div>
+
             {/* Right Section */}
             <div className='flex items-center gap-3 ml-4'>
               {/* Notification Bell */}
@@ -355,18 +361,54 @@ const Header = ({ toggleSidebar }) => {
                 )}
               </button>
 
-              {/* User Profile Dropdown */}
+              {/* Mobile Icons */}
+              <div className='flex items-center gap-2 md:hidden'>
+                <button
+                  onClick={handleNotificationClick}
+                  className='relative p-2 rounded-lg hover:bg-zinc-100 transition'
+                >
+                  <FiBell className='w-5 h-5 text-gray-700' />
+                  {notifications.unreadCount > 0 && (
+                    <span className='absolute top-1 right-1 min-w-[16px] h-[16px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center px-0.5'>
+                      {notifications.unreadCount > 99 ? '99+' : notifications.unreadCount}
+                    </span>
+                  )}
+                </button>
+                <div className='relative'>
+                  <button
+                    onClick={handleProfileClick}
+                    className='flex items-center gap-1 hover:bg-zinc-50 rounded-lg p-1 transition'
+                  >
+                    {getProfileImageUrl() ? (
+                      <img
+                        className='h-9 w-9 rounded-full border-2 border-gray-200 object-cover'
+                        src={getProfileImageUrl()}
+                        alt={user?.name}
+                        onError={() => {
+                          const target = event.target;
+                          target.onerror = null;
+                          target.style.display = 'none';
+                          target.parentNode.innerHTML = `<div class="h-9 w-9 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium border-2 border-gray-200">${getInitials(user?.name)}</div>`;
+                        }}
+                      />
+                    ) : (
+                      <div className='h-9 w-9 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white text-xs font-medium border-2 border-gray-200'>
+                        {user ? getInitials(user.name) : 'U'}
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+
               {/* User Profile Dropdown */}
               <div className='relative'>
-                {/* Button */}
                 <button
                   ref={buttonRef}
                   onClick={(e) => {
-                    // Simple - screen size check kar lo
                     if (window.innerWidth < 768) {
-                      handleProfileClick(); // Mobile par direct profile
+                      handleProfileClick();
                     } else {
-                      toggleDropdown(); // Desktop par dropdown
+                      toggleDropdown();
                     }
                   }}
                   className='flex items-center gap-2 hover:bg-zinc-50 rounded-lg p-1 transition'
@@ -377,10 +419,11 @@ const Header = ({ toggleSidebar }) => {
                         className='h-10 w-10 rounded-full border-2 border-gray-200 object-cover'
                         src={getProfileImageUrl()}
                         alt={user?.name}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.style.display = 'none';
-                          e.target.parentNode.innerHTML = `<div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-medium border-2 border-gray-200">${getInitials(user?.name)}</div>`;
+                        onError={() => {
+                          const target = event.target;
+                          target.onerror = null;
+                          target.style.display = 'none';
+                          target.parentNode.innerHTML = `<div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-medium border-2 border-gray-200">${getInitials(user?.name)}</div>`;
                         }}
                       />
                     ) : (
@@ -396,13 +439,11 @@ const Header = ({ toggleSidebar }) => {
                   <FiChevronDown className='w-4 h-4 text-gray-500 hidden md:block' />
                 </button>
 
-                {/* Dropdown - only for desktop */}
                 {showDropdown && (
                   <div
                     ref={dropdownRef}
                     className='absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 hidden md:block'
                   >
-                    
                     <div className='px-4 py-3 border-b border-gray-200'>
                       <p className='font-medium text-gray-900 text-sm'>{user?.name}</p>
                       <p className='text-xs text-gray-500 truncate'>{user?.email}</p>

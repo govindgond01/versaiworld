@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
+import Loader from '../common/Loader';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (data.success) {
-        localStorage.setItem("token", data.token);
+        // Store user data in localStorage (tokens are now in httpOnly cookies)
         localStorage.setItem("user", JSON.stringify(data.user));
         
         const userRole = data.user.userType || data.user.role;
@@ -60,7 +61,7 @@ const LoginPage = () => {
         localStorage.setItem("username", data.user.name);
         localStorage.setItem("userId", data.user.userId || data.user._id);
 
-        if (userRole === "admin") {
+        if (userRole === "admin" || userRole === "superAdmin") {
           window.location.href = "/admin-dashboard";
         } else if (userRole === "staff") {
           window.location.href = "/staff-dashboard";
@@ -89,9 +90,9 @@ const LoginPage = () => {
       <div className="min-h-screen lg:h-screen login-form flex items-center justify-center p-4">
         <div className="w-full max-w-5xl bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="flex">
-            <div className="w-full lg:w-1/2 p-4 md:p-5">
+            <div className="w-full lg:w-1/2 p-4 md:p-6">
               <div className="flex flex-col justify-center h-[100%]">
-                <div className="text-center mb-6">
+                <div className="text-center mb-4 md:mb-6">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
                     Versai Academy Library
                   </h1>
@@ -106,7 +107,7 @@ const LoginPage = () => {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email Address <span className="text-red-500">*</span>
@@ -178,7 +179,7 @@ const LoginPage = () => {
                   >
                     {loading ? (
                       <div className="flex items-center justify-center">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        <Loader type="inline" size="small" className="mr-2" />
                         Signing in...
                       </div>
                     ) : (

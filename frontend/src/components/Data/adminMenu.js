@@ -3,6 +3,22 @@ const adminMenu = [
     items:[
        {
         type: "dropdown",
+        key: "super-admin",
+        icon: "adminstaff",
+        label: "Super Admin",
+        subItems: [
+          {
+            path: "/admin-dashboard/super-admin/stats",
+            label: "Admin Statistics",
+          },
+          {
+            path: "/admin-dashboard/super-admin/users",
+            label: "User Management",
+          },
+        ],
+      },
+       {
+        type: "dropdown",
         path: "/admin-dashboard",
         icon: "dashboard",
         label: "Dashboard",

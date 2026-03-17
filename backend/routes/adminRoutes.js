@@ -11,16 +11,19 @@ const {
   getStudentTypes,
   getAllStaff,
   addStaff,
-  renewMembership
+  renewMembership,
+  // Super admin functions
+  getAllUsers,
+  updateUserRole,
+  blockUser,
+  deleteUser,
+  getAdminStats
 } = require('../controllers/adminController');
-const { protect } = require('../middleware/authMiddleware');
-const { protect, adminOnly } = require('../middleware/authMiddleware');
-router.use(protect);
-router.use(adminOnly);
+const { protect, adminOnly, superAdminOnly } = require('../middleware/authMiddleware');
 
 // All routes require authentication and admin role
 router.use(protect);
-router.use(authorize('admin'));
+router.use(adminOnly);
 
 // Dashboard
 router.get('/dashboard', getDashboardStats);
@@ -38,5 +41,14 @@ router.put('/students/:id/renew', renewMembership); // ✅ NEW ROUTE
 // Staff Management
 router.get('/staff', getAllStaff);
 router.post('/staff', addStaff);
+
+// Super Admin Routes (require superAdmin role)
+router.use('/users', superAdminOnly);
+router.use('/stats', superAdminOnly);
+router.get('/users', getAllUsers);
+router.patch('/users/:id/role', updateUserRole);
+router.patch('/users/:id/block', blockUser);
+router.delete('/users/:id', deleteUser);
+router.get('/stats', getAdminStats);
 
 module.exports = router;

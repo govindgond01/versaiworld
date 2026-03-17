@@ -4,13 +4,14 @@ import {
   FiUser, FiMail, FiPhone, FiMapPin, 
   FiCalendar, FiBook, FiDollarSign,
   FiClock, FiAward, FiEdit2, FiCamera,
-  FiSave, FiX, FiLoader
+  FiSave, FiX
 } from 'react-icons/fi';
 import { GiTeacher, GiGraduateCap } from 'react-icons/gi';
 import { MdLocalLibrary } from 'react-icons/md';
 import { BsPersonWorkspace } from 'react-icons/bs';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';  // 👈 CORRECT PATH - services folder
+import Loader from '../../components/common/Loader';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -144,7 +145,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <Loader type="spinner" size="large" />
       </div>
     );
   }
@@ -213,7 +214,7 @@ const Profile = () => {
               
               {uploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full">
-                  <FiLoader className="w-6 h-6 text-white animate-spin" />
+                  <Loader type="inline" size="small" />
                 </div>
               )}
             </div>

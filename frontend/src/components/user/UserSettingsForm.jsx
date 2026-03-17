@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaSave, FaSpinner } from 'react-icons/fa';
+import { FaSave } from 'react-icons/fa';
+import Loader from '../common/Loader';
 
 const UserSettingsForm = ({ settings, onSave, loading }) => {
   const [formData, setFormData] = useState(settings);
@@ -57,7 +58,7 @@ const UserSettingsForm = ({ settings, onSave, loading }) => {
       </div>
       <div className="flex justify-end">
         <button type="submit" disabled={loading} className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
-          {loading ? <FaSpinner className="animate-spin" /> : <FaSave />}
+          {loading ? <Loader type="inline" size="small" /> : <FaSave />}
           {loading ? 'Saving...' : 'Save Changes'}
         </button>
       </div>

@@ -3,7 +3,7 @@ import { toast } from 'react-hot-toast';
 import {
   FiDownload,FiClock, FiFile, FiFileText, FiCalendar,
   FiUsers, FiCreditCard, FiBookOpen, FiCheckCircle,
-  FiFilter, FiArrowRight, FiLoader, FiUserCheck,
+  FiFilter, FiArrowRight, FiUserCheck,
   FiUserX, FiUsers as FiUsersAll, FiRefreshCw,
   FiGrid
 } from 'react-icons/fi';
@@ -18,6 +18,7 @@ import {
   BsPersonWorkspace, BsBuilding, BsCalendarWeek,
   BsCalendarMonth, BsCalendar2
 } from 'react-icons/bs';
+import Loader from '../../components/common/Loader';
 import { GiTeacher } from 'react-icons/gi';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -334,7 +335,7 @@ const ExportData = () => {
           onClick={fetchFilterOptions}
           className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
         >
-          <FiRefreshCw className={`w-4 h-4 ${fetchingFilters ? 'animate-spin' : ''}`} />
+          {fetchingFilters ? <Loader type="inline" size="small" /> : <FiRefreshCw className="w-4 h-4" />}
           Refresh Filters
         </button>
       </div>
@@ -584,7 +585,7 @@ const ExportData = () => {
           >
             {loading ? (
               <>
-                <FiLoader className="w-5 h-5 animate-spin" />
+                <Loader type="inline" size="small" />
                 Processing...
               </>
             ) : (

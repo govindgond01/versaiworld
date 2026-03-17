@@ -6,7 +6,7 @@ import {
   FaArrowLeft, FaEnvelope, FaPhone, FaCalendarAlt, FaRupeeSign, 
   FaUserTie, FaEdit, FaBuilding, FaMapMarkerAlt, FaCreditCard, 
   FaIdCard, FaMoneyBillWave, FaPrint, FaTrash, FaHistory,
-  FaCheckCircle, FaTimesCircle, FaSpinner, FaUserGraduate,
+  FaCheckCircle, FaTimesCircle, FaUserGraduate,
   FaHome, FaBriefcase, FaClock, FaChartLine
 } from 'react-icons/fa';
 import { 
@@ -20,6 +20,7 @@ import {
 import { 
   GiTeacher, GiPayMoney, GiExpense, GiReceiveMoney
 } from 'react-icons/gi';
+import Loader from '../common/Loader';
 
 const ViewStaff = () => {
   const { id } = useParams();
@@ -83,7 +84,7 @@ const ViewStaff = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center"><FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" /><p className="mt-3">Loading...</p></div>
+        <div className="text-center"><Loader type="spinner" size="medium" /><p className="mt-3">Loading...</p></div>
       </div>
     );
   }
@@ -94,31 +95,31 @@ const ViewStaff = () => {
   const isActive = staff.status === 'active';
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-5">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-4 md:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-start gap-3">
           <button onClick={() => navigate('/admin-dashboard/staff')} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <FaArrowLeft className="w-4 h-4 text-gray-600" />
           </button>
-          <div className="p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
-            <FaUserTie className="w-5 h-5 text-white" />
+          <div className="p-2 md:p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
+            <FaUserTie className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{staff.name}</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">{staff.name}</h1>
             <p className="text-sm text-gray-600 flex items-center gap-1.5 mt-1">
               <FaIdCard className="w-4 h-4" /> {staff.staffId || staff.userId}
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => navigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+          <button onClick={() => navigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             <FaEdit className="w-4 h-4" /> Edit
           </button>
-          <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2.5 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700">
+          <button onClick={() => window.print()} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700">
             <FaPrint className="w-4 h-4" /> Print
           </button>
-          <button onClick={handleDelete} className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
+          <button onClick={handleDelete} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700">
             <FaTrash className="w-4 h-4" /> Delete
           </button>
         </div>
@@ -126,18 +127,18 @@ const ViewStaff = () => {
 
       {/* Profile Card */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-8 text-white">
+        <div className="bg-gradient-to-r from-purple-500 to-purple-600 px-4 md:px-6 py-6 md:py-8 text-white">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl font-bold">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 rounded-2xl flex items-center justify-center text-xl md:text-3xl font-bold">
                 {staff.name?.charAt(0)}
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-white/20`}>
+                  <span className={`inline-flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 text-xs font-medium rounded-full bg-white/20`}>
                     {role.icon} {role.name}
                   </span>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`}>
+                  <span className={`inline-flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 text-xs font-medium rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`}>
                     {isActive ? <FaCheckCircle className="w-3 h-3" /> : <FaTimesCircle className="w-3 h-3" />}
                     {staff.status}
                   </span>
@@ -147,7 +148,7 @@ const ViewStaff = () => {
             </div>
             <div className="text-right">
               <p className="text-sm opacity-80">Joined</p>
-              <p className="text-lg font-semibold">{formatDate(staff.joinDate)}</p>
+              <p className="text-base md:text-lg font-semibold">{formatDate(staff.joinDate)}</p>
             </div>
           </div>
         </div>
@@ -168,10 +169,10 @@ const ViewStaff = () => {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           {/* Personal Tab */}
           {activeTab === 'personal' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {[
                 { label: 'Full Name', value: staff.name, icon: <FaUserTie className="w-4 h-4" /> },
                 { label: 'Email', value: staff.email, icon: <FaEnvelope className="w-4 h-4" /> },
@@ -180,7 +181,7 @@ const ViewStaff = () => {
                 { label: 'Join Date', value: formatDate(staff.joinDate), icon: <FaCalendarAlt className="w-4 h-4" /> },
                 { label: 'Address', value: formatAddress(staff.address), icon: <FaMapMarkerAlt className="w-4 h-4" /> }
               ].map((item, i) => (
-                <div key={i} className="bg-gray-50 rounded-lg p-4">
+                <div key={i} className="bg-gray-50 rounded-lg p-3 md:p-4">
                   <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">{item.icon} {item.label}</p>
                   <p className="text-sm font-medium text-gray-900">{item.value}</p>
                 </div>
@@ -190,17 +191,17 @@ const ViewStaff = () => {
 
           {/* Salary Tab */}
           {activeTab === 'salary' && (
-            <div className="space-y-5">
+            <div className="space-y-4 md:space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { label: 'Monthly', value: staff.salary, color: 'blue', icon: <FaRupeeSign className="w-5 h-5" /> },
-                  { label: 'Paid', value: staff.paidSalary, color: 'green', icon: <GiPayMoney className="w-5 h-5" /> },
-                  { label: 'Due', value: staff.dueSalary, color: staff.dueSalary > 0 ? 'red' : 'green', icon: <GiExpense className="w-5 h-5" /> }
+                  { label: 'Monthly', value: staff.salary, color: 'blue', icon: <FaRupeeSign className="w-4 h-4 md:w-5 md:h-5" /> },
+                  { label: 'Paid', value: staff.paidSalary, color: 'green', icon: <GiPayMoney className="w-4 h-4 md:w-5 md:h-5" /> },
+                  { label: 'Due', value: staff.dueSalary, color: staff.dueSalary > 0 ? 'red' : 'green', icon: <GiExpense className="w-4 h-4 md:w-5 md:h-5" /> }
                 ].map((item, i) => (
-                  <div key={i} className={`bg-${item.color}-50 rounded-lg p-4`}>
+                  <div key={i} className={`bg-${item.color}-50 rounded-lg p-3 md:p-4`}>
                     <div className={`text-${item.color}-600 mb-2`}>{item.icon}</div>
                     <p className={`text-sm text-${item.color}-600 font-medium`}>{item.label}</p>
-                    <p className={`text-2xl font-bold text-${item.color}-700 mt-1`}>{formatCurrency(item.value)}</p>
+                    <p className={`text-lg md:text-2xl font-bold text-${item.color}-700 mt-1`}>{formatCurrency(item.value)}</p>
                   </div>
                 ))}
               </div>
@@ -226,15 +227,15 @@ const ViewStaff = () => {
                 { label: 'IFSC Code', value: staff.bankDetails.ifsc, icon: <FaCreditCard className="w-4 h-4" /> },
                 { label: 'Account Type', value: 'Savings Account', icon: <MdAccountBalance className="w-4 h-4" /> }
               ].map((item, i) => (
-                <div key={i} className="bg-gray-50 rounded-lg p-4">
+                <div key={i} className="bg-gray-50 rounded-lg p-3 md:p-4">
                   <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">{item.icon} {item.label}</p>
                   <p className="text-sm font-medium text-gray-900">{item.value}</p>
                 </div>
               ))}
             </div>
           ) : activeTab === 'bank' && (
-            <div className="text-center py-8">
-              <FaCreditCard className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <div className="text-center py-6 md:py-8">
+              <FaCreditCard className="w-10 h-10 md:w-12 md:h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500">No bank details</p>
               <button onClick={() => navigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="mt-3 text-sm text-purple-600 hover:text-purple-700">
                 Add Details →
@@ -244,8 +245,8 @@ const ViewStaff = () => {
 
           {/* Documents Tab */}
           {activeTab === 'documents' && (
-            <div className="text-center py-8">
-              <FaHistory className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <div className="text-center py-6 md:py-8">
+              <FaHistory className="w-10 h-10 md:w-12 md:h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500">No documents</p>
               <p className="text-xs text-gray-400 mt-1">Coming soon</p>
             </div>
@@ -254,7 +255,7 @@ const ViewStaff = () => {
       </div>
 
       {/* Footer Info */}
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><FaClock className="w-4 h-4 text-gray-500" /> Timeline</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
           <div><span className="text-gray-500">Created</span><p className="font-medium mt-1">{formatDate(staff.createdAt)}</p></div>

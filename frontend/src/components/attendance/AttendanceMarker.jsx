@@ -1,5 +1,6 @@
 import React from 'react';
-import { FaCheckCircle, FaTimesCircle, FaClock, FaSpinner } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa';
+import Loader from '../common/Loader';
 
 const AttendanceMarker = ({ todayStatus, onMark, loading }) => {
   // Agar already mark kiya hai to status dikhao
@@ -39,7 +40,7 @@ const AttendanceMarker = ({ todayStatus, onMark, loading }) => {
           disabled={loading}
           className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-4 px-4 rounded-xl transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
         >
-          {loading ? <FaSpinner className="animate-spin" /> : <FaCheckCircle />}
+          {loading ? <Loader type="inline" size="small" /> : <FaCheckCircle />}
           Present
         </button>
         <button
@@ -47,7 +48,7 @@ const AttendanceMarker = ({ todayStatus, onMark, loading }) => {
           disabled={loading}
           className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium py-4 px-4 rounded-xl transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
         >
-          {loading ? <FaSpinner className="animate-spin" /> : <FaTimesCircle />}
+          {loading ? <Loader type="inline" size="small" /> : <FaTimesCircle />}
           Absent
         </button>
         <button
@@ -55,7 +56,7 @@ const AttendanceMarker = ({ todayStatus, onMark, loading }) => {
           disabled={loading}
           className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-white font-medium py-4 px-4 rounded-xl transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
         >
-          {loading ? <FaSpinner className="animate-spin" /> : <FaClock />}
+          {loading ? <Loader type="inline" size="small" /> : <FaClock />}
           Half Day
         </button>
       </div>

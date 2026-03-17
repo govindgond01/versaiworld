@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';  // ✅ Using api instance instead of axios
 import { toast } from 'react-hot-toast';
+import Loader from '../common/Loader';
 
 const AdminStaffSalary = () => {
   const [staffList, setStaffList] = useState([]);
@@ -121,7 +122,7 @@ const AdminStaffSalary = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <Loader type="spinner" size="large" />
       </div>
     );
   }

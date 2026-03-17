@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 import { 
   FaUser, FaEnvelope, FaPhone, FaRupeeSign, FaCalendarAlt, 
-  FaBuilding, FaMapMarkerAlt, FaClock, FaSpinner,
+  FaBuilding, FaMapMarkerAlt, FaClock,
   FaCheckCircle, FaTimesCircle, FaArrowLeft, FaBook, FaUserTie
 } from "react-icons/fa";
 import { MdLocalLibrary, MdRefresh } from "react-icons/md";
 import { BsPersonWorkspace, BsChevronDown } from "react-icons/bs";
 import { GiTeacher } from "react-icons/gi";
+import Loader from '../../../components/common/Loader';
 
 const AddStudent = () => {
   const navigate = useNavigate();
@@ -260,7 +261,7 @@ const AddStudent = () => {
         <div className="px-6 py-4 bg-gray-50 border-t flex justify-between items-center">
           <div className="flex gap-3">
             <button type="submit" disabled={loading} className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
-              {loading ? <FaSpinner className="w-4 h-4 animate-spin" /> : <GiTeacher className="w-4 h-4" />}
+              {loading ? <Loader type="inline" size="small" /> : <GiTeacher className="w-4 h-4" />}
               {loading ? 'Creating...' : 'Create Student'}
             </button>
             <button type="button" onClick={() => navigate('/admin-dashboard/students')} className="px-6 py-2.5 border bg-white rounded-lg hover:bg-gray-50">

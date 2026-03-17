@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MdLocalLibrary } from 'react-icons/md';
 import { FiRefreshCw } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
+import Loader from '../../../components/common/Loader';
 
 import AdminAttendanceStats from '../../../components/admin/attendance/AdminAttendanceStats';
 import AdminAttendanceFilters from '../../../components/admin/attendance/AdminAttendanceFilters';
@@ -113,7 +114,7 @@ const AdminLibraryAttendance = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
+          <Loader type="spinner" size="medium" />
           <p className="mt-4 text-gray-600">Loading library attendance...</p>
         </div>
       </div>
@@ -133,7 +134,8 @@ const AdminLibraryAttendance = () => {
           </div>
         </div>
         <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          <FiRefreshCw className={loading ? 'animate-spin' : ''} /> Refresh
+          {loading ? <Loader type="inline" size="small" /> : <FiRefreshCw />}
+          Refresh
         </button>
       </div>
 

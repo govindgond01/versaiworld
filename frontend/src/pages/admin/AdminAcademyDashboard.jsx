@@ -4,6 +4,7 @@ import { FiUsers, FiUserCheck, FiAlertCircle, FiTrendingUp, FiClock, FiCreditCar
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';
+import Loader from '../../components/common/Loader';
 
 const AdminAcademyDashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -156,7 +157,7 @@ const AdminAcademyDashboard = () => {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <Loader type="spinner" size="large" />
           <p className="mt-4 text-gray-600">Loading academy dashboard...</p>
         </div>
       </div>
@@ -166,23 +167,24 @@ const AdminAcademyDashboard = () => {
   const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
+    <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Academy Dashboard</h1>
-          <p className="text-gray-600">Manage academy students and courses</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Academy Dashboard</h1>
+          <p className="text-gray-600 mt-1">Manage academy students and courses</p>
         </div>
         <button
           onClick={fetchData}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
-          <FiRefreshCw className={loading ? 'animate-spin' : ''} /> Refresh
+          {loading ? <Loader type="inline" size="small" /> : <FiRefreshCw />}
+          Refresh
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statsCards.map((stat, i) => (
-          <div key={i} className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition">
+          <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 hover:shadow-md transition">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-3 rounded-lg ${stat.color} text-white shadow-lg`}>
                 {stat.icon}
@@ -200,8 +202,8 @@ const AdminAcademyDashboard = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Monthly Revenue</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -215,7 +217,7 @@ const AdminAcademyDashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Course Distribution</h3>
           <div className="h-64">
             {data.courses.length > 0 ? (
@@ -251,10 +253,10 @@ const AdminAcademyDashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4 md:mb-6">
               <div>
                 <h2 className="text-xl font-bold text-gray-800">Recent Students</h2>
                 <p className="text-sm text-gray-500">Latest academy enrollments</p>
@@ -297,8 +299,8 @@ const AdminAcademyDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Top Courses</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 md:mb-6">Top Courses</h2>
             <div className="space-y-4">
               {data.courses.slice(0, 3).map((course, i) => (
                 <div key={i} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
@@ -326,9 +328,9 @@ const AdminAcademyDashboard = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="space-y-4 md:space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <div className="flex justify-between items-center mb-4 md:mb-6">
               <h2 className="text-xl font-bold text-gray-800">Upcoming Renewals</h2>
               <span className="px-3 py-1 bg-red-50 text-red-700 rounded-full text-sm font-medium">
                 {data.expiring.length} Due
@@ -359,8 +361,8 @@ const AdminAcademyDashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-xl font-bold text-gray-800 mb-6">Quick Stats</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 md:mb-6">Quick Stats</h2>
             <div className="space-y-4">
               {quickStats.map((stat, i) => (
                 <div key={i} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50">

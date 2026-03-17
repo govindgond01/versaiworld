@@ -4,8 +4,7 @@ import api from '../../../services/api';
 import { toast } from 'react-hot-toast';
 import { 
   FaIndianRupeeSign,
-  FaUserGraduate,
-  FaSpinner
+  FaUserGraduate
 } from 'react-icons/fa6';
 import { 
   FiUsers, 
@@ -13,6 +12,7 @@ import {
   FiClock,
   FiArrowRight
 } from 'react-icons/fi';
+import Loader from '../../../components/common/Loader';
 import { 
   MdLocalLibrary,
   MdPayments,
@@ -95,7 +95,7 @@ const PaymentsDashboard = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <Loader type="spinner" size="large" />
           <p className="mt-3 text-sm text-gray-600">Loading dashboard...</p>
         </div>
       </div>

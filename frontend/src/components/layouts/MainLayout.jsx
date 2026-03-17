@@ -31,7 +31,7 @@ const MainLayout = () => {
         
         {/* Main Content Area */}
         <div className="flex-1 md:ml-[300px] min-h-[calc(100vh-4rem)] bg-gray-100">
-          <div className="pt-2 px-4 md:px-6 lg:px-8">
+          <div className="p-4 md:p-6">
             <Outlet />
           </div>
         </div>

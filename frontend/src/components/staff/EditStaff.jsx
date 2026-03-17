@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast';
 import { 
   FaArrowLeft, FaSave, FaUserTie, FaRupeeSign, FaBuilding, 
   FaPhone, FaEnvelope, FaCalendarAlt, FaCreditCard, FaCheck,
-  FaSpinner, FaUserGraduate, FaHome, FaMapMarkerAlt, FaIdCard
+  FaUserGraduate, FaHome, FaMapMarkerAlt, FaIdCard
 } from 'react-icons/fa';
 import { 
   MdLocalLibrary, MdSchool, MdWarning, MdPayments, MdPerson,
@@ -18,6 +18,7 @@ import {
 import { 
   GiTeacher, GiPayMoney, GiExpense, GiReceiveMoney
 } from 'react-icons/gi';
+import Loader from '../common/Loader';
 
 const EditStaff = () => {
   const { id } = useParams();
@@ -112,23 +113,23 @@ const EditStaff = () => {
   if (fetching) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="text-center"><FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" /><p className="mt-3">Loading...</p></div>
+        <div className="text-center"><Loader type="spinner" size="large" /><p className="mt-3">Loading...</p></div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-5xl mx-auto">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4 md:mb-6">
         <button onClick={() => navigate(`/admin-dashboard/staff/${id}`)} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
           <FaArrowLeft className="w-4 h-4 text-gray-600" />
         </button>
-        <div className="p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
-          <FaUserTie className="w-5 h-5 text-white" />
+        <div className="p-2 md:p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
+          <FaUserTie className="w-4 h-4 md:w-5 md:h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Edit Staff</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Edit Staff</h1>
           <p className="text-sm text-gray-600 flex items-center gap-1.5">
             <FaIdCard className="w-4 h-4" /> {staffDetails?.staffId || staffDetails?.userId} • {staffDetails?.name}
           </p>
@@ -138,9 +139,9 @@ const EditStaff = () => {
       {/* Form */}
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {/* Personal Info */}
-        <div className="p-6 border-b">
-          <h2 className="text-lg font-semibold mb-5 flex items-center gap-2"><MdPerson className="w-5 h-5 text-blue-600" /> Personal</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="p-4 md:p-6 border-b">
+          <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-5 flex items-center gap-2"><MdPerson className="w-4 h-4 md:w-5 md:h-5 text-blue-600" /> Personal</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             <div className="space-y-1.5">
               <label className={labelClass}><FaUserTie /> Name *</label>
               <div className="relative"><FaUserTie className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
@@ -169,12 +170,12 @@ const EditStaff = () => {
         </div>
 
         {/* Role & Status */}
-        <div className="p-6 border-b">
-          <h2 className="text-lg font-semibold mb-5 flex items-center gap-2"><MdWork className="w-5 h-5 text-blue-600" /> Role & Status</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="p-4 md:p-6 border-b">
+          <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-5 flex items-center gap-2"><MdWork className="w-4 h-4 md:w-5 md:h-5 text-blue-600" /> Role & Status</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             <div className="space-y-2">
               <label className={labelClass}>Staff Role</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {staffRoles.map((role) => (
                   <button key={role.value} type="button" onClick={() => setFormData({...formData, staffRole: role.value})}
                     className={`p-3 rounded-lg border-2 flex items-center gap-2 transition-all ${
@@ -188,7 +189,7 @@ const EditStaff = () => {
             </div>
             <div className="space-y-2">
               <label className={labelClass}>Status</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button type="button" onClick={() => setFormData({...formData, status: 'active'})}
                   className={`p-3 rounded-lg border-2 flex items-center justify-center gap-2 ${
                     formData.status === 'active' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-200 hover:border-green-300'
@@ -207,9 +208,9 @@ const EditStaff = () => {
         </div>
 
         {/* Department & Address */}
-        <div className="p-6 border-b">
-          <h2 className="text-lg font-semibold mb-5 flex items-center gap-2"><FaBuilding className="w-5 h-5 text-blue-600" /> Department & Address</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="p-4 md:p-6 border-b">
+          <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-5 flex items-center gap-2"><FaBuilding className="w-4 h-4 md:w-5 md:h-5 text-blue-600" /> Department & Address</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             <div className="space-y-1.5">
               <label className={labelClass}><FaBuilding /> Department</label>
               <div className="relative">
@@ -231,9 +232,9 @@ const EditStaff = () => {
         </div>
 
         {/* Salary */}
-        <div className="p-6 border-b">
-          <h2 className="text-lg font-semibold mb-5 flex items-center gap-2"><FaRupeeSign className="w-5 h-5 text-blue-600" /> Salary</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="p-4 md:p-6 border-b">
+          <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-5 flex items-center gap-2"><FaRupeeSign className="w-4 h-4 md:w-5 md:h-5 text-blue-600" /> Salary</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
             <div className="space-y-1.5">
               <label className={labelClass}><FaRupeeSign /> Monthly</label>
               <div className="relative"><FaRupeeSign className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
@@ -260,9 +261,9 @@ const EditStaff = () => {
         </div>
 
         {/* Bank Details */}
-        <div className="p-6 border-b">
-          <h2 className="text-lg font-semibold mb-5 flex items-center gap-2"><FaCreditCard className="w-5 h-5 text-blue-600" /> Bank</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="p-4 md:p-6 border-b">
+          <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-5 flex items-center gap-2"><FaCreditCard className="w-4 h-4 md:w-5 md:h-5 text-blue-600" /> Bank</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
             <div className="space-y-1.5">
               <label className={labelClass}>Bank Name</label>
               <div className="relative">
@@ -290,13 +291,13 @@ const EditStaff = () => {
         </div>
 
         {/* Actions */}
-        <div className="p-6 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-4 md:p-6 bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex gap-3">
-            <button type="submit" disabled={loading} className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
-              {loading ? <FaSpinner className="w-4 h-4 animate-spin" /> : <FaSave className="w-4 h-4" />}
+            <button type="submit" disabled={loading} className="flex items-center gap-2 px-4 md:px-6 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              {loading ? <Loader type="inline" size="small" /> : <FaSave className="w-4 h-4" />}
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
-            <button type="button" onClick={() => navigate(`/admin-dashboard/staff/${id}`)} className="px-6 py-2.5 border bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+            <button type="button" onClick={() => navigate(`/admin-dashboard/staff/${id}`)} className="px-4 md:px-6 py-2 md:py-2.5 border bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
               Cancel
             </button>
           </div>

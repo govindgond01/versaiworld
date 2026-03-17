@@ -3,6 +3,7 @@ import { BsPersonWorkspace } from 'react-icons/bs';
 import { FiRefreshCw } from 'react-icons/fi';
 import api from '../../../services/api';
 import { toast } from 'react-hot-toast';
+import Loader from '../../../components/common/Loader';
 
 import AdminAttendanceStats from '../../../components/admin/attendance/AdminAttendanceStats';
 import AdminAttendanceFilters from '../../../components/admin/attendance/AdminAttendanceFilters';
@@ -114,7 +115,7 @@ const AdminStaffAttendance = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600 mx-auto"></div>
+          <Loader type="spinner" size="medium" />
           <p className="mt-4 text-gray-600">Loading staff attendance...</p>
         </div>
       </div>
@@ -134,7 +135,8 @@ const AdminStaffAttendance = () => {
           </div>
         </div>
         <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
-          <FiRefreshCw className={loading ? 'animate-spin' : ''} /> Refresh
+          {loading ? <Loader type="inline" size="small" /> : <FiRefreshCw />}
+          Refresh
         </button>
       </div>
 

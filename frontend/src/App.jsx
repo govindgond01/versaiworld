@@ -2,6 +2,8 @@ import './index.css'
 import { Route, Routes, Navigate } from "react-router-dom";
 import LoginPage from "./components/forms/LoginPage";
 import SignUpPage from "./components/forms/SignUpPage";
+import ForgotPasswordPage from "./components/forms/ForgotPasswordPage";
+import ResetPasswordPage from "./components/forms/ResetPasswordPage";
 import MainLayout from "./components/layouts/MainLayout";
 import { useState, useEffect } from 'react';
 
@@ -9,6 +11,8 @@ import { useState, useEffect } from 'react';
 import AdminLibraryDashboard from "./pages/admin/AdminLibraryDashboard";
 import AdminAcademyDashboard from "./pages/admin/AdminAcademyDashboard";
 import AdminStaffDashboard from "./pages/admin/AdminStaffDashboard";
+import AdminStats from "./pages/admin/AdminStats";
+import UserManagement from "./pages/admin/UserManagement";
 import AllStudents from "./pages/admin/students/AllStudents";
 import AddStudent from "./pages/admin/students/AddStudent";
 import StudentTypes from "./pages/admin/students/StudentTypes";
@@ -96,6 +100,8 @@ function App() {
       {/* Auth routes */}
       <Route path="/login" element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />} />
       <Route path="/signup" element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />} />
+      <Route path="/forgot-password" element={!isLoggedIn ? <ForgotPasswordPage /> : <Navigate to="/" replace />} />
+      <Route path="/reset-password/:token" element={!isLoggedIn ? <ResetPasswordPage /> : <Navigate to="/" replace />} />
 
       {/* ========== ADMIN ROUTES ========== */}
       <Route path="/admin-dashboard" element={isLoggedIn && role === "admin" ? <MainLayout /> : <Navigate to="/login" replace />}>
@@ -146,6 +152,12 @@ function App() {
         <Route path="settings" element={<SystemSettings />} />
         <Route path="notifications" element={<div>admin notification</div>} />
         <Route path="help" element={<HelpSupport />} />
+
+        <Route path="super-admin">
+          <Route index element={<Navigate to="stats" replace />} />
+          <Route path="stats" element={<AdminStats />} />
+          <Route path="users" element={<UserManagement />} />
+        </Route>
       </Route>
 
       {/* ========== ACADEMY STUDENT ROUTES ========== */}

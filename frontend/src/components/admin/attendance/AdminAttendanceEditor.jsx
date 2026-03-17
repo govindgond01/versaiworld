@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaTimes, FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa';
+import Loader from '../../common/Loader';
 
 const AdminAttendanceEditor = ({ 
   isOpen, 
@@ -115,7 +116,7 @@ const AdminAttendanceEditor = ({
           >
             {loading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <Loader type="inline" size="small" />
                 Saving...
               </>
             ) : (

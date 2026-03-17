@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaSpinner } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
+import Loader from '../common/Loader';
 
 import AttendanceStats from './AttendanceStats';
 import AttendanceMarker from './AttendanceMarker';
@@ -142,10 +143,7 @@ const calculateStats = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-                <div className="text-center">
-                    <FaSpinner className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-                    <p className="text-gray-600 text-lg">Loading your attendance...</p>
-                </div>
+                <Loader type="spinner" size="large" text="Loading your attendance..." />
             </div>
         );
     }

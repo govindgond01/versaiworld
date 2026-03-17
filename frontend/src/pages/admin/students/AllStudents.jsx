@@ -20,6 +20,7 @@ import {
   RiGovernmentLine, RiBankLine
 } from 'react-icons/ri';
 import api from '../../../services/api';
+import Loader from '../../../components/common/Loader';
 
 const AllStudents = () => {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ const AllStudents = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto"></div>
+          <Loader type="spinner" size="medium" />
           <p className="mt-3 text-gray-600">Loading...</p>
         </div>
       </div>

@@ -108,4 +108,22 @@ const studentOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly, staffOnly, studentOnly };
+const superAdminOnly = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Not authenticated'
+    });
+  }
+
+  if (req.user.userType !== 'superAdmin') {
+    res.status(403).json({
+      success: false,
+      message: 'Access denied. Super admin only.'
+    });
+  } else {
+    next();
+  }
+};
+
+module.exports = { protect, adminOnly, staffOnly, studentOnly, superAdminOnly };

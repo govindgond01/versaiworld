@@ -9,11 +9,12 @@ import {
   MdWarning, MdPayments, MdLocalLibrary 
 } from 'react-icons/md';
 import { 
-  FaIndianRupeeSign, FaUserGraduate, FaSpinner 
+  FaIndianRupeeSign, FaUserGraduate
 } from 'react-icons/fa6';
 import { 
-  BsPersonWorkspace, BsPersonBadge, BsCalendar, BsCashStack 
+  BsPersonWorkspace, BsPersonBadge, BsCalendar, BsCashStack
 } from 'react-icons/bs';
+import Loader from '../../../components/common/Loader';
 import { 
   GiTeacher, GiPayMoney 
 } from 'react-icons/gi';
@@ -97,7 +98,7 @@ const DuePayments = () => {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
-          <FaSpinner className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
+          <Loader type="spinner" size="large" />
           <p className="mt-3 text-sm text-gray-600">Loading...</p>
         </div>
       </div>
