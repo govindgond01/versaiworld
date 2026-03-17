@@ -239,9 +239,9 @@ UserSchema.pre("save", async function(next) {
     const key = `${this.userType}_${category}`;
     const prefix = prefixMap[key] || "USR";
     
+    // Count existing users with userId starting with this prefix
     const count = await this.constructor.countDocuments({ 
-      userType: this.userType,
-      ...(this.userType === "student" ? { studentCategory: this.studentCategory } : {})
+      userId: new RegExp(`^${prefix}`)
     });
     
     this.userId = `${prefix}${(count + 1).toString().padStart(4, '0')}`;
