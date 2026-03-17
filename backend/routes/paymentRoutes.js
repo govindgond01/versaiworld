@@ -18,7 +18,7 @@ router.get('/my-payments', paymentController.getMyPayments);
 router.get('/user/:userId', async (req, res) => {
   try {
     // Check if user is accessing their own data or is admin
-    if (req.user.id === req.params.userId || req.user.userType === 'admin') {
+    if (req.user.id.toString() === req.params.userId || req.user.userType === 'admin') {
       const user = await User.findById(req.params.userId).select('fees financials');
       const payments = user?.fees?.paymentHistory || user?.financials?.paymentHistory || [];
       return res.json({ success: true, payments });
