@@ -31,13 +31,20 @@ const LoginPage = () => {
     setError("");
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_URL = import.meta.env.VITE_API_URL;
+      
+      if (!API_URL) {
+        setError("API URL not configured. Please check environment variables.");
+        setLoading(false);
+        return;
+      }
       
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies in the request
         body: JSON.stringify({
           email: formData.email,
           password: formData.password
