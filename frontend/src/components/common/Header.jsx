@@ -106,9 +106,6 @@ const Header = ({ toggleSidebar }) => {
 
     setSearchLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
       const res = await api.get(`/search?q=${searchTerm}`);
 
       setSearchResults(res.data.results || []);
@@ -120,10 +117,16 @@ const Header = ({ toggleSidebar }) => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    toast.success('Logged out successfully');
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.clear();
+      toast.success('Logged out successfully');
+      navigate('/login');
+    }
   };
 
   const handleNotificationClick = () => {

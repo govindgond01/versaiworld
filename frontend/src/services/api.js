@@ -8,21 +8,11 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Enable sending cookies with requests
 });
 
-// Add token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// Remove manual token setting since we're using httpOnly cookies
+// Add token to requests - REMOVED: tokens are in httpOnly cookies
 
 // Response interceptor for error handling
 api.interceptors.response.use(

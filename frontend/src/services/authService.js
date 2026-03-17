@@ -24,14 +24,10 @@ const authService = {
     return localStorage.getItem('role') || 'student';
   },
 
-  // Get token
-  getToken: () => {
-    return localStorage.getItem('token');
-  },
-
   // Logout user
   logout: () => {
     localStorage.clear();
+    // Clear cookies by making a logout request or redirecting
     window.location.href = '/login';
   }
 };
