@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaChevronLeft, FaChevronRight, FaCalendarAlt } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight, FaCalendar } from 'react-icons/fa';
 
 const MonthSelector = ({ currentDate, onPrev, onNext, onDateChange }) => {
   const monthNames = [
@@ -19,7 +19,7 @@ const MonthSelector = ({ currentDate, onPrev, onNext, onDateChange }) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-            <FaCalendarAlt className="w-4 h-4" />
+            <FaCalendar className="w-4 h-4" />
           </div>
           <span className="text-sm font-medium text-gray-700">Select Month:</span>
         </div>
