@@ -5,7 +5,7 @@ import SignUpPage from "./components/forms/SignUpPage";
 import ForgotPasswordPage from "./components/forms/ForgotPasswordPage";
 import ResetPasswordPage from "./components/forms/ResetPasswordPage";
 import MainLayout from "./components/layouts/MainLayout";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Admin Pages
 import AdminLibraryDashboard from "./pages/admin/AdminLibraryDashboard";
@@ -81,27 +81,23 @@ function App() {
     localStorage.getItem("studentCategory") || ''
   );
 
-  // Debounce timer ref to prevent rapid state updates
   const storageTimeoutRef = useRef(null);
 
   useEffect(() => {
     const checkAuth = () => {
-      // Clear any pending timeout
       if (storageTimeoutRef.current) {
         clearTimeout(storageTimeoutRef.current);
       }
 
-      // Debounce storage events to prevent rapid consecutive updates
       storageTimeoutRef.current = setTimeout(() => {
         const newIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
         const newRole = localStorage.getItem("role") || '';
         const newStudentCategory = localStorage.getItem("studentCategory") || '';
 
-        // Only update if values actually changed
         setIsLoggedIn(prev => prev === newIsLoggedIn ? prev : newIsLoggedIn);
         setRole(prev => prev === newRole ? prev : newRole);
         setStudentCategory(prev => prev === newStudentCategory ? prev : newStudentCategory);
-      }, 100); // 100ms debounce
+      }, 100);
     };
 
     window.addEventListener('storage', checkAuth);
@@ -113,36 +109,65 @@ function App() {
     };
   }, []);
 
+  // ============ FIX 1: Get dashboard path based on role ============
+  const getDashboardPath = useCallback(() => {
+    if (!isLoggedIn) return '/login';
+    
+    if (role === 'admin') return '/admin-dashboard';
+    if (role === 'staff') return '/staff-dashboard';
+    if (role === 'student') {
+      if (studentCategory === 'academy') return '/academy-dashboard';
+      if (studentCategory === 'library') return '/library-dashboard';
+    }
+    return '/login';
+  }, [isLoggedIn, role, studentCategory]);
+
+  // ============ FIX 2: Check if current path is valid ============
+  const isValidPath = useCallback((path) => {
+    if (!isLoggedIn) return path === '/login' || path === '/signup' || path === '/forgot-password' || path.startsWith('/reset-password');
+    
+    if (role === 'admin') return path.startsWith('/admin-dashboard');
+    if (role === 'staff') return path.startsWith('/staff-dashboard');
+    if (role === 'student') {
+      if (studentCategory === 'academy') return path.startsWith('/academy-dashboard');
+      if (studentCategory === 'library') return path.startsWith('/library-dashboard');
+    }
+    return false;
+  }, [isLoggedIn, role, studentCategory]);
+
   return (
     <Routes>
-      {/* Home route - redirect based on role */}
+      {/* ============ FIX 3: Home route - single redirect point ============ */}
       <Route path="/" element={
-        isLoggedIn ? (
-          role === "admin" ? <Navigate to="/admin-dashboard" replace /> :
-          role === "staff" ? <Navigate to="/staff-dashboard" replace /> :
-          role === "student" ? (
-            studentCategory === "academy" ? <Navigate to="/academy-dashboard" replace /> :
-            studentCategory === "library" ? <Navigate to="/library-dashboard" replace /> :
-            <Navigate to="/login" replace />
-          ) : <Navigate to="/login" replace />
-        ) : <Navigate to="/login" replace />
+        <Navigate to={getDashboardPath()} replace />
       } />
 
       {/* Auth routes */}
-      <Route path="/login" element={!isLoggedIn ? <LoginPage /> : <Navigate to="/" replace />} />
-      <Route path="/signup" element={!isLoggedIn ? <SignUpPage /> : <Navigate to="/" replace />} />
-      <Route path="/forgot-password" element={!isLoggedIn ? <ForgotPasswordPage /> : <Navigate to="/" replace />} />
-      <Route path="/reset-password/:token" element={!isLoggedIn ? <ResetPasswordPage /> : <Navigate to="/" replace />} />
+      <Route path="/login" element={
+        !isLoggedIn ? <LoginPage /> : <Navigate to={getDashboardPath()} replace />
+      } />
+      <Route path="/signup" element={
+        !isLoggedIn ? <SignUpPage /> : <Navigate to={getDashboardPath()} replace />
+      } />
+      <Route path="/forgot-password" element={
+        !isLoggedIn ? <ForgotPasswordPage /> : <Navigate to={getDashboardPath()} replace />
+      } />
+      <Route path="/reset-password/:token" element={
+        !isLoggedIn ? <ResetPasswordPage /> : <Navigate to={getDashboardPath()} replace />
+      } />
 
       {/* ========== ADMIN ROUTES ========== */}
-      <Route path="/admin-dashboard" element={isLoggedIn && role === "admin" ? <MainLayout /> : <Navigate to="/login" replace />}>
-        <Route index element={<Navigate to="library-dash" replace />} />
+      <Route path="/admin-dashboard" element={
+        isLoggedIn && role === "admin" ? <MainLayout /> : <Navigate to="/login" replace />
+      }>
+        {/* FIX 4: Remove nested redirects - use direct components */}
+        <Route index element={<AdminLibraryDashboard />} />
         <Route path="library-dash" element={<AdminLibraryDashboard />} />
         <Route path="academy-dash" element={<AdminAcademyDashboard />} />
         <Route path="staff-dash" element={<AdminStaffDashboard />} />
         
         <Route path="students">
-          <Route index element={<Navigate to="all" replace />} />
+          <Route index element={<AllStudents />} />
           <Route path="all" element={<AllStudents />} />
           <Route path="add" element={<AddStudent />} />
           <Route path="types" element={<StudentTypes />} />
@@ -152,7 +177,7 @@ function App() {
         </Route>
         
         <Route path="payments">
-          <Route index element={<Navigate to="academy" replace />} />
+          <Route index element={<CategoryPayments category="academy" />} />
           <Route path="dashboard" element={<PaymentsDashboard />} />
           <Route path="academy" element={<CategoryPayments category="academy" />} />
           <Route path="library" element={<CategoryPayments category="library" />} />
@@ -163,7 +188,7 @@ function App() {
         </Route>
         
         <Route path="attendance">
-          <Route index element={<Navigate to="academy" replace />} />
+          <Route index element={<AdminAcademyAttendance />} />
           <Route path="academy" element={<AdminAcademyAttendance />} />
           <Route path="library" element={<AdminLibraryAttendance />} />
           <Route path="staff" element={<AdminStaffAttendance />} />
@@ -172,7 +197,7 @@ function App() {
         <Route path="export" element={<ExportData />} />
         
         <Route path="staff">
-          <Route index element={<Navigate to="all" replace />} />
+          <Route index element={<AllStaff />} />
           <Route path="all" element={<AllStaff />} />
           <Route path="add" element={<AddStaff />} />
           <Route path=":id" element={<ViewStaff />} />
@@ -185,14 +210,17 @@ function App() {
         <Route path="help" element={<HelpSupport />} />
 
         <Route path="super-admin">
-          <Route index element={<Navigate to="stats" replace />} />
+          <Route index element={<AdminStats />} />
           <Route path="stats" element={<AdminStats />} />
           <Route path="users" element={<UserManagement />} />
         </Route>
       </Route>
 
       {/* ========== ACADEMY STUDENT ROUTES ========== */}
-      <Route path="/academy-dashboard" element={isLoggedIn && role === "student" && studentCategory === "academy" ? <MainLayout /> : <Navigate to="/login" replace />}>
+      <Route path="/academy-dashboard" element={
+        isLoggedIn && role === "student" && studentCategory === "academy" ? 
+        <MainLayout /> : <Navigate to="/login" replace />
+      }>
         <Route index element={<AcademyDashboard />} />
         <Route path="attendance" element={<AcademyAttendance />} />
         <Route path="payments" element={<AcademyPayments />} />
@@ -204,7 +232,10 @@ function App() {
       </Route>
 
       {/* ========== LIBRARY STUDENT ROUTES ========== */}
-      <Route path="/library-dashboard" element={isLoggedIn && role === "student" && studentCategory === "library" ? <MainLayout /> : <Navigate to="/login" replace />}>
+      <Route path="/library-dashboard" element={
+        isLoggedIn && role === "student" && studentCategory === "library" ? 
+        <MainLayout /> : <Navigate to="/login" replace />
+      }>
         <Route index element={<LibraryDashboard />} />
         <Route path="attendance" element={<LibraryAttendance />} />
         <Route path="payments" element={<LibraryPayments />} />
@@ -216,7 +247,9 @@ function App() {
       </Route>
 
       {/* ========== STAFF ROUTES ========== */}
-      <Route path="/staff-dashboard" element={isLoggedIn && role === "staff" ? <MainLayout /> : <Navigate to="/login" replace />}>
+      <Route path="/staff-dashboard" element={
+        isLoggedIn && role === "staff" ? <MainLayout /> : <Navigate to="/login" replace />
+      }>
         <Route index element={<StaffDashboard />} />
         <Route path="attendance" element={<StaffAttendance />} />
         <Route path="payments" element={<StaffPayments />} />
