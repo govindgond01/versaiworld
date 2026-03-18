@@ -11,7 +11,7 @@ const SignUpPage = () => {
     email: "",
     phone: "",
     password: "",
-    userType:"",
+    userType: "student",
     studentCategory: "academy",
     staffRole: "teacher",
   });
@@ -25,13 +25,22 @@ const SignUpPage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleUserTypeChange = (e) => {
+    const value = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      userType: value,
+      studentCategory: value === 'student' ? 'academy' : undefined,
+      staffRole: value === 'staff' ? 'teacher' : undefined
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      // ✅ FIXED: Environment variable used
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       
       const response = await fetch(`${API_URL}/auth/register`, {
@@ -45,7 +54,6 @@ const SignUpPage = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Store user data in localStorage (tokens are now in httpOnly cookies)
         localStorage.setItem("user", JSON.stringify(data.user));
         
         const userRole = data.user.userType || data.user.role;
@@ -105,9 +113,7 @@ const SignUpPage = () => {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-                {/* Grid for Name & Email */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                  {/* Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Name <span className="text-red-500">*</span>
@@ -131,7 +137,6 @@ const SignUpPage = () => {
                     </div>
                   </div>
 
-                  {/* Email */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email <span className="text-red-500">*</span>
@@ -156,9 +161,7 @@ const SignUpPage = () => {
                   </div>
                 </div>
 
-                {/* Grid for Phone & Role */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                  {/* Phone */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Phone <span className="text-red-500">*</span>
@@ -183,7 +186,6 @@ const SignUpPage = () => {
                     </div>
                   </div>
 
-                  {/* Role */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Role <span className="text-red-500">*</span>
@@ -192,7 +194,7 @@ const SignUpPage = () => {
                       <select
                         name="userType"
                         value={formData.userType}
-                        onChange={handleChange}
+                        onChange={handleUserTypeChange}
                         className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none pr-10"
                       >
                         <option value="student">Student</option>
@@ -207,39 +209,39 @@ const SignUpPage = () => {
                   </div>
                 </div>
 
-                {/* Password - Full Width */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Role Category: <span className="text-red-500">*</span>
+                      {formData.userType === "student" ? "Student Category" : "Staff Role"} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
-                      {
-                      formData.userType=="student"?(
+                      {formData.userType === "student" ? (
                         <select
-                        name="studentCategory"
-                        value={formData.studentCategory}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none pr-10"
-                      >
-                        <option value="academy">Academy</option>
-                        <option value="library">Library</option>
-                      </select>
-                      ):
-                      (
+                          name="studentCategory"
+                          value={formData.studentCategory}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none pr-10"
+                        >
+                          <option value="academy">Academy</option>
+                          <option value="library">Library</option>
+                          <option value="both">Both</option>
+                        </select>
+                      ) : (
                         <select
-                        name="staffRole"
-                        value={formData.staffRole}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none pr-10"
-                      >
-                        <option value="teacher">Teacher</option>
-                        <option value="web">Web</option>
-                      </select>
-                      )
-                      
-                      }
+                          name="staffRole"
+                          value={formData.staffRole}
+                          onChange={handleChange}
+                          className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none pr-10"
+                        >
+                          <option value="teacher">Teacher</option>
+                          <option value="Digital Marketer">Digital Marketer</option>
+                          <option value="Web Developer">Web Developer</option>
+                          <option value="Front-End Developer">Front-End Developer</option>
+                          <option value="Back-End Developer">Back-End Developer</option>
+                          <option value="Full-Stack Developer">Full-Stack Developer</option>
+                          <option value="other">Other</option>
+                        </select>
+                      )}
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                         <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -247,39 +249,39 @@ const SignUpPage = () => {
                       </div>
                     </div>
                   </div>
+
                   <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Password <span className="text-red-500">*</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Password <span className="text-red-500">*</span>
+                      </label>
+                    </div>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        autoComplete="new-password"
+                        className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12 transition-colors"
+                        placeholder="••••••••"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? (
+                          <AiOutlineEyeInvisible className="w-5 h-5" />
+                        ) : (
+                          <AiOutlineEye className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
                   </div>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      autoComplete="new-password"
-                      className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none pr-12 transition-colors"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? (
-                        <AiOutlineEyeInvisible className="w-5 h-5" />
-                      ) : (
-                        <AiOutlineEye className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
                 </div>
 
-                {/* Terms Checkbox */}
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -292,7 +294,6 @@ const SignUpPage = () => {
                   </label>
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -312,7 +313,6 @@ const SignUpPage = () => {
                 </button>
               </form>
 
-              {/* Bottom Link */}
               <div className="text-center mt-6 pt-6 border-t border-gray-200">
                 <p className="text-gray-600 text-sm">
                   Already have an account?{' '}
@@ -322,7 +322,6 @@ const SignUpPage = () => {
             </div>
           </div>
 
-          {/* Right Side - Image */}
           <div className="hidden lg:block lg:w-1/2">
             <div className="h-full">
               <img className="h-full w-full object-cover" src={bookImg} alt="" />
