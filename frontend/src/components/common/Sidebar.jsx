@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   FiHome, FiTrendingUp, FiAward, FiBookOpen, FiBook, FiClock,
   FiHeart, FiStar, FiUser, FiCreditCard, FiSearch, FiCalendar,
@@ -17,14 +17,14 @@ import adminMenu from '../Data/adminMenu';
 import academyMenu from '../Data/academyMenu';
 import staffMenu from '../Data/staffMenu';
 import libraryMenu from '../Data/libraryMenu';
+import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
   const logoutRef = useRef(false);
-  const navigationRef = useRef(false);
+  const debouncedNavigate = useDebouncedNavigation(300);
 
   // Memoize menuData to prevent unnecessary recalculations and reference changes
   const menuData = useMemo(() => {
@@ -105,16 +105,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     localStorage.clear();
     window.location.replace('/login');
   }, []);
-
-  // Debounced navigation to prevent rapid clicks
-  const debouncedNavigate = useCallback((path) => {
-    if (navigationRef.current) return;
-    navigationRef.current = true;
-    navigate(path);
-    setTimeout(() => {
-      navigationRef.current = false;
-    }, 300);
-  }, [navigate]);
 
   const handleNavClick = useCallback(() => {
     if (window.innerWidth < 768 && onClose) onClose();
