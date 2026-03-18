@@ -71,6 +71,9 @@ import AdminStaffAttendance from "./pages/admin/attendance/AdminStaffAttendance"
 import Profile from "./pages/admin/Profile";
 
 function App() {
+  console.log('🔥 App loaded');
+console.log('isLoggedIn:', localStorage.getItem('isLoggedIn'));
+console.log('role:', localStorage.getItem('role'));
   const [isLoggedIn, setIsLoggedIn] = useState(() => 
     localStorage.getItem("isLoggedIn") === "true"
   );
