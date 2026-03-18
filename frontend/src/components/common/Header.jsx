@@ -1,20 +1,17 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import logoImg from "../../assets/logo.webp";
 import {
   FiSearch, FiMenu, FiBell, FiUser,
-  FiLogOut, FiSettings, FiHelpCircle,
+  FiSettings, FiHelpCircle,
   FiChevronDown, FiBook, FiDollarSign,
   FiCalendar, FiUsers
 } from 'react-icons/fi';
-import { toast } from 'react-hot-toast';
 import Loader from './Loader';
 import api from '../../services/api';
 import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 
 const Header = ({ toggleSidebar }) => {
   const debouncedNavigate = useDebouncedNavigation(300);
-  const navigate = useNavigate();
   
   const [user, setUser] = useState(() => {
     try {
@@ -36,7 +33,6 @@ const Header = ({ toggleSidebar }) => {
 
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
-  const logoutRef = useRef(false);
   const searchTimeoutRef = useRef(null);
 
   // ============ FIX 1: fetchUserData with useCallback ============
@@ -168,21 +164,6 @@ const Header = ({ toggleSidebar }) => {
       setSearchLoading(false);
     }
   };
-
-  const handleLogout = useCallback(async () => {
-    if (logoutRef.current) return;
-    logoutRef.current = true;
-
-    try {
-      await api.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      localStorage.clear();
-      toast.success('Logged out successfully');
-      navigate('/login', { replace: true });
-    }
-  }, [navigate]);
 
   // ============ FIX 5: Remove useCallback wrappers from navigation handlers ============
   const handleNotificationClick = () => {
@@ -453,13 +434,6 @@ const Header = ({ toggleSidebar }) => {
                       <button onClick={handleHelpClick} className='w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center gap-3'>
                         <FiHelpCircle className='w-4 h-4 text-gray-500' />
                         <span className='text-sm'>Help & Support</span>
-                      </button>
-                    </div>
-
-                    <div className='border-t border-gray-200 pt-2'>
-                      <button onClick={handleLogout} className='w-full px-4 py-2 text-left hover:bg-red-50 flex items-center gap-3 text-red-600'>
-                        <FiLogOut className='w-4 h-4' />
-                        <span className='text-sm'>Logout</span>
                       </button>
                     </div>
                   </div>

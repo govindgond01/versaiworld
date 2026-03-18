@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   FiHome, FiTrendingUp, FiAward, FiBookOpen, FiBook, FiClock,
   FiHeart, FiStar, FiUser, FiCreditCard, FiSearch, FiCalendar,
@@ -12,6 +12,8 @@ import { HiDatabase } from 'react-icons/hi';
 import { GiTeacher } from 'react-icons/gi';
 import { CiCalendar } from "react-icons/ci";
 import logoImg from "../../assets/logo.webp";
+import { toast } from 'react-hot-toast';
+import api from '../../services/api';
 
 import adminMenu from '../Data/adminMenu';
 import academyMenu from '../Data/academyMenu';
@@ -20,10 +22,10 @@ import libraryMenu from '../Data/libraryMenu';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
   const logoutRef = useRef(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const menuData = useMemo(() => {
     if (userRole === 'admin') return adminMenu;
@@ -94,12 +96,52 @@ const Sidebar = ({ isOpen, onClose }) => {
     });
   }, []);
 
-  const handleLogout = useCallback(() => {
-    if (logoutRef.current) return;
+  // Utility function to clear cookies
+  const clearCookies = useCallback(() => {
+    // Clear all cookies by setting expiration to past date
+    document.cookie.split(";").forEach((c) => {
+      const eq = c.indexOf("=");
+      const name = eq === -1 ? c.trim() : c.substring(0, eq).trim();
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/; domain=.${window.location.hostname}`;
+    });
+    
+    // Also clear by setting empty with immediate expiration
+    const cookies = document.cookie ? document.cookie.split(';') : [];
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i];
+      const eqPos = cookie.indexOf('=');
+      const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+    }
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    if (logoutRef.current || isLoggingOut) return;
+    
+    setIsLoggingOut(true);
     logoutRef.current = true;
-    localStorage.clear();
-    navigate('/login', { replace: true });
-  }, [navigate]);
+
+    try {
+      // Call the logout API
+      await api.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout API error:', error);
+      // Continue with logout even if API fails
+    } finally {
+      // Clear all storage
+      localStorage.clear();
+      sessionStorage.clear();
+      clearCookies();
+      
+      toast.success('Logged out successfully');
+      
+      // Force redirect to login
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 100);
+    }
+  }, [isLoggingOut, clearCookies]);
 
   const handleNavClick = useCallback(() => {
     if (window.innerWidth < 768 && onClose) onClose();
@@ -163,7 +205,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                         </div>
                       </div>
                     ) : (
-                      // FIXED: Normal NavLink without any comments inside
                       <NavLink
                         to={item.path}
                         onClick={handleNavClick}
@@ -191,10 +232,24 @@ const Sidebar = ({ isOpen, onClose }) => {
           <div className="mt-6 pt-4 border-t border-gray-200">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium shadow-md text-gray-600 hover:bg-gray-100"
+              disabled={isLoggingOut}
+              className={`w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium shadow-md ${
+                isLoggingOut 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
             >
-              <FiLogOut className="w-4 h-4" />
-              <span className="text-sm font-semibold">Logout</span>
+              {isLoggingOut ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                  <span className="text-sm font-semibold">Logging out...</span>
+                </>
+              ) : (
+                <>
+                  <FiLogOut className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Logout</span>
+                </>
+              )}
             </button>
           </div>
 
@@ -263,7 +318,6 @@ const Sidebar = ({ isOpen, onClose }) => {
                         </div>
                       </div>
                     ) : (
-                      // FIXED: Normal NavLink without any comments inside
                       <NavLink
                         to={item.path}
                         onClick={handleNavClick}
@@ -291,10 +345,24 @@ const Sidebar = ({ isOpen, onClose }) => {
           <div className="mt-6 pt-4 border-t border-gray-200">
             <button
               onClick={() => { handleLogout(); onClose(); }}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium shadow-md text-gray-600 hover:bg-gray-100"
+              disabled={isLoggingOut}
+              className={`w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg font-medium shadow-md ${
+                isLoggingOut 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
             >
-              <FiLogOut className="w-4 h-4" />
-              <span className="text-sm font-semibold">Logout</span>
+              {isLoggingOut ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                  <span className="text-sm font-semibold">Logging out...</span>
+                </>
+              ) : (
+                <>
+                  <FiLogOut className="w-4 h-4" />
+                  <span className="text-sm font-semibold">Logout</span>
+                </>
+              )}
             </button>
           </div>
 
