@@ -73,9 +73,9 @@ const AcademyProfile = () => {
   const imageUrl = getImageUrl(userData);
 
   return (
-    <div className="p-4 sm:p-6 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">My Profile</h1>
+        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
         <button
           onClick={() => setEditMode(!editMode)}
           className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
@@ -84,7 +84,7 @@ const AcademyProfile = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg p-6">
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         <div className="flex flex-col items-center mb-8">
           <ProfileImageUpload
             user={userData}

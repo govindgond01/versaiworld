@@ -122,8 +122,8 @@ const AdminLibraryAttendance = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-xl shadow-lg">
             <MdLocalLibrary className="w-6 h-6 text-white" />
@@ -133,7 +133,10 @@ const AdminLibraryAttendance = () => {
             <p className="text-sm text-gray-500">Manage attendance for library members</p>
           </div>
         </div>
-        <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+        <button
+          onClick={fetchData}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
           {loading ? <Loader type="inline" size="small" /> : <FiRefreshCw />}
           Refresh
         </button>

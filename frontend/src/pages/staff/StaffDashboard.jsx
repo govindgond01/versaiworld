@@ -85,23 +85,23 @@ const StaffDashboard = () => {
   if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto">
-      <div className="mb-4 md:mb-6">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Staff Dashboard</h1>
         <p className="text-gray-600">Welcome back, {userData.name}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         <UserStatsCard icon={FaRupeeSign} label="Total Salary" value={`₹${stats.totalSalary.toLocaleString()}`} color="blue" />
         <UserStatsCard icon={FaRupeeSign} label="Received" value={`₹${stats.paidSalary.toLocaleString()}`} color="green" />
         <UserStatsCard icon={FaClock} label="Due Salary" value={`₹${stats.dueSalary.toLocaleString()}`} color={stats.dueSalary > 0 ? 'red' : 'gray'} />
         <UserStatsCard icon={FaUserCheck} label="Attendance" value={`${stats.attendance}%`} subValue="This month" color="purple" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-        <div className="lg:col-span-2 space-y-4 md:space-y-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-            <h2 className="text-lg font-semibold mb-4 md:mb-6">My Tasks</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 space-y-6 md:space-y-0">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold mb-6">My Tasks</h2>
             {tasks.length === 0 ? (
               <p className="text-gray-500">No tasks assigned</p>
             ) : (
@@ -114,8 +114,8 @@ const StaffDashboard = () => {
             )}
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-            <h2 className="text-lg font-semibold mb-4 md:mb-6">Recent Activity</h2>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold mb-6">Recent Activity</h2>
             {activities.length === 0 ? (
               <p className="text-gray-500">No recent activity</p>
             ) : (
@@ -124,14 +124,14 @@ const StaffDashboard = () => {
           </div>
         </div>
 
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-6">
           {/* <UserAttendanceCalendar
             attendanceData={attendanceData}
             monthAttendance={stats.attendance}
             onMarkAttendance={handleMarkAttendance}
           /> */}
-          <div className="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
-            <h2 className="text-lg font-semibold mb-4 md:mb-6">Quick Actions</h2>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold mb-6">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-4 md:gap-6">
               <UserQuickAction icon={FaUserCheck} label="Attendance" path="/staff-dashboard/attendance" color="blue" />
               <UserQuickAction icon={FaCalendarAlt} label="Schedule" path="/staff-dashboard/schedule" color="green" />

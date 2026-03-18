@@ -123,8 +123,8 @@ const AdminStaffAttendance = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-3 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-lg">
             <BsPersonWorkspace className="w-6 h-6 text-white" />
@@ -134,7 +134,10 @@ const AdminStaffAttendance = () => {
             <p className="text-sm text-gray-500">Manage attendance for staff members</p>
           </div>
         </div>
-        <button onClick={fetchData} className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+        <button
+          onClick={fetchData}
+          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+        >
           {loading ? <Loader type="inline" size="small" /> : <FiRefreshCw />}
           Refresh
         </button>

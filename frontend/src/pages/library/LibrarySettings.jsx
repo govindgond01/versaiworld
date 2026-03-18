@@ -11,13 +11,12 @@ const LibrarySettings = () => {
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({ emailNotifications: true, smsNotifications: false, showProfile: true });
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-
   useEffect(() => { fetchSettings(); }, []);
 
   const fetchSettings = async () => {
     try {
       setLoading(true);
+      
       const res = await api.get('users/settings');
 
       if (res.data.success) {
@@ -34,6 +33,7 @@ const LibrarySettings = () => {
   const handleSave = async (newSettings) => {
     try {
       setSaving(true);
+      
       await api.put('users/settings', newSettings);
 
       setSettings(newSettings);
@@ -48,8 +48,10 @@ const LibrarySettings = () => {
   if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+      </div>
       <UserSettingsForm settings={settings} onSave={handleSave} loading={saving} />
     </div>
   );

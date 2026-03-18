@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { BsPersonWorkspace } from 'react-icons/bs';
-import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 import Loader from '../../components/common/Loader';
 import UserSettingsForm from '../../components/user/UserSettingsForm';
+import api from '../../services/api';
 
 const StaffSettings = () => {
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,8 @@ const StaffSettings = () => {
   const fetchSettings = async () => {
     try {
       setLoading(true);
-      const res = await api.get('users/settings');
+      
+      const res = await api.get('/users/settings');
 
       if (res.data.success) {
         setSettings(res.data.settings);
@@ -31,7 +32,8 @@ const StaffSettings = () => {
   const handleSave = async (newSettings) => {
     try {
       setSaving(true);
-      await api.put('users/settings', newSettings);
+      
+      await api.put('/users/settings', newSettings);
 
       setSettings(newSettings);
       toast.success('Settings saved');
@@ -45,8 +47,10 @@ const StaffSettings = () => {
   if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Settings</h1>
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+      </div>
       <UserSettingsForm settings={settings} onSave={handleSave} loading={saving} />
     </div>
   );

@@ -44,8 +44,10 @@ const StaffActivity = () => {
   if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Activity History</h1>
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Activity History</h1>
+      </div>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         {activities.length === 0 ? (
