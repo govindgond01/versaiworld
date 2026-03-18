@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   FiHome, FiTrendingUp, FiAward, FiBookOpen, FiBook, FiClock,
@@ -22,6 +22,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
   const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
+  const logoutRef = useRef(false);
 
   const getMenuData = () => {
     if (userRole === 'admin') return adminMenu;
@@ -92,8 +93,12 @@ const Sidebar = ({ isOpen, onClose }) => {
   const toggleMenu = (key) => setOpenMenus(prev => ({ ...prev, [key]: !prev[key] }));
 
   const handleLogout = () => {
+    // Prevent multiple rapid logout attempts
+    if (logoutRef.current) return;
+    logoutRef.current = true;
+
     localStorage.clear();
-    window.location.href = '/login';
+    window.location.replace('/login');
   };
 
   const handleNavClick = () => {

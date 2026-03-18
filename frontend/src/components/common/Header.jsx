@@ -28,6 +28,7 @@ const Header = ({ toggleSidebar }) => {
 
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
+  const logoutRef = useRef(false);
 
   useEffect(() => {
     fetchUserData();
@@ -129,19 +130,18 @@ const Header = ({ toggleSidebar }) => {
   };
 
   const handleLogout = async () => {
+    // Prevent multiple rapid logout attempts
+    if (logoutRef.current) return;
+    logoutRef.current = true;
+
     try {
       await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      localStorage.removeItem('user');
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userName');
-      localStorage.removeItem('userRole');
-      localStorage.removeItem('studentCategory');
       localStorage.clear();
       toast.success('Logged out successfully');
-      window.location.href = '/login';
+      window.location.replace('/login');
     }
   };
 
@@ -374,7 +374,7 @@ const Header = ({ toggleSidebar }) => {
               <div className='relative'>
                 <button
                   ref={buttonRef}
-                  onClick={(e) => {
+                  onClick={() => {
                     if (window.innerWidth >= 768) {
                       toggleDropdown();
                     } else {
