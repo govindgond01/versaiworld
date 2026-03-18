@@ -11,11 +11,11 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 globalThis.API_URL = API_URL;  
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </Provider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );
