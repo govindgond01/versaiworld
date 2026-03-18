@@ -255,6 +255,7 @@ const Header = ({ toggleSidebar }) => {
   const getProfileImageUrl = () => {
     if (!user?.profileImage) return null;
 
+    // Cloudinary image (object with secure_url)
     if (typeof user.profileImage === 'object' && user.profileImage !== null) {
       if (user.profileImage.secure_url) {
         return user.profileImage.secure_url;
@@ -264,10 +265,13 @@ const Header = ({ toggleSidebar }) => {
       }
     }
 
+    // Cloudinary image (string URL)
+    if (typeof user.profileImage === 'string' && user.profileImage.includes('cloudinary')) {
+      return user.profileImage;
+    }
+
+    // Legacy local image (string filename)
     if (typeof user.profileImage === 'string') {
-      if (user.profileImage.startsWith('http')) {
-        return user.profileImage;
-      }
       const baseURL = globalThis.API_URL?.replace('/api', '') || 'http://localhost:5000';
       return `${baseURL}/uploads/${user.profileImage}`;
     }
@@ -385,10 +389,10 @@ const Header = ({ toggleSidebar }) => {
                         className='h-10 w-10 rounded-full border-2 border-gray-200 object-cover'
                         src={getProfileImageUrl()}
                         alt={user?.name}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.style.display = 'none';
-                          const parent = e.target.parentNode;
+                        onError={(event) => {
+                          event.target.onerror = null;
+                          event.target.style.display = 'none';
+                          const parent = event.target.parentNode;
                           parent.innerHTML = `<div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-medium border-2 border-gray-200">${getInitials(user?.name)}</div>`;
                         }}
                       />
