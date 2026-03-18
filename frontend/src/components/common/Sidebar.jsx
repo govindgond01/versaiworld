@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { useState, useMemo, useRef, useCallback } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   FiHome, FiTrendingUp, FiAward, FiBookOpen, FiBook, FiClock,
   FiHeart, FiStar, FiUser, FiCreditCard, FiSearch, FiCalendar,
@@ -20,11 +20,14 @@ import libraryMenu from '../Data/libraryMenu';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
   const logoutRef = useRef(false);
+  const navigationRef = useRef(false);
 
-  const getMenuData = () => {
+  // Memoize menuData to prevent unnecessary recalculations and reference changes
+  const menuData = useMemo(() => {
     if (userRole === 'admin') return adminMenu;
     if (userRole === 'staff') return staffMenu;
     if (userRole === 'student') {
@@ -32,9 +35,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       if (studentCategory === 'library') return libraryMenu;
     }
     return [];
-  };
-
-  const menuData = getMenuData();
+  }, [userRole, studentCategory]);
 
   const iconMap = {
     dashboard: <MdDashboard className="w-5 h-5" />,
@@ -69,48 +70,62 @@ const Sidebar = ({ isOpen, onClose }) => {
     database: <HiDatabase className="w-5 h-5" />,
   };
 
-  const [openMenus, setOpenMenus] = useState({});
+  // Store user's manual toggle actions separately
+  const [userToggles, setUserToggles] = useState({});
 
-  // Compute which menus should be open based on current path
-  const initialOpenMenus = useMemo(() => {
-    const newOpen = {};
+  // Compute which menus should be open: combine user toggles + location-based auto-open
+  const openMenus = useMemo(() => {
+    const result = { ...userToggles };
+
     menuData.forEach(section => {
       section.items.forEach(item => {
         if (item.type === "dropdown" && item.subItems) {
-          const hasActive = item.subItems.some(sub => location.pathname === sub.path);
-          if (hasActive) newOpen[item.key] = true;
+          const isActive = item.subItems.some(sub => location.pathname === sub.path);
+          if (isActive) {
+            result[item.key] = true;
+          }
         }
       });
     });
-    return newOpen;
-  }, [location.pathname, menuData]);
 
-  // Sync state when path changes
-  useEffect(() => {
-    setOpenMenus(initialOpenMenus);
-  }, [initialOpenMenus]);
+    return result;
+  }, [location.pathname, menuData, userToggles]);
 
-  const toggleMenu = (key) => setOpenMenus(prev => ({ ...prev, [key]: !prev[key] }));
+  // Toggle menu - updates user's manual preference
+  const toggleMenu = useCallback((key) => {
+    setUserToggles(prev => {
+      const newVal = !prev[key];
+      return { ...prev, [key]: newVal };
+    });
+  }, []);
 
-  const handleLogout = () => {
-    // Prevent multiple rapid logout attempts
+  const handleLogout = useCallback(() => {
     if (logoutRef.current) return;
     logoutRef.current = true;
-
     localStorage.clear();
     window.location.replace('/login');
-  };
+  }, []);
 
-  const handleNavClick = () => {
+  // Debounced navigation to prevent rapid clicks
+  const debouncedNavigate = useCallback((path) => {
+    if (navigationRef.current) return;
+    navigationRef.current = true;
+    navigate(path);
+    setTimeout(() => {
+      navigationRef.current = false;
+    }, 300);
+  }, [navigate]);
+
+  const handleNavClick = useCallback(() => {
     if (window.innerWidth < 768 && onClose) onClose();
-  };
+  }, [onClose]);
 
-  const isAnySubItemActive = (item) => {
+  const isAnySubItemActive = useCallback((item) => {
     if (item.type === "dropdown" && item.subItems) {
       return item.subItems.some(sub => location.pathname === sub.path);
     }
     return false;
-  };
+  }, [location.pathname]);
 
   if (!menuData || menuData.length === 0) return null;
 
@@ -134,8 +149,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                       <div>
                         <button
                           onClick={() => toggleMenu(item.key)}
-                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200
-                            ${isAnySubItemActive(item) || openMenus[item.key] ? activeClass : 'text-gray-600 hover:bg-gray-100'}`}
+                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                            isAnySubItemActive(item) || openMenus[item.key] ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                          }`}
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-lg">{iconMap[item.icon]}</span>
@@ -150,8 +166,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                               to={sub.path}
                               onClick={handleNavClick}
                               className={({ isActive }) =>
-                                `block px-3 py-2 ml-6 rounded-lg text-sm transition-all duration-200
-                                ${isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'}`
+                                `block px-3 py-2 ml-6 rounded-lg text-sm transition-all duration-200 ${
+                                  isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                                }`
                               }
                             >
                               {sub.label}
@@ -162,10 +179,15 @@ const Sidebar = ({ isOpen, onClose }) => {
                     ) : (
                       <NavLink
                         to={item.path}
-                        onClick={handleNavClick}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          debouncedNavigate(item.path);
+                          handleNavClick();
+                        }}
                         className={({ isActive }) =>
-                          `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
-                          ${isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'}`
+                          `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                            isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                          }`
                         }
                       >
                         <span className="text-lg">{iconMap[item.icon]}</span>
@@ -207,12 +229,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   return (
     <>
       {isOpen && <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={onClose} />}
-      <div className={`
-        fixed top-0 left-0 h-screen w-[300px] bg-white z-50
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:hidden overflow-y-auto
-      `}>
+      <div className={`fixed top-0 left-0 h-screen w-[300px] bg-white z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden overflow-y-auto`}>
         <div className="px-4 pt-4 border-b border-gray-100 flex justify-between items-center">
           <img src={logoImg} className="h-8 w-auto" alt="logo" />
           <button onClick={onClose} className="p-2 hover:bg-gray-50 rounded-lg">
@@ -235,8 +252,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                       <div>
                         <button
                           onClick={() => toggleMenu(item.key)}
-                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200
-                            ${isAnySubItemActive(item) || openMenus[item.key] ? activeClass : 'text-gray-600 hover:bg-gray-100'}`}
+                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                            isAnySubItemActive(item) || openMenus[item.key] ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                          }`}
                         >
                           <div className="flex items-center gap-3">
                             <span className="text-lg">{iconMap[item.icon]}</span>
@@ -251,8 +269,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                               to={sub.path}
                               onClick={handleNavClick}
                               className={({ isActive }) =>
-                                `block px-3 py-2 ml-6 rounded-lg text-sm transition-all duration-200
-                                ${isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'}`
+                                `block px-3 py-2 ml-6 rounded-lg text-sm transition-all duration-200 ${
+                                  isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                                }`
                               }
                             >
                               {sub.label}
@@ -263,10 +282,15 @@ const Sidebar = ({ isOpen, onClose }) => {
                     ) : (
                       <NavLink
                         to={item.path}
-                        onClick={handleNavClick}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          debouncedNavigate(item.path);
+                          handleNavClick();
+                        }}
                         className={({ isActive }) =>
-                          `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
-                          ${isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'}`
+                          `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                            isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                          }`
                         }
                       >
                         <span className="text-lg">{iconMap[item.icon]}</span>

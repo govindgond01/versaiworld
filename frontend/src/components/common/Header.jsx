@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoImg from "../../assets/logo.webp";
 import {
@@ -29,6 +29,7 @@ const Header = ({ toggleSidebar }) => {
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
   const logoutRef = useRef(false);
+  const navigationRef = useRef(false);
 
   useEffect(() => {
     fetchUserData();
@@ -78,7 +79,6 @@ const Header = ({ toggleSidebar }) => {
       if (res.data.success) {
         const userData = res.data.user;
         setUser(userData);
-        // Store complete user object for persistence
         localStorage.setItem('user', JSON.stringify(userData));
         localStorage.setItem('userId', userData.id);
         localStorage.setItem('userName', userData.name);
@@ -89,7 +89,6 @@ const Header = ({ toggleSidebar }) => {
       }
     } catch (error) {
       console.error('Failed to fetch user:', error);
-      // If API fails, try to use cached user from localStorage
       const cachedUser = localStorage.getItem('user');
       if (cachedUser) {
         setUser(JSON.parse(cachedUser));
@@ -129,8 +128,7 @@ const Header = ({ toggleSidebar }) => {
     }
   };
 
-  const handleLogout = async () => {
-    // Prevent multiple rapid logout attempts
+  const handleLogout = useCallback(async () => {
     if (logoutRef.current) return;
     logoutRef.current = true;
 
@@ -143,77 +141,87 @@ const Header = ({ toggleSidebar }) => {
       toast.success('Logged out successfully');
       window.location.replace('/login');
     }
-  };
+  }, []);
 
-  const handleNotificationClick = () => {
+  // Debounced navigation to prevent rapid clicks
+  const debouncedNavigate = useCallback((path) => {
+    if (navigationRef.current) return;
+    navigationRef.current = true;
+    navigate(path);
+    setTimeout(() => {
+      navigationRef.current = false;
+    }, 300);
+  }, [navigate]);
+
+  const handleNotificationClick = useCallback(() => {
     const role = localStorage.getItem('role');
     if (role === 'admin') {
-      navigate('/admin-dashboard/notifications');
+      debouncedNavigate('/admin-dashboard/notifications');
     } else if (role === 'staff') {
-      navigate('/staff-dashboard/notifications');
+      debouncedNavigate('/staff-dashboard/notifications');
     } else {
       const category = localStorage.getItem('studentCategory');
-      navigate(`/${category}-dashboard/notifications`);
+      debouncedNavigate(`/${category}-dashboard/notifications`);
     }
-  };
+  }, [debouncedNavigate]);
 
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
+  const toggleDropdown = useCallback(() => {
+    setShowDropdown(prev => !prev);
+  }, []);
 
-  const handleProfileClick = () => {
+  const handleProfileClick = useCallback(() => {
     setShowDropdown(false);
     const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
     if (role === 'admin') {
-      navigate('/admin-dashboard/profile');
+      debouncedNavigate('/admin-dashboard/profile');
     } else if (role === 'staff') {
-      navigate('/staff-dashboard/profile');
+      debouncedNavigate('/staff-dashboard/profile');
     } else if (role === 'student') {
       if (category === 'academy') {
-        navigate('/academy-dashboard/profile');
+        debouncedNavigate('/academy-dashboard/profile');
       } else if (category === 'library') {
-        navigate('/library-dashboard/profile');
+        debouncedNavigate('/library-dashboard/profile');
       }
     }
-  };
+  }, [debouncedNavigate]);
 
-  const handleSettingsClick = () => {
+  const handleSettingsClick = useCallback(() => {
     setShowDropdown(false);
     const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
     if (role === 'admin') {
-      navigate('/admin-dashboard/settings');
+      debouncedNavigate('/admin-dashboard/settings');
     } else if (role === 'staff') {
-      navigate('/staff-dashboard/settings');
+      debouncedNavigate('/staff-dashboard/settings');
     } else if (role === 'student') {
       if (category === 'academy') {
-        navigate('/academy-dashboard/settings');
+        debouncedNavigate('/academy-dashboard/settings');
       } else if (category === 'library') {
-        navigate('/library-dashboard/settings');
+        debouncedNavigate('/library-dashboard/settings');
       }
     }
-  };
+  }, [debouncedNavigate]);
 
-  const handleHelpClick = () => {
+  const handleHelpClick = useCallback(() => {
     setShowDropdown(false);
     const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
     if (role === 'admin') {
-      navigate('/admin-dashboard/help');
+      debouncedNavigate('/admin-dashboard/help');
     } else if (role === 'staff') {
-      navigate('/staff-dashboard/help');
+      debouncedNavigate('/staff-dashboard/help');
     } else if (role === 'student') {
       if (category === 'academy') {
-        navigate('/academy-dashboard/help');
+        debouncedNavigate('/academy-dashboard/help');
       } else if (category === 'library') {
-        navigate('/library-dashboard/help');
+        debouncedNavigate('/library-dashboard/help');
       }
     }
-  };
+  }, [debouncedNavigate]);
 
   const getInitials = (name) => {
     if (!name) return 'U';
@@ -255,7 +263,6 @@ const Header = ({ toggleSidebar }) => {
   const getProfileImageUrl = () => {
     if (!user?.profileImage) return null;
 
-    // Cloudinary image (object with secure_url)
     if (typeof user.profileImage === 'object' && user.profileImage !== null) {
       if (user.profileImage.secure_url) {
         return user.profileImage.secure_url;
@@ -265,12 +272,10 @@ const Header = ({ toggleSidebar }) => {
       }
     }
 
-    // Cloudinary image (string URL)
     if (typeof user.profileImage === 'string' && user.profileImage.includes('cloudinary')) {
       return user.profileImage;
     }
 
-    // Legacy local image (string filename)
     if (typeof user.profileImage === 'string') {
       const baseURL = globalThis.API_URL?.replace('/api', '') || 'http://localhost:5000';
       return `${baseURL}/uploads/${user.profileImage}`;
@@ -280,15 +285,13 @@ const Header = ({ toggleSidebar }) => {
   };
 
   return (
-     <div className='bg-white fixed top-0 z-50 w-full shadow-sm px-4 md:px-6 lg:px-8'>
+    <div className='bg-white fixed top-0 z-50 w-full shadow-sm px-4 md:px-6 lg:px-8'>
       <div className='h-16'>
         <div className='flex h-full items-center'>
-          {/* Logo Section */}
           <div className='w-[300px] h-full border-r border-zinc-200 hidden md:flex items-center'>
             <img className='h-10' src={logoImg} alt="Logo" />
           </div>
 
-          {/* Mobile Left */}
           <div className='flex items-center md:hidden'>
             <button
               onClick={toggleSidebar}
@@ -300,7 +303,6 @@ const Header = ({ toggleSidebar }) => {
           </div>
 
           <div className='flex flex-1 items-center justify-end md:justify-between'>
-            {/* Desktop Search Bar */}
             <div className='flex-1 max-w-xl relative pl-2 hidden md:block'>
               <div className='relative'>
                 <FiSearch className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
@@ -320,7 +322,6 @@ const Header = ({ toggleSidebar }) => {
                 )}
               </div>
 
-              {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-96 overflow-y-auto z-50">
                   {searchResults.map((result, index) => (
@@ -328,7 +329,7 @@ const Header = ({ toggleSidebar }) => {
                       key={index}
                       className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0 flex items-center gap-3"
                       onClick={() => {
-                        navigate(result.url);
+                        debouncedNavigate(result.url);
                         setShowSearchResults(false);
                         setSearchTerm('');
                       }}
@@ -355,9 +356,7 @@ const Header = ({ toggleSidebar }) => {
               )}
             </div>
 
-            {/* Right Section */}
             <div className='flex items-center gap-3 ml-4'>
-              {/* Notification Bell */}
               <button
                 onClick={handleNotificationClick}
                 className='relative p-2 rounded-lg hover:bg-zinc-100 transition'
@@ -370,7 +369,6 @@ const Header = ({ toggleSidebar }) => {
                 )}
               </button>
 
-              {/* User Profile */}
               <div className='relative'>
                 <button
                   ref={buttonRef}
