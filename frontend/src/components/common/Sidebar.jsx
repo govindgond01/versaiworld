@@ -17,7 +17,6 @@ import adminMenu from '../Data/adminMenu';
 import academyMenu from '../Data/academyMenu';
 import staffMenu from '../Data/staffMenu';
 import libraryMenu from '../Data/libraryMenu';
-import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
@@ -25,7 +24,6 @@ const Sidebar = ({ isOpen, onClose }) => {
   const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
   const logoutRef = useRef(false);
-  const debouncedNavigate = useDebouncedNavigation(300);
 
   // Memoize menuData to prevent unnecessary recalculations and reference changes
   const menuData = useMemo(() => {
@@ -104,7 +102,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     if (logoutRef.current) return;
     logoutRef.current = true;
     localStorage.clear();
-    // Use React Router navigation instead of window.location
     navigate('/login', { replace: true });
   }, [navigate]);
 
@@ -169,13 +166,10 @@ const Sidebar = ({ isOpen, onClose }) => {
                         </div>
                       </div>
                     ) : (
+                      {/* FIX: Remove e.preventDefault() and manual navigation */}
                       <NavLink
                         to={item.path}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          debouncedNavigate(item.path);
-                          handleNavClick();
-                        }}
+                        onClick={handleNavClick}
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                             isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
@@ -272,13 +266,10 @@ const Sidebar = ({ isOpen, onClose }) => {
                         </div>
                       </div>
                     ) : (
+                      {/* FIX: Remove e.preventDefault() and manual navigation */}
                       <NavLink
                         to={item.path}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          debouncedNavigate(item.path);
-                          handleNavClick();
-                        }}
+                        onClick={handleNavClick}
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
                             isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
