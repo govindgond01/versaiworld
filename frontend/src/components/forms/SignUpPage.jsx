@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
 import Loader from '../common/Loader';
 
 const SignUpPage = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -95,7 +94,7 @@ const SignUpPage = () => {
                   Create Your Account
                 </h1>
                 <p className="text-gray-600 text-sm">
-                  Join Versai Academy Library
+                  Join VersaiWorld
                 </p>
               </div>
 

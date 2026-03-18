@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
 import Loader from '../common/Loader';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -101,7 +100,7 @@ const LoginPage = () => {
               <div className="flex flex-col justify-center h-[100%]">
                 <div className="text-center mb-4 md:mb-6">
                   <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                    Versai Academy Library
+                    VersaiWorld
                   </h1>
                   <p className="text-gray-600 text-sm">
                     Sign in to your Library CRM account
