@@ -32,6 +32,7 @@ import CategoryPayments from "./components/payments/CategoryPayments";
 import ExportData from "./pages/admin/ExportData";
 import HelpSupport from "./pages/admin/HelpSupport";
 import SystemSettings from "./pages/admin/SystemSettings";
+import AdminNotifications from "./pages/admin/AdminNotifications";
 
 // Academy student pages
 import AcademyDashboard from "./pages/academy/AcademyDashboard";
@@ -40,6 +41,7 @@ import AcademyActivity from "./pages/academy/AcademyActivity";
 import AcademyProfile from "./pages/academy/AcademyProfile";
 import AcademySettings from "./pages/academy/AcademySettings";
 import AcademyHelp from "./pages/academy/AcademyHelp";
+import AcademyNotifications from "./pages/academy/AcademyNotifications";
 
 // Library student pages
 import LibraryDashboard from "./pages/library/LibraryDashboard";
@@ -48,6 +50,7 @@ import LibraryActivity from "./pages/library/LibraryActivity";
 import LibraryProfile from "./pages/library/LibraryProfile";
 import LibrarySettings from "./pages/library/LibrarySettings";
 import LibraryHelp from "./pages/library/LibraryHelp";
+import LibraryNotifications from "./pages/library/LibraryNotifications";
 
 // Staff pages
 import StaffDashboard from "./pages/staff/StaffDashboard";
@@ -56,6 +59,7 @@ import StaffActivity from "./pages/staff/StaffActivity";
 import StaffProfile from "./pages/staff/StaffProfile";
 import StaffSettings from "./pages/staff/StaffSettings";
 import StaffHelp from "./pages/staff/StaffHelp";
+import StaffNotifications from "./pages/staff/StaffNotifications";
 
 // Attendance pages
 import AcademyAttendance from "./pages/academy/AcademyAttendance";
@@ -150,7 +154,7 @@ function App() {
         </Route>
         <Route path="profile" element={<Profile/>} />
         <Route path="settings" element={<SystemSettings />} />
-        <Route path="notifications" element={<div>admin notification</div>} />
+        <Route path="notifications" element={<AdminNotifications />} />
         <Route path="help" element={<HelpSupport />} />
 
         <Route path="super-admin">
@@ -168,7 +172,7 @@ function App() {
         <Route path="activity" element={<AcademyActivity />} />
         <Route path="profile" element={<AcademyProfile />} />
         <Route path="settings" element={<AcademySettings />} />
-        <Route path="notifications" element={<div>academy notifications</div>} />
+        <Route path="notifications" element={<AcademyNotifications />} />
         <Route path="help" element={<AcademyHelp />} />
       </Route>
 
@@ -180,7 +184,7 @@ function App() {
         <Route path="activity" element={<LibraryActivity />} />
         <Route path="profile" element={<LibraryProfile />} />
         <Route path="settings" element={<LibrarySettings />} />
-        <Route path="notifications" element={<div>library notifications</div>} /> 
+        <Route path="notifications" element={<LibraryNotifications />} /> 
         <Route path="help" element={<LibraryHelp />} />
       </Route>
 
@@ -192,7 +196,7 @@ function App() {
         <Route path="activity" element={<StaffActivity />} />
         <Route path="profile" element={<StaffProfile />} />
         <Route path="settings" element={<StaffSettings />} />
-        <Route path="notifications" element={<div>staff notifications</div>} />
+        <Route path="notifications" element={<StaffNotifications />} />
         <Route path="help" element={<StaffHelp />} />
       </Route>
     </Routes>
