@@ -15,12 +15,14 @@ const corsOptions = require("./config/corsConfig");
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
-const studentRoutes = require('./routes/studentRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const staffRoutes = require('./routes/staffRoutes');
+const studentRoutes = require('./routes/studentRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 const exportRoutes = require('./routes/exportRoutes');
-// const notificationRoutes = require('./routes/notificationRoutes');
 
 // 👇 YEH LINE IMPORT KARO (new)
 const uploadRoutes = require('./routes/uploadRoutes');
@@ -53,12 +55,14 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use('/api/staff', staffRoutes); 
-app.use('/api/admin/students', studentRoutes);
+app.use('/api/students', studentRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/settings', settingsRoutes);
 app.use('/api/export', exportRoutes);
-// app.use('/api/notifications', notificationRoutes);
 app.use('/api/search', require('./routes/searchRoutes'));
 
 // 👇 UPLOAD ROUTES - YEH LINE ADD KARO
