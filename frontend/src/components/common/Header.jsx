@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logoImg from "../../assets/logo.webp";
 import {
@@ -17,8 +17,13 @@ const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    try {
+      const savedUser = localStorage.getItem('user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      console.error('Error parsing user:', error);
+      return null;
+    }
   });
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -32,12 +37,83 @@ const Header = ({ toggleSidebar }) => {
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
   const logoutRef = useRef(false);
+  const searchTimeoutRef = useRef(null);
 
+  // ============ FIX 1: fetchUserData with useCallback ============
+  const fetchUserData = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const res = await api.get('/auth/me');
+      if (res.data?.success) {
+        const userData = res.data.user;
+        
+        // Only update if data actually changed
+        setUser(prevUser => {
+          if (JSON.stringify(prevUser) === JSON.stringify(userData)) {
+            return prevUser;
+          }
+          return userData;
+        });
+        
+        // Batch localStorage updates
+        const updates = {
+          user: JSON.stringify(userData),
+          userId: String(userData.id),
+          userName: userData.name,
+          userRole: userData.role
+        };
+        
+        if (userData.studentCategory) {
+          updates.studentCategory = userData.studentCategory;
+        }
+        
+        // Apply updates efficiently
+        Object.entries(updates).forEach(([key, value]) => {
+          if (localStorage.getItem(key) !== value) {
+            localStorage.setItem(key, value);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+      const cachedUser = localStorage.getItem('user');
+      if (cachedUser) {
+        try {
+          setUser(JSON.parse(cachedUser));
+        } catch (e) {
+          console.error('Error parsing cached user:', e);
+        }
+      }
+    }
+  }, []); // Empty dependency array - runs once
+
+  // ============ FIX 2: fetchNotificationCount with useCallback ============
+  const fetchNotificationCount = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const res = await api.get('/notifications/my?limit=1');
+      
+      setNotifications(prev => {
+        const newCount = res.data?.unreadCount || 0;
+        if (prev.unreadCount === newCount) return prev;
+        return { ...prev, unreadCount: newCount };
+      });
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    }
+  }, []); // Empty dependency array
+
+  // ============ FIX 3: useEffect with proper dependencies ============
   useEffect(() => {
     fetchUserData();
     fetchNotificationCount();
-  }, []);
+  }, [fetchUserData, fetchNotificationCount]); // Dependencies added
 
+  // Click outside handler - no changes needed
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -56,74 +132,27 @@ const Header = ({ toggleSidebar }) => {
     };
   }, []);
 
-  // Search with debounce
+  // ============ FIX 4: Search with proper cleanup ============
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchTerm.length > 1) {
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (searchTerm.length > 1) {
+      searchTimeoutRef.current = setTimeout(() => {
         handleSearch();
-      } else {
-        setSearchResults([]);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        return;
-      }
-
-      const res = await api.get('/auth/me');
-
-      if (res.data.success) {
-        const userData = res.data.user;
-        setUser(userData);
-        // Only update localStorage if data changed to prevent unnecessary storage events
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-        if (JSON.stringify(currentUser) !== JSON.stringify(userData)) {
-          localStorage.setItem('user', JSON.stringify(userData));
-        }
-        // Only update individual fields if changed
-        if (localStorage.getItem('userId') !== String(userData.id)) {
-          localStorage.setItem('userId', userData.id);
-        }
-        if (localStorage.getItem('userName') !== userData.name) {
-          localStorage.setItem('userName', userData.name);
-        }
-        if (localStorage.getItem('userRole') !== userData.role) {
-          localStorage.setItem('userRole', userData.role);
-        }
-        if (userData.studentCategory && localStorage.getItem('studentCategory') !== userData.studentCategory) {
-          localStorage.setItem('studentCategory', userData.studentCategory);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      const cachedUser = localStorage.getItem('user');
-      if (cachedUser) {
-        setUser(JSON.parse(cachedUser));
-      }
+      }, 500);
+    } else {
+      setSearchResults([]);
     }
-  };
 
-  const fetchNotificationCount = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const res = await api.get('/notifications/my?limit=1');
-
-      setNotifications(prev => ({
-        ...prev,
-        unreadCount: res.data.unreadCount || 0
-      }));
-    } catch (error) {
-      console.error('Failed to fetch notifications:', error);
-    }
-  };
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchTerm]); // Only searchTerm dependency
 
   const handleSearch = async () => {
     if (searchTerm.length < 2) return;
@@ -131,7 +160,6 @@ const Header = ({ toggleSidebar }) => {
     setSearchLoading(true);
     try {
       const res = await api.get(`/search?q=${searchTerm}`);
-
       setSearchResults(res.data.results || []);
       setShowSearchResults(true);
     } catch (error) {
@@ -152,96 +180,91 @@ const Header = ({ toggleSidebar }) => {
     } finally {
       localStorage.clear();
       toast.success('Logged out successfully');
-      // Use React Router navigation instead of window.location
       navigate('/login', { replace: true });
     }
   }, [navigate]);
 
-  const handleNotificationClick = useCallback(() => {
-    const role = localStorage.getItem('role');
-    if (role === 'admin') {
-      debouncedNavigate('/admin-dashboard/notifications');
-    } else if (role === 'staff') {
-      debouncedNavigate('/staff-dashboard/notifications');
-    } else {
-      const category = localStorage.getItem('studentCategory');
-      debouncedNavigate(`/${category}-dashboard/notifications`);
-    }
-  }, [debouncedNavigate]);
-
-  const toggleDropdown = useCallback(() => {
-    setShowDropdown(prev => !prev);
-  }, []);
-
-  const handleProfileClick = useCallback(() => {
-    setShowDropdown(false);
+  // ============ FIX 5: Remove useCallback wrappers from navigation handlers ============
+  const handleNotificationClick = () => {
     const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
-
-    if (role === 'admin') {
-      debouncedNavigate('/admin-dashboard/profile');
-    } else if (role === 'staff') {
-      debouncedNavigate('/staff-dashboard/profile');
-    } else if (role === 'student') {
-      if (category === 'academy') {
-        debouncedNavigate('/academy-dashboard/profile');
-      } else if (category === 'library') {
-        debouncedNavigate('/library-dashboard/profile');
-      }
-    }
-  }, [debouncedNavigate]);
-
-  const handleSettingsClick = useCallback(() => {
-    setShowDropdown(false);
-    const role = localStorage.getItem('role');
-    const category = localStorage.getItem('studentCategory');
-
-    if (role === 'admin') {
-      debouncedNavigate('/admin-dashboard/settings');
-    } else if (role === 'staff') {
-      debouncedNavigate('/staff-dashboard/settings');
-    } else if (role === 'student') {
-      if (category === 'academy') {
-        debouncedNavigate('/academy-dashboard/settings');
-      } else if (category === 'library') {
-        debouncedNavigate('/library-dashboard/settings');
-      }
-    }
-  }, [debouncedNavigate]);
-
-  const handleHelpClick = useCallback(() => {
-    setShowDropdown(false);
-    const role = localStorage.getItem('role');
-    const category = localStorage.getItem('studentCategory');
-
-    if (role === 'admin') {
-      debouncedNavigate('/admin-dashboard/help');
-    } else if (role === 'staff') {
-      debouncedNavigate('/staff-dashboard/help');
-    } else if (role === 'student') {
-      if (category === 'academy') {
-        debouncedNavigate('/academy-dashboard/help');
-      } else if (category === 'library') {
-        debouncedNavigate('/library-dashboard/help');
-      }
-    }
-  }, [debouncedNavigate]);
-
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    
+    let path = '/';
+    if (role === 'admin') path = '/admin-dashboard/notifications';
+    else if (role === 'staff') path = '/staff-dashboard/notifications';
+    else if (role === 'student' && category) path = `/${category}-dashboard/notifications`;
+    
+    debouncedNavigate(path);
   };
 
-  const getUserRoleDisplay = () => {
+  const toggleDropdown = () => {
+    setShowDropdown(prev => !prev);
+  };
+
+  const handleProfileClick = () => {
+    setShowDropdown(false);
+    const role = localStorage.getItem('role');
+    const category = localStorage.getItem('studentCategory');
+
+    let path = '/';
+    if (role === 'admin') path = '/admin-dashboard/profile';
+    else if (role === 'staff') path = '/staff-dashboard/profile';
+    else if (role === 'student') {
+      if (category === 'academy') path = '/academy-dashboard/profile';
+      else if (category === 'library') path = '/library-dashboard/profile';
+    }
+    
+    debouncedNavigate(path);
+  };
+
+  const handleSettingsClick = () => {
+    setShowDropdown(false);
+    const role = localStorage.getItem('role');
+    const category = localStorage.getItem('studentCategory');
+
+    let path = '/';
+    if (role === 'admin') path = '/admin-dashboard/settings';
+    else if (role === 'staff') path = '/staff-dashboard/settings';
+    else if (role === 'student') {
+      if (category === 'academy') path = '/academy-dashboard/settings';
+      else if (category === 'library') path = '/library-dashboard/settings';
+    }
+    
+    debouncedNavigate(path);
+  };
+
+  const handleHelpClick = () => {
+    setShowDropdown(false);
+    const role = localStorage.getItem('role');
+    const category = localStorage.getItem('studentCategory');
+
+    let path = '/';
+    if (role === 'admin') path = '/admin-dashboard/help';
+    else if (role === 'staff') path = '/staff-dashboard/help';
+    else if (role === 'student') {
+      if (category === 'academy') path = '/academy-dashboard/help';
+      else if (category === 'library') path = '/library-dashboard/help';
+    }
+    
+    debouncedNavigate(path);
+  };
+
+  // Memoized helper functions
+  const getInitials = useCallback((name) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  }, []);
+
+  const getUserRoleDisplay = useCallback(() => {
     if (!user) return '';
     if (user.role === 'admin') return 'Admin';
     if (user.role === 'staff') return user.staffRole || 'Staff';
     if (user.studentCategory === 'academy') return 'Academy Student';
     if (user.studentCategory === 'library') return 'Library Student';
     return 'User';
-  };
+  }, [user]);
 
-  const getSearchPlaceholder = () => {
+  const getSearchPlaceholder = useCallback(() => {
     const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
@@ -250,9 +273,9 @@ const Header = ({ toggleSidebar }) => {
     if (category === 'academy') return 'Search fees, courses, attendance...';
     if (category === 'library') return 'Search books, membership, fees...';
     return 'Search...';
-  };
+  }, []);
 
-  const getResultIcon = (type) => {
+  const getResultIcon = useCallback((type) => {
     switch(type) {
       case 'user': return <FiUsers className="w-4 h-4" />;
       case 'payment':
@@ -262,18 +285,14 @@ const Header = ({ toggleSidebar }) => {
       case 'book': return <FiBook className="w-4 h-4" />;
       default: return <FiSearch className="w-4 h-4" />;
     }
-  };
+  }, []);
 
-  const getProfileImageUrl = () => {
+  const getProfileImageUrl = useCallback(() => {
     if (!user?.profileImage) return null;
 
     if (typeof user.profileImage === 'object' && user.profileImage !== null) {
-      if (user.profileImage.secure_url) {
-        return user.profileImage.secure_url;
-      }
-      if (user.profileImage.url) {
-        return user.profileImage.url;
-      }
+      if (user.profileImage.secure_url) return user.profileImage.secure_url;
+      if (user.profileImage.url) return user.profileImage.url;
     }
 
     if (typeof user.profileImage === 'string' && user.profileImage.includes('cloudinary')) {
@@ -286,8 +305,9 @@ const Header = ({ toggleSidebar }) => {
     }
 
     return null;
-  };
+  }, [user]);
 
+  // Rest of the component remains EXACTLY the same - UI untouched
   return (
     <div className='bg-white fixed top-0 z-50 w-full shadow-sm px-4 md:px-6 lg:px-8'>
       <div className='h-16'>
