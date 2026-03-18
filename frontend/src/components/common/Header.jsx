@@ -10,9 +10,11 @@ import {
 import { toast } from 'react-hot-toast';
 import Loader from './Loader';
 import api from '../../services/api';
+import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 
 const Header = ({ toggleSidebar }) => {
-  const navigate = useNavigate();
+  const debouncedNavigate = useDebouncedNavigation(300);
+  
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('user');
     return savedUser ? JSON.parse(savedUser) : null;
@@ -29,7 +31,6 @@ const Header = ({ toggleSidebar }) => {
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
   const logoutRef = useRef(false);
-  const navigationRef = useRef(false);
 
   useEffect(() => {
     fetchUserData();
@@ -79,11 +80,22 @@ const Header = ({ toggleSidebar }) => {
       if (res.data.success) {
         const userData = res.data.user;
         setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('userId', userData.id);
-        localStorage.setItem('userName', userData.name);
-        localStorage.setItem('userRole', userData.role);
-        if (userData.studentCategory) {
+        // Only update localStorage if data changed to prevent unnecessary storage events
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (JSON.stringify(currentUser) !== JSON.stringify(userData)) {
+          localStorage.setItem('user', JSON.stringify(userData));
+        }
+        // Only update individual fields if changed
+        if (localStorage.getItem('userId') !== String(userData.id)) {
+          localStorage.setItem('userId', userData.id);
+        }
+        if (localStorage.getItem('userName') !== userData.name) {
+          localStorage.setItem('userName', userData.name);
+        }
+        if (localStorage.getItem('userRole') !== userData.role) {
+          localStorage.setItem('userRole', userData.role);
+        }
+        if (userData.studentCategory && localStorage.getItem('studentCategory') !== userData.studentCategory) {
           localStorage.setItem('studentCategory', userData.studentCategory);
         }
       }
@@ -142,16 +154,6 @@ const Header = ({ toggleSidebar }) => {
       window.location.replace('/login');
     }
   }, []);
-
-  // Debounced navigation to prevent rapid clicks
-  const debouncedNavigate = useCallback((path) => {
-    if (navigationRef.current) return;
-    navigationRef.current = true;
-    navigate(path);
-    setTimeout(() => {
-      navigationRef.current = false;
-    }, 300);
-  }, [navigate]);
 
   const handleNotificationClick = useCallback(() => {
     const role = localStorage.getItem('role');

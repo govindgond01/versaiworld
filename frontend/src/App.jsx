@@ -5,7 +5,7 @@ import SignUpPage from "./components/forms/SignUpPage";
 import ForgotPasswordPage from "./components/forms/ForgotPasswordPage";
 import ResetPasswordPage from "./components/forms/ResetPasswordPage";
 import MainLayout from "./components/layouts/MainLayout";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 // Admin Pages
 import AdminLibraryDashboard from "./pages/admin/AdminLibraryDashboard";
@@ -71,19 +71,46 @@ import AdminStaffAttendance from "./pages/admin/attendance/AdminStaffAttendance"
 import Profile from "./pages/admin/Profile";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("isLoggedIn") === "true");
-  const [role, setRole] = useState(localStorage.getItem("role") || '');
-  const [studentCategory, setStudentCategory] = useState(localStorage.getItem("studentCategory") || '');
+  const [isLoggedIn, setIsLoggedIn] = useState(() => 
+    localStorage.getItem("isLoggedIn") === "true"
+  );
+  const [role, setRole] = useState(() => 
+    localStorage.getItem("role") || ''
+  );
+  const [studentCategory, setStudentCategory] = useState(() => 
+    localStorage.getItem("studentCategory") || ''
+  );
+
+  // Debounce timer ref to prevent rapid state updates
+  const storageTimeoutRef = useRef(null);
 
   useEffect(() => {
     const checkAuth = () => {
-      setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
-      setRole(localStorage.getItem("role") || '');
-      setStudentCategory(localStorage.getItem("studentCategory") || '');
+      // Clear any pending timeout
+      if (storageTimeoutRef.current) {
+        clearTimeout(storageTimeoutRef.current);
+      }
+
+      // Debounce storage events to prevent rapid consecutive updates
+      storageTimeoutRef.current = setTimeout(() => {
+        const newIsLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+        const newRole = localStorage.getItem("role") || '';
+        const newStudentCategory = localStorage.getItem("studentCategory") || '';
+
+        // Only update if values actually changed
+        setIsLoggedIn(prev => prev === newIsLoggedIn ? prev : newIsLoggedIn);
+        setRole(prev => prev === newRole ? prev : newRole);
+        setStudentCategory(prev => prev === newStudentCategory ? prev : newStudentCategory);
+      }, 100); // 100ms debounce
     };
 
     window.addEventListener('storage', checkAuth);
-    return () => window.removeEventListener('storage', checkAuth);
+    return () => {
+      window.removeEventListener('storage', checkAuth);
+      if (storageTimeoutRef.current) {
+        clearTimeout(storageTimeoutRef.current);
+      }
+    };
   }, []);
 
   return (
