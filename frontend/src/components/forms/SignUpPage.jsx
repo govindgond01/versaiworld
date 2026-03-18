@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
 import Loader from '../common/Loader';
 
 const SignUpPage = () => {
-  const navigate = useNavigate();
+  const debouncedNavigate = useDebouncedNavigation(300);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -69,18 +70,18 @@ const SignUpPage = () => {
         localStorage.setItem("username", data.user.name);
         localStorage.setItem("userId", data.user.userId || data.user._id);
 
-        // Use React Router navigation instead of window.location
+        // Use debounced navigation
         if (userRole === "admin" || userRole === "superAdmin") {
-          navigate("/admin-dashboard", { replace: true });
+          debouncedNavigate("/admin-dashboard", { replace: true });
         } else if (userRole === "staff") {
-          navigate("/staff-dashboard", { replace: true });
+          debouncedNavigate("/staff-dashboard", { replace: true });
         } else if (userRole === "student") {
           if (data.user.studentCategory === "academy") {
-            navigate("/academy-dashboard", { replace: true });
+            debouncedNavigate("/academy-dashboard", { replace: true });
           } else if (data.user.studentCategory === "library") {
-            navigate("/library-dashboard", { replace: true });
+            debouncedNavigate("/library-dashboard", { replace: true });
           } else {
-            navigate("/login", { replace: true });
+            debouncedNavigate("/login", { replace: true });
           }
         }
       } else {

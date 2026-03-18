@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 import api from '../../services/api';
 import { toast } from 'react-hot-toast';
-import { 
-  FaArrowLeft, FaEnvelope, FaPhone, FaCalendarAlt, FaRupeeSign, 
-  FaUserTie, FaEdit, FaBuilding, FaMapMarkerAlt, FaCreditCard, 
+import {
+  FaArrowLeft, FaEnvelope, FaPhone, FaCalendarAlt, FaRupeeSign,
+  FaUserTie, FaEdit, FaBuilding, FaMapMarkerAlt, FaCreditCard,
   FaIdCard, FaMoneyBillWave, FaPrint, FaTrash, FaHistory,
   FaCheckCircle, FaTimesCircle, FaUserGraduate,
   FaHome, FaBriefcase, FaClock, FaChartLine
 } from 'react-icons/fa';
-import { 
+import {
   MdLocalLibrary, MdSchool, MdWarning, MdPayments, MdPerson,
   MdWork, MdLocationCity, MdAccountBalance
 } from 'react-icons/md';
-import { 
+import {
   BsPersonBadge, BsPersonWorkspace, BsCashStack, BsCalendar,
   BsEnvelope, BsTelephone, BsBank2, BsBuilding, BsGraphUp
 } from 'react-icons/bs';
-import { 
+import {
   GiTeacher, GiPayMoney, GiExpense, GiReceiveMoney
 } from 'react-icons/gi';
 import Loader from '../common/Loader';
 
 const ViewStaff = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const debouncedNavigate = useDebouncedNavigation(300);
   const [staff, setStaff] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('personal');
@@ -37,10 +38,10 @@ const ViewStaff = () => {
       const res = await api.get(`/staff/${id}`);
 
       if (res.data.success) setStaff(res.data.staff);
-      else { toast.error('Staff not found'); navigate('/admin-dashboard/staff'); }
-    } catch (error) {
+      else { toast.error('Staff not found'); debouncedNavigate('/admin-dashboard/staff'); }
+    } catch {
       toast.error('Failed to load staff');
-      navigate('/admin-dashboard/staff');
+      debouncedNavigate('/admin-dashboard/staff');
     } finally { setLoading(false); }
   };
 
@@ -49,8 +50,8 @@ const ViewStaff = () => {
     try {
       await api.delete(`/staff/${id}`);
       toast.success('Staff deleted');
-      navigate('/admin-dashboard/staff');
-    } catch (error) { toast.error('Delete failed'); }
+      debouncedNavigate('/admin-dashboard/staff');
+    } catch { toast.error('Delete failed'); }
   };
 
   const getRoleConfig = (role) => {
@@ -99,7 +100,7 @@ const ViewStaff = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-start gap-3">
-          <button onClick={() => navigate('/admin-dashboard/staff')} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+          <button onClick={() => debouncedNavigate('/admin-dashboard/staff')} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <FaArrowLeft className="w-4 h-4 text-gray-600" />
           </button>
           <div className="p-2 md:p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
@@ -113,7 +114,7 @@ const ViewStaff = () => {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => navigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+          <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             <FaEdit className="w-4 h-4" /> Edit
           </button>
           <button onClick={() => window.print()} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700">
@@ -237,7 +238,7 @@ const ViewStaff = () => {
             <div className="text-center py-6 md:py-8">
               <FaCreditCard className="w-10 h-10 md:w-12 md:h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500">No bank details</p>
-              <button onClick={() => navigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="mt-3 text-sm text-purple-600 hover:text-purple-700">
+              <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="mt-3 text-sm text-purple-600 hover:text-purple-700">
                 Add Details →
               </button>
             </div>

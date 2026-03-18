@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 import api from '../../services/api';
 import {
   FaEye, FaEdit, FaTrash, FaSearch, FaCheckCircle, FaTimesCircle,
@@ -20,7 +20,7 @@ import {
 } from 'react-icons/gi';
 
 const AllStaff = () => {
-  const navigate = useNavigate();
+  const debouncedNavigate = useDebouncedNavigation(300);
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,7 +47,7 @@ const AllStaff = () => {
         setTotalStaff(res.data.total || 0);
         setTotalPages(res.data.pages || 1);
       }
-    } catch (error) { alert('Failed to fetch staff'); }
+    } catch { alert('Failed to fetch staff'); }
     finally { setLoading(false); }
   };
 
@@ -63,7 +63,7 @@ const AllStaff = () => {
       await api.delete(`/staff/${id}`);
       alert('Deleted!');
       fetchStaff();
-    } catch (error) { alert('Delete failed'); }
+    } catch { alert('Delete failed'); }
   };
 
   const handleExport = async () => {
@@ -79,7 +79,7 @@ const AllStaff = () => {
         a.download = `staff_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
       }
-    } catch (error) { alert('Export failed'); }
+    } catch { alert('Export failed'); }
   };
 
   const getRoleConfig = (role) => {
@@ -110,13 +110,13 @@ const AllStaff = () => {
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button onClick={() => navigate('/admin-dashboard/staff/add')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+          <button onClick={() => debouncedNavigate('/admin-dashboard/staff/add')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             <FaPlus className="w-4 h-4" /> Add
           </button>
           <button onClick={handleExport} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
             <FaDownload className="w-4 h-4" /> Export
           </button>
-          <button onClick={() => navigate('/admin-dashboard/staff-dashboard')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700">
+          <button onClick={() => debouncedNavigate('/admin-dashboard/staff-dashboard')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700">
             <FaChartLine className="w-4 h-4" /> Dashboard
           </button>
         </div>
@@ -223,8 +223,8 @@ const AllStaff = () => {
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2">
-                            <button onClick={() => navigate(`/admin-dashboard/staff/${s._id}`)} className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><FaEye className="w-4 h-4" /></button>
-                            <button onClick={() => navigate(`/admin-dashboard/staff/edit/${s._id}`)} className="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100"><FaEdit className="w-4 h-4" /></button>
+                            <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/${s._id}`)} className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><FaEye className="w-4 h-4" /></button>
+                            <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${s._id}`)} className="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100"><FaEdit className="w-4 h-4" /></button>
                             <button onClick={() => handleDelete(s._id, s.name)} className="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100"><FaTrash className="w-4 h-4" /></button>
                           </div>
                         </td>
@@ -283,8 +283,8 @@ const AllStaff = () => {
                         {role.icon} {role.name}
                       </span>
                       <div className="flex gap-2">
-                        <button onClick={() => navigate(`/admin-dashboard/staff/${s._id}`)} className="p-2 bg-blue-50 text-blue-600 rounded-lg"><FaEye className="w-4 h-4" /></button>
-                        <button onClick={() => navigate(`/admin-dashboard/staff/edit/${s._id}`)} className="p-2 bg-green-50 text-green-600 rounded-lg"><FaEdit className="w-4 h-4" /></button>
+                        <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/${s._id}`)} className="p-2 bg-blue-50 text-blue-600 rounded-lg"><FaEye className="w-4 h-4" /></button>
+                        <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${s._id}`)} className="p-2 bg-green-50 text-green-600 rounded-lg"><FaEdit className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete(s._id, s.name)} className="p-2 bg-red-50 text-red-600 rounded-lg"><FaTrash className="w-4 h-4" /></button>
                       </div>
                     </div>

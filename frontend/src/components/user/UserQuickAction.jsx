@@ -1,8 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 
 const UserQuickAction = ({ icon: Icon, label, path, color = 'blue' }) => {
-  const navigate = useNavigate();
+  const debouncedNavigate = useDebouncedNavigation(300);
   
   const colorClasses = {
     blue: 'bg-blue-50 hover:bg-blue-100 text-blue-600',
@@ -13,7 +13,7 @@ const UserQuickAction = ({ icon: Icon, label, path, color = 'blue' }) => {
   };
 
   return (
-    <button onClick={() => navigate(path)} className={`p-4 rounded-lg transition-all flex flex-col items-center gap-2 ${colorClasses[color]}`}>
+    <button onClick={() => debouncedNavigate(path)} className={`p-4 rounded-lg transition-all flex flex-col items-center gap-2 ${colorClasses[color]}`}>
       <Icon className="w-5 h-5" />
       <span className="text-sm font-medium">{label}</span>
     </button>

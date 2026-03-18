@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 import { AiOutlineLock, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { FaCheckCircle } from 'react-icons/fa';
 import Loader from '../common/Loader';
 
 const ResetPasswordPage = () => {
   const { token } = useParams();
-  const navigate = useNavigate();
+  const debouncedNavigate = useDebouncedNavigation(300);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -57,7 +58,7 @@ const ResetPasswordPage = () => {
         setSuccess(true);
         setMessage(data.message);
         setTimeout(() => {
-          navigate('/login');
+          debouncedNavigate('/login');
         }, 3000);
       } else {
         setError(data.message || 'Failed to reset password');
