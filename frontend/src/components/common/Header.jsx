@@ -139,9 +139,9 @@ const Header = ({ toggleSidebar }) => {
       localStorage.removeItem('userName');
       localStorage.removeItem('userRole');
       localStorage.removeItem('studentCategory');
-      localStorage.removeItem('token');
+      localStorage.clear();
       toast.success('Logged out successfully');
-      navigate('/login');
+      window.location.href = '/login';
     }
   };
 

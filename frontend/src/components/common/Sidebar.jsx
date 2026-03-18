@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   FiHome, FiTrendingUp, FiAward, FiBookOpen, FiBook, FiClock,
   FiHeart, FiStar, FiUser, FiCreditCard, FiSearch, FiCalendar,
@@ -19,7 +19,6 @@ import staffMenu from '../Data/staffMenu';
 import libraryMenu from '../Data/libraryMenu';
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
@@ -71,7 +70,8 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const [openMenus, setOpenMenus] = useState({});
 
-  useEffect(() => {
+  // Compute which menus should be open based on current path
+  const initialOpenMenus = useMemo(() => {
     const newOpen = {};
     menuData.forEach(section => {
       section.items.forEach(item => {
@@ -81,14 +81,19 @@ const Sidebar = ({ isOpen, onClose }) => {
         }
       });
     });
-    setOpenMenus(newOpen);
+    return newOpen;
   }, [location.pathname, menuData]);
+
+  // Sync state when path changes
+  useEffect(() => {
+    setOpenMenus(initialOpenMenus);
+  }, [initialOpenMenus]);
 
   const toggleMenu = (key) => setOpenMenus(prev => ({ ...prev, [key]: !prev[key] }));
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate('/login');
+    window.location.href = '/login';
   };
 
   const handleNavClick = () => {
@@ -104,9 +109,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   if (!menuData || menuData.length === 0) return null;
 
-  // ✅ Sirf active tab ke liye gradient
   const activeClass = "gradient-primary text-white";
-  // ❌ Hover class hata di - normal rahega
 
   if (isOpen === undefined) {
     return (
