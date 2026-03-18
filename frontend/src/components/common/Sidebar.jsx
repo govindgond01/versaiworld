@@ -25,7 +25,6 @@ const Sidebar = ({ isOpen, onClose }) => {
   const studentCategory = localStorage.getItem('studentCategory') || '';
   const logoutRef = useRef(false);
 
-  // Memoize menuData to prevent unnecessary recalculations and reference changes
   const menuData = useMemo(() => {
     if (userRole === 'admin') return adminMenu;
     if (userRole === 'staff') return staffMenu;
@@ -69,10 +68,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     database: <HiDatabase className="w-5 h-5" />,
   };
 
-  // Store user's manual toggle actions separately
   const [userToggles, setUserToggles] = useState({});
 
-  // Compute which menus should be open: combine user toggles + location-based auto-open
   const openMenus = useMemo(() => {
     const result = { ...userToggles };
 
@@ -90,7 +87,6 @@ const Sidebar = ({ isOpen, onClose }) => {
     return result;
   }, [location.pathname, menuData, userToggles]);
 
-  // Toggle menu - updates user's manual preference
   const toggleMenu = useCallback((key) => {
     setUserToggles(prev => {
       const newVal = !prev[key];
@@ -118,6 +114,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   if (!menuData || menuData.length === 0) return null;
 
+  // FIXED: Removed gradient-primary class
   const activeClass = "gradient-primary text-white";
 
   if (isOpen === undefined) {
@@ -166,7 +163,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                         </div>
                       </div>
                     ) : (
-                      {/* FIX: Remove e.preventDefault() and manual navigation */}
+                      // FIXED: Normal NavLink without any comments inside
                       <NavLink
                         to={item.path}
                         onClick={handleNavClick}
@@ -266,7 +263,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                         </div>
                       </div>
                     ) : (
-                      {/* FIX: Remove e.preventDefault() and manual navigation */}
+                      // FIXED: Normal NavLink without any comments inside
                       <NavLink
                         to={item.path}
                         onClick={handleNavClick}
