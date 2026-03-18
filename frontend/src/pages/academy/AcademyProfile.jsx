@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { GiTeacher } from 'react-icons/gi';
+import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 import Loader from '../../components/common/Loader';
-import UserProfileInfo from '../../components/user/UserProfileInfo';
 import ProfileImageUpload from '../../components/common/ProfileImageUpload';
-import { getImageUrl } from '../../utils/imageUtils';
-import api from '../../services/api';
 
 const AcademyProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -14,22 +12,19 @@ const AcademyProfile = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
 
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const userId = user?.id || user?._id || '';
-
-  useEffect(() => {
-    fetchProfile();
+  useEffect(() => { 
+    fetchProfile(); 
   }, []);
 
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      
-      const res = await api.get(`/admin/students/${userId}`);
+      const res = await api.get('/profile');
 
       if (res.data.success) {
-        setUserData(res.data.student);
-        setFormData(res.data.student);
+        const profileUser = res.data.user;
+        setUserData(profileUser);
+        setFormData(profileUser);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -55,10 +50,24 @@ const AcademyProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await api.put(`/admin/students/${userId}`, formData);
+      // Only send the fields that can be updated via settings/profile
+      const updateData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        fatherName: formData.fatherName,
+        dob: formData.dob,
+        address: formData.address
+      };
+
+      const res = await api.put('/settings/profile', updateData);
 
       if (res.data.success) {
-        setUserData(res.data.student);
+        // Merge the updated fields back into userData
+        setUserData(prev => ({
+          ...prev,
+          ...res.data.user
+        }));
         setEditMode(false);
         toast.success('Profile updated successfully');
       }
@@ -70,10 +79,8 @@ const AcademyProfile = () => {
 
   if (loading) return <Loader type="spinner" size="large" />;
 
-  const imageUrl = getImageUrl(userData);
-
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
         <button
@@ -86,8 +93,8 @@ const AcademyProfile = () => {
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         <div className="flex flex-col items-center mb-8">
-          <ProfileImageUpload
-            user={userData}
+          <ProfileImageUpload 
+            user={userData} 
             onImageUpdate={handleImageUpdate}
             size="lg"
           />
@@ -183,7 +190,7 @@ const AcademyProfile = () => {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold text-gray-700 border-b pb-2">Academic Information</h3>
+            <h3 className="font-semibold text-gray-700 border-b pb-2">Academy Information</h3>
             
             <div>
               <label className="text-sm text-gray-500">Student ID</label>
@@ -192,49 +199,18 @@ const AcademyProfile = () => {
 
             <div>
               <label className="text-sm text-gray-500">Course</label>
-              {editMode ? (
-                <input
-                  type="text"
-                  name="course"
-                  value={formData.course || ''}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
-                />
-              ) : (
-                <p className="font-medium">{userData?.course || 'Not assigned'}</p>
-              )}
+              <p className="font-medium">{userData?.course || 'N/A'}</p>
             </div>
 
             <div>
-              <label className="text-sm text-gray-500">Membership Duration</label>
-              {editMode ? (
-                <select
-                  name="membershipDuration"
-                  value={formData.membershipDuration || '1_month'}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
-                >
-                  <option value="1_month">1 Month</option>
-                  <option value="3_months">3 Months</option>
-                  <option value="6_months">6 Months</option>
-                  <option value="1_year">1 Year</option>
-                </select>
-              ) : (
-                <p className="font-medium capitalize">
-                  {userData?.membershipDuration?.replace('_', ' ') || 'N/A'}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="text-sm text-gray-500">Admission Date</label>
+              <label className="text-sm text-gray-500">Join Date</label>
               <p className="font-medium">
                 {userData?.admissionDate ? new Date(userData.admissionDate).toLocaleDateString() : 'N/A'}
               </p>
             </div>
 
             <div>
-              <label className="text-sm text-gray-500">Expiry Date</label>
+              <label className="text-sm text-gray-500">Membership Expiry</label>
               <p className="font-medium">
                 {userData?.expiryDate ? new Date(userData.expiryDate).toLocaleDateString() : 'N/A'}
               </p>

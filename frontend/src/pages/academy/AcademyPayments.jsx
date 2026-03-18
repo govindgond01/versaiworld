@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaRupeeSign, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { GiTeacher } from 'react-icons/gi';
+import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 import UserStatsCard from '../../components/user/UserStatsCard';
 import Loader from '../../components/common/Loader';
 import UserEmptyState from '../../components/user/UserEmptyState';
 import UserPaymentCard from '../../components/user/UserPaymentCard';
-import api from '../../services/api';
 
 const AcademyPayments = () => {
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ const AcademyPayments = () => {
     try {
       setLoading(true);
       
-      const userRes = await api.get(`/admin/students/${userId}`);
+      const userRes = await api.get(`admin/students/${userId}`);
 
       if (userRes.data.success) {
         const data = userRes.data.student;
@@ -55,9 +55,9 @@ const AcademyPayments = () => {
   if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">My Payments</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Academy Payments</h1>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">

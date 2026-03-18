@@ -4,8 +4,8 @@ import api from '../../services/api';
 import { toast } from 'react-hot-toast';
 
 import Loader from '../../components/common/Loader';
+import UserProfileInfo from '../../components/user/UserProfileInfo';
 import ProfileImageUpload from '../../components/common/ProfileImageUpload';
-import { getImageUrl } from '../../utils/imageUtils';
 
 const StaffProfile = () => {
   const [loading, setLoading] = useState(true);
@@ -69,7 +69,7 @@ const StaffProfile = () => {
   if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
         <button
@@ -91,7 +91,7 @@ const StaffProfile = () => {
           <div className="mt-4 flex items-center gap-2">
             <BsPersonWorkspace className="text-purple-600" />
             <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
-              {userData?.staffRole || 'Staff Member'}
+              Staff Member
             </span>
           </div>
         </div>
@@ -144,18 +144,9 @@ const StaffProfile = () => {
                 <p className="font-medium">{userData?.phone || 'Not provided'}</p>
               )}
             </div>
-          </div>
-
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-700 border-b pb-2">Work Information</h3>
-            
-            <div>
-              <label className="text-sm text-gray-500">Staff ID</label>
-              <p className="font-medium">{userData?.staffId || userData?.userId}</p>
-            </div>
 
             <div>
-              <label className="text-sm text-gray-500">Role</label>
+              <label className="text-sm text-gray-500">Staff Role</label>
               {editMode ? (
                 <select
                   name="staffRole"
@@ -165,28 +156,21 @@ const StaffProfile = () => {
                 >
                   <option value="teacher">Teacher</option>
                   <option value="librarian">Librarian</option>
-                  <option value="accountant">Accountant</option>
-                  <option value="admin">Admin</option>
+                  <option value="admin_staff">Admin Staff</option>
                   <option value="other">Other</option>
                 </select>
               ) : (
-                <p className="font-medium capitalize">{userData?.staffRole}</p>
+                <p className="font-medium capitalize">{userData?.staffRole || 'N/A'}</p>
               )}
             </div>
+          </div>
 
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-700 border-b pb-2">Employment Details</h3>
+            
             <div>
-              <label className="text-sm text-gray-500">Department</label>
-              {editMode ? (
-                <input
-                  type="text"
-                  name="department"
-                  value={formData.department || ''}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded mt-1"
-                />
-              ) : (
-                <p className="font-medium">{userData?.department || 'General'}</p>
-              )}
+              <label className="text-sm text-gray-500">Staff ID</label>
+              <p className="font-medium">{userData?.staffId || userData?.userId}</p>
             </div>
 
             <div>
@@ -198,7 +182,18 @@ const StaffProfile = () => {
 
             <div>
               <label className="text-sm text-gray-500">Salary</label>
-              <p className="font-medium">₹{userData?.salary || 0}/month</p>
+              <p className="font-medium">₹{userData?.fees?.salary || 0}</p>
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-500">Status</label>
+              <p className="font-medium">
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  userData?.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                }`}>
+                  {userData?.status || 'N/A'}
+                </span>
+              </p>
             </div>
           </div>
         </div>

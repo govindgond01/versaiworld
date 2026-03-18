@@ -1,19 +1,19 @@
 import React from 'react';
-import { FaBook, FaVideo, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { BsPersonWorkspace } from 'react-icons/bs';
+import { FaBook, FaVideo, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 import UserHelpCard from '../../components/user/UserHelpCard';
 
 const StaffHelp = () => {
   const helpItems = [
-    { icon: FaBook, title: 'Staff Handbook', description: 'Learn about staff policies', action: 'Read Guide' },
-    { icon: FaVideo, title: 'Training Videos', description: 'Watch training tutorials', action: 'Watch Now' },
-    { icon: FaEnvelope, title: 'HR Support', description: 'hr@company.com', action: 'Send Email' },
-    { icon: FaPhone, title: 'IT Support', description: '+91 9876543210', action: 'Call Now' }
+    { icon: FaBook, title: 'Staff Guide', description: 'Learn how to use the staff portal', action: 'Read Guide' },
+    { icon: FaVideo, title: 'Video Tutorials', description: 'Watch tutorials', action: 'Watch Now' },
+    { icon: FaEnvelope, title: 'Email Support', description: 'Get help via email', action: 'Send Email' },
+    { icon: FaPhone, title: 'Contact Admin', description: 'Call the administrator', action: 'Call Now' }
   ];
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Help & Support</h1>
       </div>
