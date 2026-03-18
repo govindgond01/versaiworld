@@ -13,7 +13,10 @@ import api from '../../services/api';
 
 const Header = ({ toggleSidebar }) => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -72,16 +75,24 @@ const Header = ({ toggleSidebar }) => {
       const res = await api.get('/auth/me');
 
       if (res.data.success) {
-        setUser(res.data.user);
-        localStorage.setItem('userId', res.data.user.id);
-        localStorage.setItem('userName', res.data.user.name);
-        localStorage.setItem('userRole', res.data.user.role);
-        if (res.data.user.studentCategory) {
-          localStorage.setItem('studentCategory', res.data.user.studentCategory);
+        const userData = res.data.user;
+        setUser(userData);
+        // Store complete user object for persistence
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('userId', userData.id);
+        localStorage.setItem('userName', userData.name);
+        localStorage.setItem('userRole', userData.role);
+        if (userData.studentCategory) {
+          localStorage.setItem('studentCategory', userData.studentCategory);
         }
       }
     } catch (error) {
       console.error('Failed to fetch user:', error);
+      // If API fails, try to use cached user from localStorage
+      const cachedUser = localStorage.getItem('user');
+      if (cachedUser) {
+        setUser(JSON.parse(cachedUser));
+      }
     }
   };
 
@@ -123,7 +134,12 @@ const Header = ({ toggleSidebar }) => {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      localStorage.clear();
+      localStorage.removeItem('user');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('studentCategory');
+      localStorage.removeItem('token');
       toast.success('Logged out successfully');
       navigate('/login');
     }
@@ -369,11 +385,11 @@ const Header = ({ toggleSidebar }) => {
                         className='h-10 w-10 rounded-full border-2 border-gray-200 object-cover'
                         src={getProfileImageUrl()}
                         alt={user?.name}
-                        onError={() => {
-                          const target = event.target;
-                          target.onerror = null;
-                          target.style.display = 'none';
-                          target.parentNode.innerHTML = `<div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-medium border-2 border-gray-200">${getInitials(user?.name)}</div>`;
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.style.display = 'none';
+                          const parent = e.target.parentNode;
+                          parent.innerHTML = `<div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-medium border-2 border-gray-200">${getInitials(user?.name)}</div>`;
                         }}
                       />
                     ) : (
