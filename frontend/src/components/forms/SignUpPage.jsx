@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
 import Loader from '../common/Loader';
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -67,17 +69,18 @@ const SignUpPage = () => {
         localStorage.setItem("username", data.user.name);
         localStorage.setItem("userId", data.user.userId || data.user._id);
 
+        // Use React Router navigation instead of window.location
         if (userRole === "admin" || userRole === "superAdmin") {
-          window.location.href = "/admin-dashboard";
+          navigate("/admin-dashboard", { replace: true });
         } else if (userRole === "staff") {
-          window.location.href = "/staff-dashboard";
+          navigate("/staff-dashboard", { replace: true });
         } else if (userRole === "student") {
           if (data.user.studentCategory === "academy") {
-            window.location.href = "/academy-dashboard";
+            navigate("/academy-dashboard", { replace: true });
           } else if (data.user.studentCategory === "library") {
-            window.location.href = "/library-dashboard";
+            navigate("/library-dashboard", { replace: true });
           } else {
-            window.location.href = "/login";
+            navigate("/login", { replace: true });
           }
         }
       } else {
@@ -297,10 +300,11 @@ const SignUpPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-2.5 px-4 rounded-lg font-medium text-white text-sm transition-all duration-300 ${loading
-                    ? 'bg-blue-400 cursor-not-allowed'
-                    : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
-                    }`}
+                  className={`w-full py-2.5 px-4 rounded-lg font-medium text-white text-sm transition-all duration-300 ${
+                    loading
+                      ? 'bg-blue-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2'
+                  }`}
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">

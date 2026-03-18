@@ -14,6 +14,7 @@ import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 
 const Header = ({ toggleSidebar }) => {
   const debouncedNavigate = useDebouncedNavigation(300);
+  const navigate = useNavigate();
   
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('user');
@@ -151,9 +152,10 @@ const Header = ({ toggleSidebar }) => {
     } finally {
       localStorage.clear();
       toast.success('Logged out successfully');
-      window.location.replace('/login');
+      // Use React Router navigation instead of window.location
+      navigate('/login', { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
   const handleNotificationClick = useCallback(() => {
     const role = localStorage.getItem('role');

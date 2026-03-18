@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
 import Loader from '../common/Loader';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -43,7 +44,7 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Include cookies in the request
+        credentials: 'include',
         body: JSON.stringify({
           email: formData.email,
           password: formData.password
@@ -53,7 +54,6 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Store user data in localStorage (tokens are now in httpOnly cookies)
         localStorage.setItem("user", JSON.stringify(data.user));
         
         const userRole = data.user.userType || data.user.role;
@@ -67,17 +67,18 @@ const LoginPage = () => {
         localStorage.setItem("username", data.user.name);
         localStorage.setItem("userId", data.user.userId || data.user._id);
 
+        // Use React Router navigation instead of window.location
         if (userRole === "admin" || userRole === "superAdmin") {
-          window.location.href = "/admin-dashboard";
+          navigate("/admin-dashboard", { replace: true });
         } else if (userRole === "staff") {
-          window.location.href = "/staff-dashboard";
+          navigate("/staff-dashboard", { replace: true });
         } else if (userRole === "student") {
           if (data.user.studentCategory === "academy") {
-            window.location.href = "/academy-dashboard";
+            navigate("/academy-dashboard", { replace: true });
           } else if (data.user.studentCategory === "library") {
-            window.location.href = "/library-dashboard";
+            navigate("/library-dashboard", { replace: true });
           } else {
-            window.location.href = "/login";
+            navigate("/login", { replace: true });
           }
         }
       } else {

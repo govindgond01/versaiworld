@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaRupeeSign } from 'react-icons/fa';
 import { FiUsers, FiUserCheck, FiAlertCircle, FiTrendingUp, FiClock, FiCreditCard, FiRefreshCw, FiCalendar, FiArrowRight } from 'react-icons/fi';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -7,6 +8,7 @@ import api from '../../services/api';
 import Loader from '../../components/common/Loader';
 
 const AdminLibraryDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     stats: {},
@@ -253,7 +255,7 @@ const AdminLibraryDashboard = () => {
                 <p className="text-sm text-gray-500 mt-1">Latest library enrollments</p>
               </div>
               <button
-                onClick={() => window.location.href = '/admin/students?studentCategory=library'}
+                onClick={() => navigate('/admin-dashboard/students?studentCategory=library')}
                 className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm"
               >
                 View All →

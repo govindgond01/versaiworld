@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   FiHome, FiTrendingUp, FiAward, FiBookOpen, FiBook, FiClock,
   FiHeart, FiStar, FiUser, FiCreditCard, FiSearch, FiCalendar,
@@ -21,6 +21,7 @@ import useDebouncedNavigation from '../../hooks/useDebouncedNavigation';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const userRole = localStorage.getItem('role') || 'user';
   const studentCategory = localStorage.getItem('studentCategory') || '';
   const logoutRef = useRef(false);
@@ -103,8 +104,9 @@ const Sidebar = ({ isOpen, onClose }) => {
     if (logoutRef.current) return;
     logoutRef.current = true;
     localStorage.clear();
-    window.location.replace('/login');
-  }, []);
+    // Use React Router navigation instead of window.location
+    navigate('/login', { replace: true });
+  }, [navigate]);
 
   const handleNavClick = useCallback(() => {
     if (window.innerWidth < 768 && onClose) onClose();
