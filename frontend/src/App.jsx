@@ -71,9 +71,6 @@ import AdminStaffAttendance from "./pages/admin/attendance/AdminStaffAttendance"
 import Profile from "./pages/admin/Profile";
 
 function App() {
-  console.log('🔥 App loaded');
-console.log('isLoggedIn:', localStorage.getItem('isLoggedIn'));
-console.log('role:', localStorage.getItem('role'));
   const [isLoggedIn, setIsLoggedIn] = useState(() => 
     localStorage.getItem("isLoggedIn") === "true"
   );
@@ -103,20 +100,28 @@ console.log('role:', localStorage.getItem('role'));
       }, 100);
     };
 
+    const handleLoginSuccess = (event) => {
+      const { role, studentCategory } = event.detail;
+      setIsLoggedIn(true);
+      setRole(role);
+      setStudentCategory(studentCategory || '');
+    };
+
     window.addEventListener('storage', checkAuth);
+    window.addEventListener('loginSuccess', handleLoginSuccess);
     return () => {
       window.removeEventListener('storage', checkAuth);
+      window.removeEventListener('loginSuccess', handleLoginSuccess);
       if (storageTimeoutRef.current) {
         clearTimeout(storageTimeoutRef.current);
       }
     };
   }, []);
 
-  // ============ FIX 1: Get dashboard path based on role ============
   const getDashboardPath = useCallback(() => {
     if (!isLoggedIn) return '/login';
     
-    if (role === 'admin') return '/admin-dashboard';
+    if (role === 'admin' || role === 'superAdmin') return '/admin-dashboard';
     if (role === 'staff') return '/staff-dashboard';
     if (role === 'student') {
       if (studentCategory === 'academy') return '/academy-dashboard';
@@ -125,22 +130,8 @@ console.log('role:', localStorage.getItem('role'));
     return '/login';
   }, [isLoggedIn, role, studentCategory]);
 
-  // ============ FIX 2: Check if current path is valid ============
-  const isValidPath = useCallback((path) => {
-    if (!isLoggedIn) return path === '/login' || path === '/signup' || path === '/forgot-password' || path.startsWith('/reset-password');
-    
-    if (role === 'admin') return path.startsWith('/admin-dashboard');
-    if (role === 'staff') return path.startsWith('/staff-dashboard');
-    if (role === 'student') {
-      if (studentCategory === 'academy') return path.startsWith('/academy-dashboard');
-      if (studentCategory === 'library') return path.startsWith('/library-dashboard');
-    }
-    return false;
-  }, [isLoggedIn, role, studentCategory]);
-
   return (
     <Routes>
-      {/* ============ FIX 3: Home route - single redirect point ============ */}
       <Route path="/" element={
         <Navigate to={getDashboardPath()} replace />
       } />
@@ -161,9 +152,8 @@ console.log('role:', localStorage.getItem('role'));
 
       {/* ========== ADMIN ROUTES ========== */}
       <Route path="/admin-dashboard" element={
-        isLoggedIn && role === "admin" ? <MainLayout /> : <Navigate to="/login" replace />
+        isLoggedIn && (role === "admin" || role === "superAdmin") ? <MainLayout /> : <Navigate to="/login" replace />
       }>
-        {/* FIX 4: Remove nested redirects - use direct components */}
         <Route index element={<AdminLibraryDashboard />} />
         <Route path="library-dash" element={<AdminLibraryDashboard />} />
         <Route path="academy-dash" element={<AdminAcademyDashboard />} />

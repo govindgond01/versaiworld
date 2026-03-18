@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import bookImg from "../../assets/books-library.jpg";
 import "./style.css";
 import Loader from '../common/Loader';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -67,20 +65,17 @@ const LoginPage = () => {
         localStorage.setItem("username", data.user.name);
         localStorage.setItem("userId", data.user.userId || data.user._id);
 
-        // Use React Router navigation instead of window.location
-        if (userRole === "admin" || userRole === "superAdmin") {
-          navigate("/admin-dashboard", { replace: true });
-        } else if (userRole === "staff") {
-          navigate("/staff-dashboard", { replace: true });
-        } else if (userRole === "student") {
-          if (data.user.studentCategory === "academy") {
-            navigate("/academy-dashboard", { replace: true });
-          } else if (data.user.studentCategory === "library") {
-            navigate("/library-dashboard", { replace: true });
-          } else {
-            navigate("/login", { replace: true });
+        window.dispatchEvent(new CustomEvent('loginSuccess', {
+          detail: {
+            role: userRole,
+            studentCategory: userRole === "student" ? data.user.studentCategory : null
           }
-        }
+        }));
+
+        setFormData({
+          email: '',
+          password: ''
+        });
       } else {
         setError(data.message || "Invalid email or password");
       }
