@@ -12,6 +12,7 @@ const connectDB = require("./config/db");
 // Middleware
 const errorHandler = require("./middleware/errorMiddleware");
 const corsOptions = require("./config/corsConfig");
+const apiVersioning = require("./middleware/versioning");
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -23,6 +24,7 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const settingsRoutes = require('./routes/settingsRoutes');
 const exportRoutes = require('./routes/exportRoutes');
+const searchRoutes = require('./routes/searchRoutes');
 
 // 👇 YEH LINE IMPORT KARO (new)
 const uploadRoutes = require('./routes/uploadRoutes');
@@ -53,7 +55,75 @@ app.use((req, res, next) => {
   next();
 });
 
-// API Routes
+// ==========================================
+// 🚀 API VERSIONING - INDUSTRY STANDARD
+// ==========================================
+// Apply versioning middleware early
+app.use(apiVersioning);
+
+// Versioned API Routes (Preferred - /api/v1/)
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
+app.use('/api/v1/staff', staffRoutes); 
+app.use('/api/v1/students', studentRoutes);
+app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/settings', settingsRoutes);
+app.use('/api/v1/export', exportRoutes);
+app.use('/api/v1/search', searchRoutes);
+app.use('/api/v1/upload', uploadRoutes);
+
+// ==========================================
+// ⚠️  BACKWARD COMPATIBILITY - DEPRECATED
+// ==========================================
+// Old /api/ endpoints maintained for backward compatibility
+// These will continue working but send deprecation warnings
+// Remove after 6 months or when all clients migrate
+
+// Health check (still available at old path)
+app.get("/api/health", (req, res) => {
+  res.json({
+    success: true,
+    status: "OK",
+    message: "Server is running",
+    timestamp: new Date().toISOString(),
+    deprecated: true,
+    migrate_to: "/api/v1/health"
+  });
+});
+
+// Test routes (still available at old paths)
+app.get("/api/attendance/test", (req, res) => {
+  res.json({
+    success: true,
+    message: "Attendance API is working!",
+    deprecated: true,
+    migrate_to: "/api/v1/attendance/test",
+    endpoints: [
+      "POST /api/v1/attendance/mark",
+      "GET /api/v1/attendance/user/:userId/today",
+      "GET /api/v1/attendance/user/:userId/monthly"
+    ]
+  });
+});
+
+app.get("/api/export/test", (req, res) => {
+  res.json({
+    success: true,
+    message: "Export route is working!",
+    deprecated: true,
+    migrate_to: "/api/v1/export/test",
+    routes: [
+      "POST /api/v1/export/students",
+      "POST /api/v1/export/payments",
+      "POST /api/v1/export/attendance"
+    ]
+  });
+});
+
+// Legacy API routes (will be removed in future)
+// These automatically get deprecation headers from versioning middleware
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/attendance", attendanceRoutes);
@@ -63,9 +133,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/export', exportRoutes);
-app.use('/api/search', require('./routes/searchRoutes'));
-
-// 👇 UPLOAD ROUTES - YEH LINE ADD KARO
+app.use('/api/search', searchRoutes);
 app.use('/api/upload', uploadRoutes);
 
 // Health check

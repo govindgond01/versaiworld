@@ -41,7 +41,7 @@ const SignUpPage = () => {
     setError("");
 
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
       
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',

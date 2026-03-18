@@ -39,7 +39,9 @@ router.get('/receipt/:userId/:paymentId', paymentController.generateReceipt);
 // 📌 Category wise payments
 router.get('/category/:category', adminOnly, paymentController.getPaymentsByCategory);
 
-// 📌 Naya payment add karna
+// 📌 Naya payment add karna (RESTful: POST to collection)
+router.post('/', adminOnly, paymentController.addPayment);
+// ✅ BACKWARD COMPATIBILITY: Keep old /add endpoint for 6 months
 router.post('/add', adminOnly, paymentController.addPayment);
 
 // 📌 Complete payment history with filters
