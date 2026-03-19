@@ -21,41 +21,10 @@ const SystemSettings = () => {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   const [settings, setSettings] = useState({
-    general: {
-      siteName: 'Library Management',
-      siteUrl: 'http://localhost:5173',
-      adminEmail: 'admin@library.com',
-      timezone: 'Asia/Kolkata',
-      dateFormat: 'DD/MM/YYYY',
-      language: 'en'
-    },
-    security: {
-      twoFactorAuth: true,
-      sessionTimeout: 30,
-      passwordExpiry: 90,
-      maxLoginAttempts: 5,
-      ipWhitelist: false
-    },
-    notifications: {
-      emailNotifications: true,
-      smsNotifications: false,
-      paymentAlerts: true,
-      expiryAlerts: true,
-      attendanceAlerts: false
-    },
-    financial: {
-      currency: 'INR',
-      taxRate: 18,
-      lateFeeEnabled: true,
-      lateFeeAmount: 100,
-      discountEnabled: true
-    },
-    backup: {
-      autoBackup: true,
-      backupFrequency: 'daily',
-      retentionDays: 30,
-      lastBackup: '2026-02-14'
-    }
+    general: {},
+    appearance: {},
+    notifications: {},
+    security: {}
   });
 
   useEffect(() => {
@@ -66,9 +35,41 @@ const SystemSettings = () => {
     setLoading(true);
     try {
       const res = await api.get('/settings');
-      if (res.data.success) setSettings(res.data.data);
-    } catch {
+      if (res.data.success) {
+        const backendSettings = res.data.settings || {};
+        setSettings({
+          general: {
+            siteName: 'Library Management',
+            siteUrl: 'http://localhost:5173',
+            adminEmail: 'admin@library.com',
+            timezone: backendSettings.preferences?.timezone || 'Asia/Kolkata',
+            dateFormat: backendSettings.preferences?.dateFormat || 'DD/MM/YYYY',
+            language: backendSettings.preferences?.language || 'en'
+          },
+          appearance: {
+            theme: 'light',
+            primaryColor: '#4F46E5',
+            sidebarCollapsed: false
+          },
+          notifications: {
+            emailNotifications: backendSettings.notifications?.email ?? true,
+            smsNotifications: backendSettings.notifications?.sms ?? false,
+            paymentAlerts: true,
+            expiryAlerts: true,
+            attendanceAlerts: false
+          },
+          security: {
+            twoFactorAuth: false,
+            sessionTimeout: 30,
+            passwordExpiry: 90,
+            maxLoginAttempts: 5,
+            ipWhitelist: false
+          }
+        });
+      }
+    } catch (error) {
       toast.error('Failed to load settings');
+      console.error('Settings fetch error:', error);
     } finally {
       setLoading(false);
     }
@@ -79,8 +80,9 @@ const SystemSettings = () => {
     try {
       await api.put('/settings', settings);
       toast.success('Settings saved successfully');
-    } catch {
+    } catch (error) {
       toast.error('Failed to save settings');
+      console.error('Settings save error:', error);
     } finally {
       setSaving(false);
     }
@@ -97,8 +99,7 @@ const SystemSettings = () => {
     { id: 'general', label: 'General', icon: <FiSettings className="w-4 h-4" /> },
     { id: 'security', label: 'Security', icon: <FiShield className="w-4 h-4" /> },
     { id: 'notifications', label: 'Notifications', icon: <FiBell className="w-4 h-4" /> },
-    { id: 'financial', label: 'Financial', icon: <FiDollarSign className="w-4 h-4" /> },
-    { id: 'backup', label: 'Backup', icon: <MdOutlineBackup className="w-4 h-4" /> }
+    { id: 'appearance', label: 'Appearance', icon: <FiMoon className="w-4 h-4" /> }
   ];
 
   if (loading) {
@@ -172,14 +173,14 @@ const SystemSettings = () => {
                     </label>
                     {item.type === 'select' ? (
                       <div className="relative">
-                        <select value={settings.general[item.field]} onChange={(e) => handleChange('general', item.field, e.target.value)}
+                        <select value={settings.general[item.field] || ''} onChange={(e) => handleChange('general', item.field, e.target.value)}
                           className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm">
                           {item.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         </select>
                         <BsChevronDown className="absolute right-3 top-3 text-gray-400 w-4 h-4" />
                       </div>
                     ) : (
-                      <input type={item.type} value={settings.general[item.field]} onChange={(e) => handleChange('general', item.field, e.target.value)}
+                      <input type={item.type} value={settings.general[item.field] || ''} onChange={(e) => handleChange('general', item.field, e.target.value)}
                         className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
                     )}
                   </div>
@@ -220,7 +221,7 @@ const SystemSettings = () => {
                     <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
                       <span className="text-indigo-600">{item.icon}</span> {item.label}
                     </label>
-                    <input type="number" value={settings.security[item.field]} onChange={(e) => handleChange('security', item.field, parseInt(e.target.value))}
+                    <input type="number" value={settings.security[item.field] || 0} onChange={(e) => handleChange('security', item.field, parseInt(e.target.value))}
                       className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm" />
                     <p className="text-xs text-gray-500">{item.unit}</p>
                   </div>
@@ -258,117 +259,55 @@ const SystemSettings = () => {
             </div>
           )}
 
-          {/* Financial Settings */}
-          {activeTab === 'financial' && (
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {[
-                  { label: 'Currency', field: 'currency', type: 'select', options: ['INR', 'USD', 'EUR'], icon: <FiDollarSign /> },
-                  { label: 'Tax Rate (%)', field: 'taxRate', type: 'number', icon: <FiDollarSign /> }
-                ].map((item, i) => (
-                  <div key={i} className="space-y-1.5">
-                    <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">{item.icon} {item.label}</label>
-                    {item.type === 'select' ? (
-                      <div className="relative">
-                        <select value={settings.financial[item.field]} onChange={(e) => handleChange('financial', item.field, e.target.value)}
-                          className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm">
-                          {item.options.map(opt => <option key={opt}>{opt}</option>)}
-                        </select>
-                        <BsChevronDown className="absolute right-3 top-3 text-gray-400 w-4 h-4" />
-                      </div>
-                    ) : (
-                      <input type="number" value={settings.financial[item.field]} onChange={(e) => handleChange('financial', item.field, e.target.value)}
-                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm" />
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {[
-                { label: 'Late Fee Enabled', field: 'lateFeeEnabled', icon: <FiClock /> },
-                { label: 'Discount Enabled', field: 'discountEnabled', icon: <FiDollarSign /> }
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${settings.financial[item.field] ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
-                      {item.icon}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">{item.label}</p>
-                    </div>
-                  </div>
-                  <button onClick={() => handleChange('financial', item.field, !settings.financial[item.field])}
-                    className={`text-2xl ${settings.financial[item.field] ? 'text-green-600' : 'text-gray-300'}`}>
-                    {settings.financial[item.field] ? <BsToggleOn /> : <BsToggleOff />}
-                  </button>
-                </div>
-              ))}
-
-              {settings.financial.lateFeeEnabled && (
-                <div className="mt-4">
-                  <label className="text-sm font-medium text-gray-700">Late Fee Amount (₹)</label>
-                  <input type="number" value={settings.financial.lateFeeAmount} onChange={(e) => handleChange('financial', 'lateFeeAmount', e.target.value)}
-                    className="w-full mt-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm" />
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Backup Settings */}
-          {activeTab === 'backup' && (
+          {/* Appearance Settings */}
+          {activeTab === 'appearance' && (
             <div className="space-y-5">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${settings.backup.autoBackup ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
-                    <MdOutlineBackup className="w-5 h-5" />
+                  <div className={`p-2 rounded-lg ${settings.appearance.theme === 'dark' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-200 text-gray-500'}`}>
+                    {settings.appearance.theme === 'dark' ? <FiMoon /> : <FiSun />}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Auto Backup</p>
-                    <p className="text-xs text-gray-500">Automatic system backups</p>
+                    <p className="text-sm font-medium text-gray-900">Dark Mode</p>
+                    <p className="text-xs text-gray-500">Toggle dark theme</p>
                   </div>
                 </div>
-                <button onClick={() => handleChange('backup', 'autoBackup', !settings.backup.autoBackup)}
-                  className={`text-2xl ${settings.backup.autoBackup ? 'text-green-600' : 'text-gray-300'}`}>
-                  {settings.backup.autoBackup ? <BsToggleOn /> : <BsToggleOff />}
+                <button onClick={() => handleChange('appearance', 'theme', settings.appearance.theme === 'dark' ? 'light' : 'dark')}
+                  className={`text-2xl ${settings.appearance.theme === 'dark' ? 'text-indigo-600' : 'text-gray-300'}`}>
+                  {settings.appearance.theme === 'dark' ? <BsToggleOn /> : <BsToggleOff />}
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {[
-                  { label: 'Backup Frequency', field: 'backupFrequency', type: 'select', options: ['daily', 'weekly', 'monthly'], icon: <FiClock /> },
-                  { label: 'Retention Days', field: 'retentionDays', type: 'number', icon: <FiCalendar /> }
-                ].map((item, i) => (
-                  <div key={i} className="space-y-1.5">
-                    <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">{item.icon} {item.label}</label>
-                    {item.type === 'select' ? (
-                      <div className="relative">
-                        <select value={settings.backup[item.field]} onChange={(e) => handleChange('backup', item.field, e.target.value)}
-                          className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm">
-                          {item.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                        </select>
-                        <BsChevronDown className="absolute right-3 top-3 text-gray-400 w-4 h-4" />
-                      </div>
-                    ) : (
-                      <input type="number" value={settings.backup[item.field]} onChange={(e) => handleChange('backup', item.field, parseInt(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm" />
-                    )}
+              <div className="space-y-5">
+                <div className="space-y-1.5">
+                  <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
+                    <FiPalette className="text-indigo-600" /> Primary Color
+                  </label>
+                  <div className="flex gap-3">
+                    {['#4F46E5', '#DC2626', '#059669', '#D97706', '#7C3AED'].map(color => (
+                      <button
+                        key={color}
+                        onClick={() => handleChange('appearance', 'primaryColor', color)}
+                        className={`w-10 h-10 rounded-full border-2 ${settings.appearance.primaryColor === color ? 'border-gray-900' : 'border-gray-200'}`}
+                        style={{ backgroundColor: color }}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
 
-              <div className="bg-blue-50 rounded-lg p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
-                      <BsClockHistory className="w-5 h-5" />
+                    <div className={`p-2 rounded-lg ${settings.appearance.sidebarCollapsed ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
+                      <FiMenu />
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">Last Backup</p>
-                      <p className="text-xs text-gray-600">{settings.backup.lastBackup}</p>
+                      <p className="text-sm font-medium text-gray-900">Collapsed Sidebar</p>
+                      <p className="text-xs text-gray-500">Hide sidebar labels</p>
                     </div>
                   </div>
-                  <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
-                    Backup Now
+                  <button onClick={() => handleChange('appearance', 'sidebarCollapsed', !settings.appearance.sidebarCollapsed)}
+                    className={`text-2xl ${settings.appearance.sidebarCollapsed ? 'text-green-600' : 'text-gray-300'}`}>
+                    {settings.appearance.sidebarCollapsed ? <BsToggleOn /> : <BsToggleOff />}
                   </button>
                 </div>
               </div>
