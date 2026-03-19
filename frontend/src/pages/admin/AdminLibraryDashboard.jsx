@@ -29,9 +29,7 @@ const AdminLibraryDashboard = () => {
       const students = studentsRes.data?.students || [];
       const stats = statsRes.data || {};
 
-      const libraryCategories = stats.categories?.filter(cat =>
-        cat._id === 'library' || cat.name === 'library'
-      ) || [];
+      const libraryCategories = stats.categories || [];
 
       const libraryCourses = stats.courses || [];
       const libraryDepartments = stats.departments || [];
