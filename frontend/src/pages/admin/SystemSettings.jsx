@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
-import {
-  FiSettings, FiSave, FiShield, FiMail,
-  FiBell, FiLock, FiUsers, FiGlobe, FiMoon, FiSun,
-  FiDollarSign, FiCalendar, FiClock, FiRefreshCw,
-  FiPalette, FiServer, FiMenu
+import { 
+  FiSettings, FiSave, FiShield, FiMail, FiBell, FiLock, 
+  FiUsers, FiGlobe, FiMoon, FiSun, FiDollarSign, FiCalendar, 
+  FiClock, FiRefreshCw, FiPalette, FiServer, FiMenu 
 } from 'react-icons/fi';
 import {
   MdOutlineSecurity, MdOutlineNotifications, MdOutlineLanguage,
@@ -22,10 +21,33 @@ const SystemSettings = () => {
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   const [settings, setSettings] = useState({
-    general: {},
-    appearance: {},
-    notifications: {},
-    security: {}
+    general: {
+      siteName: 'Library Management',
+      siteUrl: window.location.origin,
+      adminEmail: '',
+      timezone: 'Asia/Kolkata',
+      dateFormat: 'DD/MM/YYYY',
+      language: 'en'
+    },
+    appearance: {
+      theme: 'light',
+      primaryColor: '#4F46E5',
+      sidebarCollapsed: false
+    },
+    notifications: {
+      emailNotifications: true,
+      smsNotifications: false,
+      paymentAlerts: true,
+      expiryAlerts: true,
+      attendanceAlerts: false
+    },
+    security: {
+      twoFactorAuth: false,
+      sessionTimeout: 30,
+      passwordExpiry: 90,
+      maxLoginAttempts: 5,
+      ipWhitelist: false
+    }
   });
 
   useEffect(() => {
@@ -38,39 +60,31 @@ const SystemSettings = () => {
       const res = await api.get('/settings');
       if (res.data.success) {
         const backendSettings = res.data.settings || {};
-        setSettings({
+        setSettings(prev => ({
           general: {
-            siteName: 'Library Management',
-            siteUrl: 'http://localhost:5173',
-            adminEmail: 'admin@library.com',
-            timezone: backendSettings.preferences?.timezone || 'Asia/Kolkata',
-            dateFormat: backendSettings.preferences?.dateFormat || 'DD/MM/YYYY',
-            language: backendSettings.preferences?.language || 'en'
+            ...prev.general,
+            ...backendSettings.general,
+            timezone: backendSettings.preferences?.timezone || prev.general.timezone,
+            dateFormat: backendSettings.preferences?.dateFormat || prev.general.dateFormat,
+            language: backendSettings.preferences?.language || prev.general.language
           },
           appearance: {
-            theme: 'light',
-            primaryColor: '#4F46E5',
-            sidebarCollapsed: false
+            ...prev.appearance,
+            ...backendSettings.appearance
           },
           notifications: {
-            emailNotifications: backendSettings.notifications?.email ?? true,
-            smsNotifications: backendSettings.notifications?.sms ?? false,
-            paymentAlerts: true,
-            expiryAlerts: true,
-            attendanceAlerts: false
+            ...prev.notifications,
+            ...backendSettings.notifications
           },
           security: {
-            twoFactorAuth: false,
-            sessionTimeout: 30,
-            passwordExpiry: 90,
-            maxLoginAttempts: 5,
-            ipWhitelist: false
+            ...prev.security,
+            ...backendSettings.security
           }
-        });
+        }));
       }
     } catch (error) {
-      toast.error('Failed to load settings');
       console.error('Settings fetch error:', error);
+      toast.error('Failed to load settings');
     } finally {
       setLoading(false);
     }
@@ -82,8 +96,8 @@ const SystemSettings = () => {
       await api.put('/settings', settings);
       toast.success('Settings saved successfully');
     } catch (error) {
-      toast.error('Failed to save settings');
       console.error('Settings save error:', error);
+      toast.error('Failed to save settings');
     } finally {
       setSaving(false);
     }
@@ -92,7 +106,10 @@ const SystemSettings = () => {
   const handleChange = (section, field, value) => {
     setSettings(prev => ({
       ...prev,
-      [section]: { ...prev[section], [field]: value }
+      [section]: { 
+        ...prev[section], 
+        [field]: value 
+      }
     }));
   };
 
@@ -115,7 +132,7 @@ const SystemSettings = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 md:p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -130,10 +147,17 @@ const SystemSettings = () => {
           </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={fetchSettings} className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+          <button 
+            onClick={fetchSettings} 
+            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+          >
             <FiRefreshCw className="w-4 h-4" /> Refresh
           </button>
-          <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50">
+          <button 
+            onClick={handleSave} 
+            disabled={saving} 
+            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
             {saving ? <Loader type="inline" size="small" /> : <FiSave className="w-4 h-4" />}
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -145,10 +169,15 @@ const SystemSettings = () => {
         <div className="border-b overflow-x-auto">
           <div className="flex">
             {tabs.map(tab => (
-              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+              <button 
+                key={tab.id} 
+                onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-5 py-4 text-sm font-medium border-b-2 transition-all whitespace-nowrap ${
-                  activeTab === tab.id ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700'
-                }`}>
+                  activeTab === tab.id 
+                    ? 'border-indigo-600 text-indigo-600' 
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
                 {tab.icon} {tab.label}
               </button>
             ))}
@@ -166,7 +195,7 @@ const SystemSettings = () => {
                   { label: 'Admin Email', field: 'adminEmail', type: 'email', icon: <FiMail /> },
                   { label: 'Timezone', field: 'timezone', type: 'select', options: ['Asia/Kolkata', 'UTC', 'America/New_York'], icon: <FiClock /> },
                   { label: 'Date Format', field: 'dateFormat', type: 'select', options: ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'], icon: <FiCalendar /> },
-                  { label: 'Language', field: 'language', type: 'select', options: ['en', 'hi', 'fr'], icon: <FiGlobe /> }
+                  { label: 'Language', field: 'language', type: 'select', options: ['en', 'hi', 'fr', 'es'], icon: <FiGlobe /> }
                 ].map((item, i) => (
                   <div key={i} className="space-y-1.5">
                     <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
@@ -174,15 +203,22 @@ const SystemSettings = () => {
                     </label>
                     {item.type === 'select' ? (
                       <div className="relative">
-                        <select value={settings.general[item.field] || ''} onChange={(e) => handleChange('general', item.field, e.target.value)}
-                          className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm">
+                        <select 
+                          value={settings.general[item.field] || ''} 
+                          onChange={(e) => handleChange('general', item.field, e.target.value)}
+                          className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
+                        >
                           {item.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         </select>
-                        <BsChevronDown className="absolute right-3 top-3 text-gray-400 w-4 h-4" />
+                        <BsChevronDown className="absolute right-3 top-3 text-gray-400 w-4 h-4 pointer-events-none" />
                       </div>
                     ) : (
-                      <input type={item.type} value={settings.general[item.field] || ''} onChange={(e) => handleChange('general', item.field, e.target.value)}
-                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100" />
+                      <input 
+                        type={item.type} 
+                        value={settings.general[item.field] || ''} 
+                        onChange={(e) => handleChange('general', item.field, e.target.value)}
+                        className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
+                      />
                     )}
                   </div>
                 ))}
@@ -194,19 +230,21 @@ const SystemSettings = () => {
           {activeTab === 'security' && (
             <div className="space-y-5">
               {[
-                { label: 'Two Factor Authentication', field: 'twoFactorAuth', icon: <FiShield /> },
-                { label: 'IP Whitelist', field: 'ipWhitelist', icon: <FiLock /> }
+                { label: 'Two Factor Authentication', field: 'twoFactorAuth', icon: <FiShield />, desc: 'Require 2FA for all admin users' },
+                { label: 'IP Whitelist', field: 'ipWhitelist', icon: <FiLock />, desc: 'Restrict access to specific IP addresses' }
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-indigo-100 rounded-lg text-indigo-600">{item.icon}</div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">{item.label}</p>
-                      <p className="text-xs text-gray-500">Enable/disable {item.label.toLowerCase()}</p>
+                      <p className="text-xs text-gray-500">{item.desc}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleChange('security', item.field, !settings.security[item.field])}
-                    className={`text-2xl ${settings.security[item.field] ? 'text-indigo-600' : 'text-gray-300'}`}>
+                  <button 
+                    onClick={() => handleChange('security', item.field, !settings.security[item.field])}
+                    className={`text-3xl ${settings.security[item.field] ? 'text-indigo-600' : 'text-gray-300'} hover:opacity-80 transition-opacity`}
+                  >
                     {settings.security[item.field] ? <BsToggleOn /> : <BsToggleOff />}
                   </button>
                 </div>
@@ -214,16 +252,22 @@ const SystemSettings = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
                 {[
-                  { label: 'Session Timeout', field: 'sessionTimeout', unit: 'minutes', icon: <FiClock /> },
-                  { label: 'Password Expiry', field: 'passwordExpiry', unit: 'days', icon: <FiLock /> },
-                  { label: 'Max Login Attempts', field: 'maxLoginAttempts', unit: 'attempts', icon: <FiUsers /> }
+                  { label: 'Session Timeout', field: 'sessionTimeout', unit: 'minutes', icon: <FiClock />, min: 5, max: 120 },
+                  { label: 'Password Expiry', field: 'passwordExpiry', unit: 'days', icon: <FiLock />, min: 30, max: 365 },
+                  { label: 'Max Login Attempts', field: 'maxLoginAttempts', unit: 'attempts', icon: <FiUsers />, min: 3, max: 10 }
                 ].map((item, i) => (
                   <div key={i} className="space-y-1.5">
                     <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
                       <span className="text-indigo-600">{item.icon}</span> {item.label}
                     </label>
-                    <input type="number" value={settings.security[item.field] || 0} onChange={(e) => handleChange('security', item.field, parseInt(e.target.value))}
-                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm" />
+                    <input 
+                      type="number" 
+                      value={settings.security[item.field] || item.min} 
+                      onChange={(e) => handleChange('security', item.field, parseInt(e.target.value))}
+                      min={item.min}
+                      max={item.max}
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 outline-none"
+                    />
                     <p className="text-xs text-gray-500">{item.unit}</p>
                   </div>
                 ))}
@@ -235,11 +279,11 @@ const SystemSettings = () => {
           {activeTab === 'notifications' && (
             <div className="space-y-4">
               {[
-                { label: 'Email Notifications', field: 'emailNotifications', icon: <FiMail /> },
-                { label: 'SMS Notifications', field: 'smsNotifications', icon: <FiBell /> },
-                { label: 'Payment Alerts', field: 'paymentAlerts', icon: <FiDollarSign /> },
-                { label: 'Expiry Alerts', field: 'expiryAlerts', icon: <FiCalendar /> },
-                { label: 'Attendance Alerts', field: 'attendanceAlerts', icon: <FiUsers /> }
+                { label: 'Email Notifications', field: 'emailNotifications', icon: <FiMail />, desc: 'Receive email alerts' },
+                { label: 'SMS Notifications', field: 'smsNotifications', icon: <FiBell />, desc: 'Receive SMS alerts' },
+                { label: 'Payment Alerts', field: 'paymentAlerts', icon: <FiDollarSign />, desc: 'Alert on new payments' },
+                { label: 'Expiry Alerts', field: 'expiryAlerts', icon: <FiCalendar />, desc: 'Alert on membership expiry' },
+                { label: 'Attendance Alerts', field: 'attendanceAlerts', icon: <FiUsers />, desc: 'Alert on attendance updates' }
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-3">
@@ -248,11 +292,13 @@ const SystemSettings = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">{item.label}</p>
-                      <p className="text-xs text-gray-500">Toggle {item.label.toLowerCase()}</p>
+                      <p className="text-xs text-gray-500">{item.desc}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleChange('notifications', item.field, !settings.notifications[item.field])}
-                    className={`text-2xl ${settings.notifications[item.field] ? 'text-green-600' : 'text-gray-300'}`}>
+                  <button 
+                    onClick={() => handleChange('notifications', item.field, !settings.notifications[item.field])}
+                    className={`text-3xl ${settings.notifications[item.field] ? 'text-green-600' : 'text-gray-300'} hover:opacity-80 transition-opacity`}
+                  >
                     {settings.notifications[item.field] ? <BsToggleOn /> : <BsToggleOff />}
                   </button>
                 </div>
@@ -270,11 +316,13 @@ const SystemSettings = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-900">Dark Mode</p>
-                    <p className="text-xs text-gray-500">Toggle dark theme</p>
+                    <p className="text-xs text-gray-500">Toggle dark/light theme</p>
                   </div>
                 </div>
-                <button onClick={() => handleChange('appearance', 'theme', settings.appearance.theme === 'dark' ? 'light' : 'dark')}
-                  className={`text-2xl ${settings.appearance.theme === 'dark' ? 'text-indigo-600' : 'text-gray-300'}`}>
+                <button 
+                  onClick={() => handleChange('appearance', 'theme', settings.appearance.theme === 'dark' ? 'light' : 'dark')}
+                  className={`text-3xl ${settings.appearance.theme === 'dark' ? 'text-indigo-600' : 'text-gray-300'} hover:opacity-80 transition-opacity`}
+                >
                   {settings.appearance.theme === 'dark' ? <BsToggleOn /> : <BsToggleOff />}
                 </button>
               </div>
@@ -284,13 +332,18 @@ const SystemSettings = () => {
                   <label className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
                     <FiPalette className="text-indigo-600" /> Primary Color
                   </label>
-                  <div className="flex gap-3">
-                    {['#4F46E5', '#DC2626', '#059669', '#D97706', '#7C3AED'].map(color => (
+                  <div className="flex gap-3 flex-wrap">
+                    {['#4F46E5', '#DC2626', '#059669', '#D97706', '#7C3AED', '#2563EB', '#DB2777'].map(color => (
                       <button
                         key={color}
                         onClick={() => handleChange('appearance', 'primaryColor', color)}
-                        className={`w-10 h-10 rounded-full border-2 ${settings.appearance.primaryColor === color ? 'border-gray-900' : 'border-gray-200'}`}
+                        className={`w-10 h-10 rounded-full border-2 transition-all ${
+                          settings.appearance.primaryColor === color 
+                            ? 'border-gray-900 scale-110' 
+                            : 'border-gray-200 hover:scale-105'
+                        }`}
                         style={{ backgroundColor: color }}
+                        title={color}
                       />
                     ))}
                   </div>
@@ -299,15 +352,17 @@ const SystemSettings = () => {
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${settings.appearance.sidebarCollapsed ? 'bg-green-100 text-green-600' : 'bg-gray-200 text-gray-500'}`}>
-                      <FiMenu />
+                      <FiMenu className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">Collapsed Sidebar</p>
-                      <p className="text-xs text-gray-500">Hide sidebar labels</p>
+                      <p className="text-xs text-gray-500">Minimize sidebar for more space</p>
                     </div>
                   </div>
-                  <button onClick={() => handleChange('appearance', 'sidebarCollapsed', !settings.appearance.sidebarCollapsed)}
-                    className={`text-2xl ${settings.appearance.sidebarCollapsed ? 'text-green-600' : 'text-gray-300'}`}>
+                  <button 
+                    onClick={() => handleChange('appearance', 'sidebarCollapsed', !settings.appearance.sidebarCollapsed)}
+                    className={`text-3xl ${settings.appearance.sidebarCollapsed ? 'text-green-600' : 'text-gray-300'} hover:opacity-80 transition-opacity`}
+                  >
                     {settings.appearance.sidebarCollapsed ? <BsToggleOn /> : <BsToggleOff />}
                   </button>
                 </div>
