@@ -23,7 +23,7 @@ const AdminLibraryDashboard = () => {
 
       const [studentsRes, statsRes] = await Promise.all([
         api.get('/admin/students?studentCategory=library&status=active&limit=7'),
-        api.get('/admin/students/stats')
+        api.get('/admin/students/stats?category=library')
       ]);
 
       const students = studentsRes.data?.students || [];
