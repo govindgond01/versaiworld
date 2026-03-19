@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import logoImg from "../../assets/logo.webp";
+import logoImg from "../../assets/versaiworldlogo.png";
 import {
   FiSearch, FiMenu, FiBell, FiUser,
   FiSettings, FiHelpCircle,
