@@ -8,7 +8,7 @@ if (!API_URL) {
 }
 
 const api = axios.create({
-  baseURL: `${API_URL}/api/v1`, // ✅ Use versioned API endpoints
+  baseURL: API_URL, // ✅ Use versioned API endpoints
   headers: {
     'Content-Type': 'application/json',
   },
