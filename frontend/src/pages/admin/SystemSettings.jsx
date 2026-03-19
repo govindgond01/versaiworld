@@ -3,7 +3,7 @@ import { toast } from 'react-hot-toast';
 import {
   FiSettings, FiSave, FiShield, FiMail,
   FiBell, FiLock, FiUsers, FiGlobe, FiMoon, FiSun,
-  FiDollarSign, FiCalendar, FiClock,FiRefreshCw,FiPalette, FiServer,FiMenu, 
+  FiDollarSign, FiCalendar, FiClock,FiRefreshCw,FiPalette, FiServer,FiMenu 
 } from 'react-icons/fi';
 import {
   MdOutlineSecurity, MdOutlineNotifications, MdOutlineLanguage,
