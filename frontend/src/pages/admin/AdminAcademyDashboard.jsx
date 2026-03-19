@@ -207,51 +207,51 @@ const AdminAcademyDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Monthly Revenue</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={[{month: new Date().toLocaleString('default', { month: 'short' }), revenue: data.stats.monthlyRevenue || 0}]}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`₹${value}`, 'Revenue']} />
-                <Bar dataKey="revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      <div className="min-h-[300px]">
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={[{month: new Date().toLocaleString('default', { month: 'short' }), revenue: data.stats.monthlyRevenue || 0}]}>
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip formatter={(value) => [`₹${value}`, 'Revenue']} />
+            <Bar dataKey="revenue" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Course Distribution</h3>
-          <div className="h-64">
-            {data.courses.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={data.courses.slice(0, 4).map((course, i) => ({
-                      name: course._id || `Course ${i+1}`,
-                      value: course.count || 0
-                    }))}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    paddingAngle={5}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {data.courses.slice(0, 4).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-full flex items-center justify-center text-gray-400">
-                No course data available
-              </div>
-            )}
-          </div>
+        <div className="min-h-[300px]">
+          {data.courses.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={data.courses.slice(0, 4).map((course, i) => ({
+                    name: course._id || `Course ${i+1}`,
+                    value: course.count || 0
+                  }))}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  paddingAngle={5}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {data.courses.slice(0, 4).map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-full flex items-center justify-center text-gray-400">
+              No course data available
+            </div>
+          )}
+        </div>
         </div>
       </div>
 
