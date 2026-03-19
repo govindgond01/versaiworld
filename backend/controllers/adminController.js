@@ -183,7 +183,7 @@ exports.renewMembership = async (req, res) => {
   }
 };
 
-// Student Types Stats
+// Student Types Stats (DEPRECATED - use getStudentStats instead)
 exports.getStudentTypes = async (req, res) => {
   try {
     const types = await User.aggregate([
@@ -192,6 +192,54 @@ exports.getStudentTypes = async (req, res) => {
     ]);
     res.json({ success: true, types });
   } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Comprehensive Student Stats for Dashboard
+exports.getStudentStats = async (req, res) => {
+  try {
+    const [
+      totalStudents,
+      activeStudents,
+      inactiveStudents,
+      byCategory,
+      byCourse,
+      byDepartment
+    ] = await Promise.all([
+      User.countDocuments({ userType: 'student' }),
+      User.countDocuments({ userType: 'student', status: 'active' }),
+      User.countDocuments({ userType: 'student', status: { $in: ['inactive', 'suspended'] } }),
+      // Category breakdown
+      User.aggregate([
+        { $match: { userType: 'student' } },
+        { $group: { _id: '$studentCategory', count: { $sum: 1 } } }
+      ]),
+      // Course breakdown
+      User.aggregate([
+        { $match: { userType: 'student', course: { $exists: true, $ne: '' } } },
+        { $group: { _id: '$course', count: { $sum: 1 } } }
+      ]),
+      // Department breakdown
+      User.aggregate([
+        { $match: { userType: 'student', department: { $exists: true, $ne: '' } } },
+        { $group: { _id: '$department', count: { $sum: 1 } } }
+      ])
+    ]);
+
+    res.json({
+      success: true,
+      stats: {
+        total: totalStudents,
+        active: activeStudents,
+        inactive: inactiveStudents
+      },
+      categories: byCategory,
+      courses: byCourse,
+      departments: byDepartment
+    });
+  } catch (error) {
+    console.error('getStudentStats error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 };

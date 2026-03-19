@@ -136,42 +136,6 @@ app.use('/api/export', exportRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/upload', uploadRoutes);
 
-// Health check
-app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    status: "OK",
-    message: "Server is running",
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// Test routes
-app.get("/api/attendance/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "Attendance API is working!",
-    endpoints: [
-      "POST /api/attendance/mark",
-      "GET /api/attendance/today/:studentId",
-      "GET /api/attendance/monthly/:studentId"
-    ]
-  });
-});
-
-app.get("/api/export/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "Export route is working!",
-    routes: [
-      "POST /api/export/students",
-      "POST /api/export/payments", 
-      "POST /api/export/courses",
-      "POST /api/export/attendance"
-    ]
-  });
-});
-
 // Serve frontend for all other routes (LAST)
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 

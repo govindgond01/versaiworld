@@ -143,7 +143,6 @@ const UserSchema = new mongoose.Schema({
   
   // Security fields
   isActive: { type: Boolean, default: true },
-  lastLogin: Date,
   loginAttempts: { type: Number, default: 0 },
   lockUntil: Date, // Account lock timestamp
   refreshToken: String, // For refresh token mechanism
@@ -185,7 +184,6 @@ const UserSchema = new mongoose.Schema({
   
   // Login/Security
   lastLogin: Date,
-  loginAttempts: { type: Number, default: 0 },
   resetPasswordToken: String,
   resetPasswordExpires: Date
   
