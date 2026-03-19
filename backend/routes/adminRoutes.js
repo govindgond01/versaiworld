@@ -9,6 +9,7 @@ const {
   getActiveStudents,
   getExpiringStudents,
   getStudentTypes,
+  getStudentStats,
   getAllStaff,
   addStaff,
   renewMembership,
