@@ -198,8 +198,8 @@ const AdminLibraryDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Library Monthly Revenue</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="min-h-[300px]">
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart data={[{month: new Date().toLocaleString('default', { month: 'short' }), revenue: data.stats.monthlyRevenue || 0}]}>
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -212,9 +212,9 @@ const AdminLibraryDashboard = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Library Courses</h3>
-          <div className="h-64">
+          <div className="min-h-[300px]">
             {data.courses?.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
                     data={data.courses.map((course, i) => ({
