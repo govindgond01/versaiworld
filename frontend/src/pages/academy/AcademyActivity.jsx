@@ -44,7 +44,7 @@ const AcademyActivity = () => {
   if (loading) return <Loader type="spinner" size="large" />;
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Activity History</h1>
       </div>
