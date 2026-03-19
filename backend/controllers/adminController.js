@@ -199,6 +199,13 @@ exports.getStudentTypes = async (req, res) => {
 // Comprehensive Student Stats for Dashboard
 exports.getStudentStats = async (req, res) => {
   try {
+    const { category } = req.query;
+    
+    let matchQuery = { userType: 'student' };
+    if (category && category !== 'all') {
+      matchQuery.studentCategory = category;
+    }
+
     const [
       totalStudents,
       activeStudents,
@@ -207,22 +214,22 @@ exports.getStudentStats = async (req, res) => {
       byCourse,
       byDepartment
     ] = await Promise.all([
-      User.countDocuments({ userType: 'student' }),
-      User.countDocuments({ userType: 'student', status: 'active' }),
-      User.countDocuments({ userType: 'student', status: { $in: ['inactive', 'suspended'] } }),
+      User.countDocuments(matchQuery),
+      User.countDocuments({ ...matchQuery, status: 'active' }),
+      User.countDocuments({ ...matchQuery, status: { $in: ['inactive', 'suspended'] } }),
       // Category breakdown
       User.aggregate([
-        { $match: { userType: 'student' } },
+        { $match: matchQuery },
         { $group: { _id: '$studentCategory', count: { $sum: 1 } } }
       ]),
       // Course breakdown
       User.aggregate([
-        { $match: { userType: 'student', course: { $exists: true, $ne: '' } } },
+        { $match: { ...matchQuery, course: { $exists: true, $ne: '' } } },
         { $group: { _id: '$course', count: { $sum: 1 } } }
       ]),
       // Department breakdown
       User.aggregate([
-        { $match: { userType: 'student', department: { $exists: true, $ne: '' } } },
+        { $match: { ...matchQuery, department: { $exists: true, $ne: '' } } },
         { $group: { _id: '$department', count: { $sum: 1 } } }
       ])
     ]);
