@@ -290,7 +290,7 @@ const Header = ({ toggleSidebar }) => {
 
   // Rest of the component remains EXACTLY the same - UI untouched
   return (
-    <div className='bg-white fixed top-0 z-50 w-full shadow-sm px-4 md:px-6 lg:px-8'>
+    <div className='bg-white fixed top-0 z-50 w-full shadow-sm px-2 md:px-4 lg:px-6'>
       <div className='h-16'>
         <div className='flex h-full items-center'>
           <div className='w-[300px] h-full border-r border-zinc-200 hidden md:flex items-center'>
