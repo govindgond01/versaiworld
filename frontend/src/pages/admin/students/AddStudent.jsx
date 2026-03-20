@@ -96,7 +96,7 @@ const AddStudent = () => {
 
   // Course options from User model
   const courseOptions = [
-    "RS-CIT", "Excel", "Advance Excel", "Web Development", 
+    "RS CIT", "Excel", "Advance Excel", "Web Development", 
     "php", "Graphic Design", "Digital Marketing", "Tally"
   ];
 
