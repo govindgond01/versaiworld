@@ -4,12 +4,8 @@ const bcrypt = require("bcryptjs");
 const UserSchema = new mongoose.Schema({
   // Core Identity
   name: { type: String, required: true, trim: true },
-  // ===== NEW FIELD: Father's Name =====
-  fatherName: { type: String, trim: true },  // Optional field
-  
-  // ===== NEW FIELD: Date of Birth =====
-  dob: { type: Date },  // Optional field
-  
+  fatherName: { type: String, trim: true },
+  dob: { type: Date },
   email: {type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true },
   phone: { 
@@ -33,32 +29,28 @@ const UserSchema = new mongoose.Schema({
   },
   userId: { type: String, unique: true, index: true },
   
-course: { 
-  type: String, 
-  enum: ["", "RS CIT", "Excel", "Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
-  required: function() {
-    // Sirf academy students ke liye required
-    return this.userType === 'student' && this.studentCategory === 'academy';
-  },
-  default: function() {
-    // Admin/staff/library student ke liye undefined
-    return this.userType === 'student' && this.studentCategory === 'academy' ? '' : undefined;
-  },
-  validate: {
-    validator: function(v) {
-      // Agar user student nahi hai, validation skip
-      if (this.userType !== 'student') {
-        return true;
-      }
-      // Agar academy student hai to value required
-      if (this.studentCategory === 'academy') {
-        return v && v !== '';
-      }
-      return true;
+  course: { 
+    type: String, 
+    enum: ["", "RS CIT", "Excel", "Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
+    required: function() {
+      return this.userType === 'student' && this.studentCategory === 'academy';
     },
-    message: 'Course is required for academy students'
-  }
-},
+    default: function() {
+      return this.userType === 'student' && this.studentCategory === 'academy' ? '' : undefined;
+    },
+    validate: {
+      validator: function(v) {
+        if (this.userType !== 'student') {
+          return true;
+        }
+        if (this.studentCategory === 'academy') {
+          return v && v !== '';
+        }
+        return true;
+      },
+      message: 'Course is required for academy students'
+    }
+  },
   batch: String,
   department: String,
   
@@ -78,15 +70,12 @@ course: {
     enum: ["teacher", "Digital Marketer", "Web Developer","Front-End Developer","Back-End Developer","Full-Stack Developer", "other"] 
   },
   
-  // Financial Structure - Optimized
+  // Financial Structure
   fees: {
-    // For Students
     totalFee: { type: Number, default: 0 },
     paidFee: { type: Number, default: 0 },
     dueFee: { type: Number, default: 0 },
     discount: { type: Number, default: 0 },
-    
-    // For Staff (Salary)
     salary: { type: Number, default: 0 },
     paidSalary: { type: Number, default: 0 },
     dueSalary: { type: Number, default: 0 },
@@ -95,8 +84,6 @@ course: {
       enum: ["monthly", "hourly", "commission", "contract"], 
       default: "monthly" 
     },
-    
-    // Payment Methods & History
     paymentHistory: [{
       date: { type: Date, default: Date.now },
       amount: { type: Number, required: true },
@@ -112,17 +99,15 @@ course: {
       },
       transactionId: String,
       receiptNo: String,
-      month: String, // For salary: "2024-01"
+      month: String,
       description: String,
       status: { 
         type: String, 
         enum: ["paid", "pending", "failed", "refunded"], 
         default: "paid" 
       },
-      recordedBy: String // Admin who recorded payment
+      recordedBy: String
     }],
-    
-    // Bank Details (Optional)
     bankDetails: {
       accountNumber: String,
       accountHolder: String,
@@ -132,13 +117,25 @@ course: {
     }
   },
   
-  // Dates & Duration
-  admissionDate: { type: Date, default: Date.now },
-  joinDate: { type: Date, default: Date.now },
+  // Dates & Duration - FIXED: Admin ke liye default undefined
+  admissionDate: { 
+    type: Date, 
+    default: function() {
+      return this.userType === 'student' ? Date.now() : undefined;
+    }
+  },
+  joinDate: { 
+    type: Date, 
+    default: function() {
+      return this.userType === 'staff' ? Date.now() : undefined;
+    }
+  },
   membershipDuration: { 
     type: String, 
     enum: ["1_month", "3_months", "6_months", "1_year", "custom"],
-    default: "1_month" 
+    default: function() {
+      return this.userType === 'student' ? "1_month" : undefined;
+    }
   },
   endDate: Date,
   
@@ -161,17 +158,16 @@ course: {
   // Security fields
   isActive: { type: Boolean, default: true },
   loginAttempts: { type: Number, default: 0 },
-  lockUntil: Date, // Account lock timestamp
-  refreshToken: String, // For refresh token mechanism
+  lockUntil: Date,
+  refreshToken: String,
   
-  // Academic/Performance (Optional)
+  // Academic/Performance - FIXED: Admin ke liye default undefined
   attendance: {
     present: { type: Number, default: 0 },
     absent: { type: Number, default: 0 },
     percentage: { type: Number, default: 0 }
   },
   
-  // ✅ NOTIFICATIONS ADDED HERE - BAKI SAB WAISA HI HAI
   notifications: [{
     title: { type: String, required: true },
     message: { type: String, required: true },
@@ -184,7 +180,6 @@ course: {
     read: { type: Boolean, default: false }
   }],
 
-  // ✅ NOTIFICATION SETTINGS ADDED HERE
   notificationSettings: {
     email: { type: Boolean, default: true },
     push: { type: Boolean, default: true },
@@ -192,14 +187,12 @@ course: {
     sound: { type: Boolean, default: true }
   },
   
-  // Admin Notes
   notes: [{
     date: { type: Date, default: Date.now },
     text: String,
     createdBy: String
   }],
   
-  // Login/Security
   lastLogin: Date,
   resetPasswordToken: String,
   resetPasswordExpires: Date
@@ -210,7 +203,7 @@ course: {
   toObject: { virtuals: true }
 });
 
-// Virtuals for quick access
+// Virtuals
 UserSchema.virtual('fullAddress').get(function() {
   if (!this.address) return '';
   const addr = this.address;
@@ -229,14 +222,12 @@ UserSchema.virtual('isAdmin').get(function() {
   return this.userType === 'admin';
 });
 
-// Auto-process before save
+// Pre-save hook
 UserSchema.pre("save", async function(next) {
-  // Hash password
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   
-  // Generate User ID if new
   if (this.isNew && !this.userId) {
     const prefixMap = {
       "student_academy": "ACAD",
@@ -254,7 +245,6 @@ UserSchema.pre("save", async function(next) {
     const key = `${this.userType}_${category}`;
     const prefix = prefixMap[key] || "USR";
     
-    // Find the highest existing userId with this prefix
     const lastUser = await this.constructor.findOne({ 
       userId: new RegExp(`^${prefix}`) 
     }).sort({ userId: -1 });
@@ -268,22 +258,19 @@ UserSchema.pre("save", async function(next) {
     this.userId = `${prefix}${nextNumber.toString().padStart(4, '0')}`;
   }
   
-  // Auto-calculate due amounts
   if (this.userType === 'student') {
     this.fees.dueFee = (this.fees.totalFee || 0) - (this.fees.paidFee || 0);
   } else if (this.userType === 'staff') {
     this.fees.dueSalary = (this.fees.salary || 0) - (this.fees.paidSalary || 0);
   }
   
-  // Auto-calculate attendance percentage
   if (this.attendance && (this.attendance.present + this.attendance.absent) > 0) {
     this.attendance.percentage = Math.round(
       (this.attendance.present / (this.attendance.present + this.attendance.absent)) * 100
     );
   }
   
-  // Set end date based on membership duration
-  if (this.isModified('membershipDuration') || this.isNew) {
+  if ((this.isModified('membershipDuration') || this.isNew) && this.userType === 'student') {
     const durationMap = {
       "1_month": 1,
       "3_months": 3,
@@ -301,8 +288,7 @@ UserSchema.pre("save", async function(next) {
   typeof next === 'function' && next();
 });
 
-// ✅ BACKWARD COMPATIBILITY: Virtual 'financials' field
-// This provides the old 'financials' structure computed from 'fees'
+// Virtual financials field
 UserSchema.virtual('financials').get(function() {
   if (this.userType === 'student') {
     return {
@@ -327,12 +313,10 @@ UserSchema.virtual('financials').get(function() {
   };
 });
 
-// Helper methods
 UserSchema.methods.comparePassword = async function(password) {
   return await bcrypt.compare(password, this.password);
 };
 
-// Add payment method
 UserSchema.methods.addPayment = function(paymentData) {
   const payment = {
     date: new Date(),
@@ -347,7 +331,6 @@ UserSchema.methods.addPayment = function(paymentData) {
     recordedBy: paymentData.recordedBy
   };
   
-  // Update financials
   if (payment.type === 'fee' && this.userType === 'student') {
     this.fees.paidFee += payment.amount;
     this.fees.dueFee = this.fees.totalFee - this.fees.paidFee;
@@ -356,7 +339,6 @@ UserSchema.methods.addPayment = function(paymentData) {
     this.fees.dueSalary = this.fees.salary - this.fees.paidSalary;
   }
   
-  // Add to history
   if (!this.fees.paymentHistory) {
     this.fees.paymentHistory = [];
   }
@@ -365,7 +347,6 @@ UserSchema.methods.addPayment = function(paymentData) {
   return payment;
 };
 
-// Get due amount
 UserSchema.methods.getDueAmount = function() {
   if (this.userType === 'student') {
     return this.fees.dueFee;
@@ -375,7 +356,6 @@ UserSchema.methods.getDueAmount = function() {
   return 0;
 };
 
-// Get payment summary
 UserSchema.methods.getPaymentSummary = function() {
   const summary = {
     total: 0,
