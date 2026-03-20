@@ -33,22 +33,24 @@ const UserSchema = new mongoose.Schema({
   },
   userId: { type: String, unique: true, index: true },
   
-  course: { 
+course: { 
   type: String, 
   enum: ["", "RS CIT", "Excel", "Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
   required: function() {
     // Sirf academy students ke liye required
     return this.userType === 'student' && this.studentCategory === 'academy';
   },
-  // Admin/staff ke liye field hi exist nahi karna chahiye
-  default: undefined,
+  default: function() {
+    // Admin/staff/library student ke liye undefined
+    return this.userType === 'student' && this.studentCategory === 'academy' ? '' : undefined;
+  },
   validate: {
     validator: function(v) {
-      // Agar user student nahi hai, to field exist hi nahi karna chahiye
+      // Agar user student nahi hai, validation skip
       if (this.userType !== 'student') {
-        return v === undefined;
+        return true;
       }
-      // Student ke liye validation
+      // Agar academy student hai to value required
       if (this.studentCategory === 'academy') {
         return v && v !== '';
       }
