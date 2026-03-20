@@ -24,6 +24,8 @@ exports.createStudent = async (req, res) => {
       dob
     } = req.body;
     
+    console.log('📌 After destructure - course:', course);
+    
     // Check existing
     const existing = await User.findOne({ email });
     if (existing) {
