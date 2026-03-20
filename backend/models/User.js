@@ -34,14 +34,30 @@ const UserSchema = new mongoose.Schema({
   userId: { type: String, unique: true, index: true },
   
   // Education/Work
-  course: { 
-    type: String, 
-    enum: ["","RS CIT","Excel","Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
-    required: function() {
-    return this.studentCategory === 'academy' && this.userType === 'student';
+ course: { 
+  type: String, 
+  enum: ["", "RS CIT", "Excel", "Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
+  required: function() {
+    // Sirf academy students ke liye required
+    return this.userType === 'student' && this.studentCategory === 'academy';
   },
-  default: ''
+  default: function() {
+    // Admin/staff/library student ke liye default undefined
+    return this.userType === 'student' && this.studentCategory === 'academy' ? '' : undefined;
   },
+  validate: {
+    validator: function(v) {
+      // Agar user student nahi hai, validation skip karo
+      if (this.userType !== 'student') return true;
+      // Agar academy student hai to value honi chahiye
+      if (this.studentCategory === 'academy') {
+        return v && v !== '';
+      }
+      return true;
+    },
+    message: 'Course is required for academy students'
+  }
+},
   batch: String,
   department: String,
   
