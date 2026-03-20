@@ -161,7 +161,7 @@ const UserSchema = new mongoose.Schema({
   lockUntil: Date,
   refreshToken: String,
   
-  // Academic/Performance - FIXED: Admin ke liye default undefined
+  // Academic/Performance
   attendance: {
     present: { type: Number, default: 0 },
     absent: { type: Number, default: 0 },
@@ -222,12 +222,20 @@ UserSchema.virtual('isAdmin').get(function() {
   return this.userType === 'admin';
 });
 
-// Pre-save hook
+// ✅ FIXED Pre-save hook with null check
 UserSchema.pre("save", async function(next) {
-  if (this.isModified("password")) {
+  // 👇 NULL CHECK ADDED
+  if (!this) {
+    console.log('❌ No document in pre-save hook');
+    return next();
+  }
+  
+  // Hash password
+  if (this.isModified("password") && this.password) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   
+  // Generate User ID if new
   if (this.isNew && !this.userId) {
     const prefixMap = {
       "student_academy": "ACAD",
@@ -258,18 +266,21 @@ UserSchema.pre("save", async function(next) {
     this.userId = `${prefix}${nextNumber.toString().padStart(4, '0')}`;
   }
   
+  // Auto-calculate due amounts
   if (this.userType === 'student') {
     this.fees.dueFee = (this.fees.totalFee || 0) - (this.fees.paidFee || 0);
   } else if (this.userType === 'staff') {
     this.fees.dueSalary = (this.fees.salary || 0) - (this.fees.paidSalary || 0);
   }
   
+  // Auto-calculate attendance percentage
   if (this.attendance && (this.attendance.present + this.attendance.absent) > 0) {
     this.attendance.percentage = Math.round(
       (this.attendance.present / (this.attendance.present + this.attendance.absent)) * 100
     );
   }
   
+  // Set end date based on membership duration (only for students)
   if ((this.isModified('membershipDuration') || this.isNew) && this.userType === 'student') {
     const durationMap = {
       "1_month": 1,
@@ -313,6 +324,7 @@ UserSchema.virtual('financials').get(function() {
   };
 });
 
+// Helper methods
 UserSchema.methods.comparePassword = async function(password) {
   return await bcrypt.compare(password, this.password);
 };
