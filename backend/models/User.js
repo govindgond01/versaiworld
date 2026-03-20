@@ -117,7 +117,7 @@ const UserSchema = new mongoose.Schema({
     }
   },
   
-  // Dates & Duration - FIXED: Admin ke liye default undefined
+  // Dates & Duration
   admissionDate: { 
     type: Date, 
     default: function() {
@@ -222,12 +222,25 @@ UserSchema.virtual('isAdmin').get(function() {
   return this.userType === 'admin';
 });
 
-// ✅ FIXED Pre-save hook with null check
+// ✅ FINAL FIXED Pre-save hook
 UserSchema.pre("save", async function(next) {
-  // 👇 NULL CHECK ADDED
+  // NULL CHECK
   if (!this) {
     console.log('❌ No document in pre-save hook');
     return next();
+  }
+  
+  // ✅ ADMIN KE LIYE STUDENT FIELDS HATA DO (PROFILE IMAGE, ADDRESS, NOTES RAKHO)
+  if (this.userType === 'admin') {
+    this.attendance = undefined;
+    this.fees = undefined;
+    this.admissionDate = undefined;
+    this.membershipDuration = undefined;
+    this.joinDate = undefined;
+    this.endDate = undefined;
+    this.course = undefined;
+    this.studentCategory = undefined;
+    // ✅ profileImage, address, notes, notifications, notificationSettings ALLOWED
   }
   
   // Hash password
