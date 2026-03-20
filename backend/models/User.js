@@ -230,7 +230,7 @@ UserSchema.pre("save", async function(next) {
     return next();
   }
   
-  // ✅ ADMIN KE LIYE STUDENT FIELDS HATA DO (PROFILE IMAGE, ADDRESS, NOTES RAKHO)
+  // ✅ ADMIN KE LIYE SAB STUDENT FIELDS HATA DO
   if (this.userType === 'admin') {
     this.attendance = undefined;
     this.fees = undefined;
@@ -240,7 +240,11 @@ UserSchema.pre("save", async function(next) {
     this.endDate = undefined;
     this.course = undefined;
     this.studentCategory = undefined;
-    // ✅ profileImage, address, notes, notifications, notificationSettings ALLOWED
+    this.address = undefined;
+    this.notificationSettings = undefined;
+    this.notifications = undefined;
+    this.notes = undefined;
+    // profileImage allowed - rakhne do
   }
   
   // Hash password
