@@ -8,7 +8,7 @@ const generateToken = (user) => {
       email: user.email 
     },
     process.env.JWT_SECRET || 'default_secret',
-    { expiresIn: '15m' } // Short-lived access token
+    { expiresIn: '30m' } // Short-lived access token
   );
 };
 
