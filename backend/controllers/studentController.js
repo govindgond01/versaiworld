@@ -116,7 +116,7 @@ exports.createStudent = async (req, res) => {
   }
 };
 
-// ✅ GET ALL STUDENTS - WITH FATHERNAME & DOB (FIXED - FORCE FILTER)
+// ✅ GET ALL STUDENTS - WITH FORCE FILTER (FINAL FIX)
 exports.getAllStudents = async (req, res) => {
   try {
     const { 
@@ -127,8 +127,6 @@ exports.getAllStudents = async (req, res) => {
       studentCategory,
       course 
     } = req.query;
-    
-    console.log('🔍 FILTER DEBUG - studentCategory:', studentCategory);
     
     const filter = { userType: "student" };
     
@@ -143,10 +141,12 @@ exports.getAllStudents = async (req, res) => {
     }
     
     if (status && status !== "all") filter.status = status;
-    if (studentCategory && studentCategory !== "all") filter.studentCategory = studentCategory;
     if (course && course !== "all") filter.course = course;
     
-    console.log('🔍 MongoDB filter:', JSON.stringify(filter));
+    // ✅ STRICT CATEGORY FILTER
+    if (studentCategory && studentCategory !== "all") {
+      filter.studentCategory = studentCategory;
+    }
     
     const students = await User.find(filter)
       .select('-password')
@@ -155,14 +155,11 @@ exports.getAllStudents = async (req, res) => {
       .limit(+limit)
       .lean();
     
-    // ✅ FORCE FILTER - Database ke baad bhi filter karo
+    // ✅ FORCE FILTER - Double check to ensure correct category
     let finalStudents = students;
     if (studentCategory && studentCategory !== "all") {
       finalStudents = students.filter(s => s.studentCategory === studentCategory);
-      console.log('🔍 After force filter:', finalStudents.length, 'students');
     }
-    
-    const total = finalStudents.length;
     
     const mappedStudents = finalStudents.map(student => ({
       _id: student._id,
@@ -193,9 +190,9 @@ exports.getAllStudents = async (req, res) => {
     res.json({
       success: true,
       students: mappedStudents,
-      total,
+      total: finalStudents.length,
       page: +page,
-      pages: Math.ceil(total / limit)
+      pages: Math.ceil(finalStudents.length / limit)
     });
   } catch (error) {
     console.error("Get all students error:", error);
