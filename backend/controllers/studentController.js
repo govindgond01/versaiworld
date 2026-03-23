@@ -19,14 +19,13 @@ exports.createStudent = async (req, res) => {
       address, 
       department,
       course,
-      // ===== NEW FIELDS ADDED =====
       fatherName,
       dob
     } = req.body;
     
     console.log('📌 After destructure - course:', course);
     
-    // ✅ FIXED: Course only for academy students (Library students ke liye undefined)
+    // ✅ Course only for academy students
     let finalCourse = undefined;
     if (studentCategory === 'academy') {
       finalCourse = course && course.trim() !== '' ? course : 'RS CIT';
@@ -41,12 +40,10 @@ exports.createStudent = async (req, res) => {
       });
     }
     
-    // ✅ FIXED: Dono objects - financials (purana) + fees (naya)
     const user = await User.create({
       name,
       email,
       phone,
-      // ===== NEW FIELDS ADDED =====
       fatherName,
       dob,
       password: phone || "password123",
@@ -54,7 +51,6 @@ exports.createStudent = async (req, res) => {
       studentCategory,
       course: finalCourse,
       
-      // ✅ Purane system ke liye - financials
       financials: {
         amount: parseFloat(totalFees) || 0,
         paid: 0,
@@ -62,7 +58,6 @@ exports.createStudent = async (req, res) => {
         salaryType: "monthly"
       },
       
-      // ✅ Naye payment system ke liye - fees
       fees: {
         totalFee: parseFloat(totalFees) || 0,
         paidFee: 0,
@@ -71,7 +66,7 @@ exports.createStudent = async (req, res) => {
       },
       
       admissionDate: admissionDate || new Date(),
-      membershipDuration,
+      membershipDuration: membershipDuration || "1_month",
       status: "active",
       department: department || "",
       address: typeof address === 'object' ? address : { street: address || "", city: "", state: "", pincode: "", country: "India" }
@@ -85,7 +80,7 @@ exports.createStudent = async (req, res) => {
       '6_months': 6,
       '1_year': 12 
     };
-    expiryDate.setMonth(expiryDate.getMonth() + (months[membershipDuration] || 1));
+    expiryDate.setMonth(expiryDate.getMonth() + (months[user.membershipDuration] || 1));
     user.endDate = expiryDate;
     await user.save();
     
@@ -97,7 +92,6 @@ exports.createStudent = async (req, res) => {
         studentId: user.userId,
         userId: user.userId,
         name: user.name,
-        // ===== NEW FIELDS IN RESPONSE =====
         fatherName: user.fatherName,
         dob: user.dob,
         email: user.email,
@@ -107,7 +101,6 @@ exports.createStudent = async (req, res) => {
         membershipDuration: user.membershipDuration,
         status: user.status,
         expiryDate: user.endDate,
-        // ✅ DONO SE DATA LE
         totalFees: user.financials?.amount || user.fees?.totalFee || 0,
         paidFees: user.financials?.paid || user.fees?.paidFee || 0,
         feesDue: user.financials?.due || user.fees?.dueFee || 0
@@ -123,7 +116,7 @@ exports.createStudent = async (req, res) => {
   }
 };
 
-// ✅ GET ALL STUDENTS - WITH FATHERNAME & DOB (FIXED)
+// ✅ GET ALL STUDENTS - WITH FATHERNAME & DOB (FIXED - FORCE FILTER)
 exports.getAllStudents = async (req, res) => {
   try {
     const { 
@@ -135,6 +128,8 @@ exports.getAllStudents = async (req, res) => {
       course 
     } = req.query;
     
+    console.log('🔍 FILTER DEBUG - studentCategory:', studentCategory);
+    
     const filter = { userType: "student" };
     
     if (search) {
@@ -143,7 +138,6 @@ exports.getAllStudents = async (req, res) => {
         { email: { $regex: search, $options: "i" } },
         { userId: { $regex: search, $options: "i" } },
         { phone: { $regex: search, $options: "i" } },
-        // ===== NEW: Search in fatherName bhi =====
         { fatherName: { $regex: search, $options: "i" } }
       ];
     }
@@ -152,29 +146,34 @@ exports.getAllStudents = async (req, res) => {
     if (studentCategory && studentCategory !== "all") filter.studentCategory = studentCategory;
     if (course && course !== "all") filter.course = course;
     
-    // ✅ FIXED: Added .lean() to prevent Mongoose document conversion
-    const [students, total] = await Promise.all([
-      User.find(filter)
-        .select('-password')
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(+limit)
-        .lean(),  // 👈 CRITICAL FIX - prevents schema validation on string profileImage
-      User.countDocuments(filter)
-    ]);
+    console.log('🔍 MongoDB filter:', JSON.stringify(filter));
     
-    // ✅ Map students to safe format
-    const mappedStudents = students.map(student => ({
+    const students = await User.find(filter)
+      .select('-password')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(+limit)
+      .lean();
+    
+    // ✅ FORCE FILTER - Database ke baad bhi filter karo
+    let finalStudents = students;
+    if (studentCategory && studentCategory !== "all") {
+      finalStudents = students.filter(s => s.studentCategory === studentCategory);
+      console.log('🔍 After force filter:', finalStudents.length, 'students');
+    }
+    
+    const total = finalStudents.length;
+    
+    const mappedStudents = finalStudents.map(student => ({
       _id: student._id,
       studentId: student.userId,
       userId: student.userId,
       name: student.name,
-      // ===== NEW FIELDS =====
       fatherName: student.fatherName,
       dob: student.dob,
       email: student.email,
       phone: student.phone,
-      profileImage: student.profileImage,  // String ya object dono chalega
+      profileImage: student.profileImage,
       course: student.course,
       status: student.status,
       studentCategory: student.studentCategory,
@@ -213,7 +212,7 @@ exports.getStudentById = async (req, res) => {
     const student = await User.findOne({ 
       _id: req.params.id, 
       userType: "student" 
-    }).select('-password').lean();  // 👈 Added lean() here too for consistency
+    }).select('-password').lean();
     
     if (!student) {
       return res.status(404).json({ 
@@ -222,18 +221,16 @@ exports.getStudentById = async (req, res) => {
       });
     }
     
-    // ✅ FIXED: DONO OBJECTS SE DATA LE
     const mappedStudent = {
       _id: student._id,
       studentId: student.userId,
       userId: student.userId,
       name: student.name,
-      // ===== NEW FIELDS =====
       fatherName: student.fatherName,
       dob: student.dob,
       email: student.email,
       phone: student.phone,
-      profileImage: student.profileImage,  // String ya object dono chalega
+      profileImage: student.profileImage,
       course: student.course,
       status: student.status,
       studentCategory: student.studentCategory,
@@ -271,16 +268,13 @@ exports.updateStudent = async (req, res) => {
     const { totalFees, paidFees, fatherName, dob, ...otherUpdates } = req.body;
     const updateData = { ...otherUpdates };
     
-    // ===== NEW FIELDS ADDED =====
     if (fatherName !== undefined) updateData.fatherName = fatherName;
     if (dob !== undefined) updateData.dob = dob;
     
-    // Handle financial updates - DONO OBJECTS UPDATE KARO
     if (totalFees !== undefined || paidFees !== undefined) {
       const amount = parseFloat(totalFees) || 0;
       const paid = parseFloat(paidFees) || 0;
       
-      // ✅ Purane system ke liye
       updateData.financials = {
         amount,
         paid,
@@ -288,7 +282,6 @@ exports.updateStudent = async (req, res) => {
         salaryType: "monthly"
       };
       
-      // ✅ Naye system ke liye
       updateData.fees = {
         totalFee: amount,
         paidFee: paid,
@@ -297,7 +290,6 @@ exports.updateStudent = async (req, res) => {
       };
     }
     
-    // Handle membership renewal
     if (updateData.membershipDuration) {
       const student = await User.findById(req.params.id);
       if (student) {
@@ -317,7 +309,7 @@ exports.updateStudent = async (req, res) => {
       { _id: req.params.id, userType: "student" },
       updateData,
       { new: true, runValidators: true }
-    ).select('-password').lean();  // 👈 Added lean() here
+    ).select('-password').lean();
     
     if (!updatedStudent) {
       return res.status(404).json({ 
@@ -340,7 +332,7 @@ exports.updateStudent = async (req, res) => {
   }
 };
 
-// ✅ DELETE STUDENT - NO CHANGE
+// ✅ DELETE STUDENT
 exports.deleteStudent = async (req, res) => {
   try {
     const student = await User.findOneAndDelete({ 
@@ -368,7 +360,7 @@ exports.deleteStudent = async (req, res) => {
   }
 };
 
-// ✅ UPDATE STUDENT STATUS - NO CHANGE
+// ✅ UPDATE STUDENT STATUS
 exports.updateStudentStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -377,7 +369,7 @@ exports.updateStudentStatus = async (req, res) => {
       { _id: req.params.id, userType: "student" },
       { status },
       { new: true }
-    ).select('-password').lean();  // 👈 Added lean()
+    ).select('-password').lean();
     
     if (!student) {
       return res.status(404).json({ 
@@ -400,7 +392,7 @@ exports.updateStudentStatus = async (req, res) => {
   }
 };
 
-// ✅ GET ACTIVE STUDENTS - NO CHANGE
+// ✅ GET ACTIVE STUDENTS
 exports.getActiveStudents = async (req, res) => {
   try {
     const startOfMonth = new Date();
@@ -415,7 +407,7 @@ exports.getActiveStudents = async (req, res) => {
         .select('userId name email phone course studentCategory admissionDate')
         .sort({ admissionDate: -1 })
         .limit(50)
-        .lean(),  // 👈 Added lean()
+        .lean(),
       User.countDocuments({ 
         userType: "student", 
         status: "active", 
@@ -451,7 +443,7 @@ exports.getActiveStudents = async (req, res) => {
   }
 };
 
-// ✅ GET STUDENT STATS - NO CHANGE
+// ✅ GET STUDENT STATS
 exports.getStudentStats = async (req, res) => {
   try {
     const [categories, courses, active, total, departments] = await Promise.all([
@@ -500,7 +492,7 @@ exports.getStudentStats = async (req, res) => {
   }
 };
 
-// ✅ GET EXPIRING STUDENTS - NO CHANGE
+// ✅ GET EXPIRING STUDENTS
 exports.getExpiringStudents = async (req, res) => {
   try {
     const today = new Date();
@@ -514,7 +506,7 @@ exports.getExpiringStudents = async (req, res) => {
     })
       .select('userId name email phone course endDate studentCategory membershipDuration')
       .sort({ endDate: 1 })
-      .lean();  // 👈 Added lean()
+      .lean();
     
     res.json({ 
       success: true, 
@@ -530,7 +522,7 @@ exports.getExpiringStudents = async (req, res) => {
   }
 };
 
-// ✅ RENEW MEMBERSHIP - NO CHANGE
+// ✅ RENEW MEMBERSHIP
 exports.renewMembership = async (req, res) => {
   try {
     const { id } = req.params;
@@ -565,7 +557,7 @@ exports.renewMembership = async (req, res) => {
         status: 'active' 
       },
       { new: true }
-    ).select('-password').lean();  // 👈 Added lean()
+    ).select('-password').lean();
     
     res.json({ 
       success: true, 
@@ -581,17 +573,16 @@ exports.renewMembership = async (req, res) => {
   }
 };
 
-// ✅ EXPORT STUDENTS - NO CHANGE
+// ✅ EXPORT STUDENTS
 exports.exportStudents = async (req, res) => {
   try {
     const students = await User.find({ userType: "student" })
       .select('-password')
-      .lean();  // 👈 Already had lean()
+      .lean();
     
     const csvData = students.map(student => ({
       "User ID": student.userId || "N/A",
       "Name": student.name,
-      // ===== NEW FIELDS =====
       "Father's Name": student.fatherName || "N/A",
       "Date of Birth": student.dob ? new Date(student.dob).toISOString().split("T")[0] : "N/A",
       "Email": student.email,
@@ -627,14 +618,14 @@ exports.exportStudents = async (req, res) => {
   }
 };
 
-// ✅ GET STUDENT BY EMAIL - NO CHANGE
+// ✅ GET STUDENT BY EMAIL
 exports.getStudentByEmail = async (req, res) => {
   try {
     const { email } = req.params;
     const student = await User.findOne({ 
       email, 
       userType: "student" 
-    }).select('-password').lean();  // 👈 Added lean()
+    }).select('-password').lean();
     
     if (!student) {
       return res.status(404).json({ 
@@ -671,7 +662,7 @@ exports.getStudentByEmail = async (req, res) => {
   }
 };
 
-// ✅ GET STUDENTS BY COURSE - NO CHANGE
+// ✅ GET STUDENTS BY COURSE
 exports.getStudentsByCourse = async (req, res) => {
   try {
     const { course } = req.params;
@@ -683,7 +674,7 @@ exports.getStudentsByCourse = async (req, res) => {
     })
       .select('userId name email phone admissionDate studentCategory')
       .sort({ name: 1 })
-      .lean();  // 👈 Added lean()
+      .lean();
     
     res.json({ 
       success: true, 
