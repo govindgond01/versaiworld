@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
-import { 
-  FaUser, FaEnvelope, FaPhone, FaRupeeSign, FaCalendarAlt, 
+import {
+  FaUser, FaEnvelope, FaPhone, FaRupeeSign, FaCalendarAlt,
   FaBuilding, FaMapMarkerAlt, FaClock,
   FaCheckCircle, FaTimesCircle, FaArrowLeft, FaBook, FaUserTie
 } from "react-icons/fa";
@@ -14,20 +14,20 @@ import Loader from '../../../components/common/Loader';
 const AddStudent = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: "", 
+    name: "",
     fatherName: "",
     dob: "",
-    email: "", 
-    phone: "", 
-    totalFees: "5000",
+    email: "",
+    phone: "",
+    totalFees: "",
     admissionDate: new Date().toISOString().split('T')[0],
-    userType: "student", 
-    studentCategory: "academy",
-    membershipDuration: "1_month", 
-    course: "", 
+    userType: "student",
+    studentCategory: "",
+    membershipDuration: "1_month",
+    course: "",
     address: ""
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -40,10 +40,10 @@ const AddStudent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // 👇 SIRF YEH DEBUG LINE ADD KI HAI
     console.log('📤 Submitting student with category:', formData.studentCategory);
-    
+
     if (!formData.name || !formData.email || !formData.phone) {
       setError("Please fill all required fields");
       return;
@@ -52,14 +52,14 @@ const AddStudent = () => {
       setError("Phone must be 10 digits");
       return;
     }
-    
+
     setLoading(true);
     setError("");
     setSuccess("");
 
     try {
-      const response = await api.post('/admin/students', { 
-        ...formData, 
+      const response = await api.post('/admin/students', {
+        ...formData,
         totalFees: parseFloat(formData.totalFees) || 5000,
         course: formData.course
       });
@@ -69,17 +69,17 @@ const AddStudent = () => {
         setGeneratedStudentId(studentId);
         setSuccess(`Student created! ID: ${studentId}`);
         setFormData({
-          name: "", 
+          name: "",
           fatherName: "",
           dob: "",
-          email: "", 
-          phone: "", 
+          email: "",
+          phone: "",
           totalFees: "5000",
           admissionDate: new Date().toISOString().split('T')[0],
-          userType: "student", 
+          userType: "student",
           studentCategory: "academy",
-          membershipDuration: "1_month", 
-          course: "", 
+          membershipDuration: "1_month",
+          course: "",
           address: ""
         });
       } else {
@@ -95,7 +95,7 @@ const AddStudent = () => {
   const inputClass = "w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm focus:outline-none";
 
   const courseOptions = [
-    "RS CIT", "Excel", "Advance Excel", "Web Development", 
+    "RS CIT", "Excel", "Advance Excel", "Web Development",
     "php", "Graphic Design", "Digital Marketing", "Tally"
   ];
 
@@ -205,7 +205,15 @@ const AddStudent = () => {
             <label className="flex items-center gap-1 text-xs font-medium text-gray-600 mb-1.5"><MdLocalLibrary /> Category *</label>
             <div className="relative">
               <MdLocalLibrary className="absolute left-3 top-3 text-gray-400" />
-              <select name="studentCategory" value={formData.studentCategory} onChange={handleChange} className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm">
+              <select
+                name="studentCategory"
+                value={formData.studentCategory}
+                onChange={(e) => {
+                  console.log('Dropdown changed to:', e.target.value);  // Debug line
+                  setFormData(prev => ({ ...prev, studentCategory: e.target.value }));
+                }}
+                className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm"
+              >
                 <option value="academy">Academy</option>
                 <option value="library">Library</option>
               </select>
@@ -267,8 +275,8 @@ const AddStudent = () => {
               Cancel
             </button>
           </div>
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => setFormData({
               ...formData,
               name: "John Doe",
@@ -278,7 +286,7 @@ const AddStudent = () => {
               phone: "9876543210",
               course: "Web Development",
               address: "123 Main Street, City"
-            })} 
+            })}
             className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
           >
             <MdRefresh className="w-4 h-4" /> Sample Data
