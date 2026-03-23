@@ -1,559 +1,585 @@
-const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
-const excelJs = require('exceljs');
 
-// ✅ Get all categories for filters
-exports.getCategories = asyncHandler(async (req, res) => {
+// ✅ CREATE STAFF
+exports.createStaff = async (req, res) => {
   try {
-    // Get unique student categories
-    let studentCategories = await User.distinct('studentCategory', { 
-      userType: 'student'
-    });
-    
-    // Filter out empty/null values
-    studentCategories = studentCategories.filter(c => c && c !== '');
-    
-    // ✅ Agar database mein koi category nahi hai to default add karo
-    if (studentCategories.length === 0) {
-      studentCategories = ['academy', 'library'];
+    const { 
+      name, 
+      email, 
+      phone, 
+      staffRole = 'teacher', 
+      salary = 0,
+      joinDate,
+      department,
+      address,
+      bankDetails
+    } = req.body;
+
+    if (!name || !email || !phone) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Name, email and phone are required" 
+      });
     }
-    
-    // Get unique staff roles
-    const staffRoles = await User.distinct('staffRole', { 
-      userType: 'staff',
-      staffRole: { $exists: true, $ne: '' }
+
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email already exists" 
+      });
+    }
+
+    const staff = await User.create({
+      name,
+      email,
+      phone,
+      password: phone || "staff@123",
+      userType: "staff",
+      staffRole,
+      
+      fees: {
+        salary: parseFloat(salary) || 0,
+        paidSalary: 0,
+        dueSalary: parseFloat(salary) || 0,
+        salaryType: "monthly",
+        bankDetails: bankDetails || {},
+        paymentHistory: []
+      },
+      
+      joinDate: joinDate || new Date(),
+      status: "active",
+      department: department || "General",
+      address: typeof address === 'object' ? address : { 
+        street: address || "", 
+        city: "", 
+        state: "", 
+        pincode: "", 
+        country: "India" 
+      }
     });
-    
-    // Get unique departments
-    const departments = await User.distinct('department', { 
-      department: { $exists: true, $ne: '' }
-    });
-    
-    // Get unique courses
-    const courses = await User.distinct('course', { 
-      course: { $exists: true, $ne: '' }
-    });
-    
-    res.json({
+
+    res.status(201).json({
       success: true,
-      categories: {
-        students: [
-          { value: 'all', label: 'All Students' },
-          ...studentCategories.filter(c => c).map(c => ({ 
-            value: c, 
-            label: c.charAt(0).toUpperCase() + c.slice(1) 
-          }))
-        ],
-        staff: [
-          { value: 'all', label: 'All Staff' },
-          ...staffRoles.filter(r => r).map(r => ({ 
-            value: r, 
-            label: r.replace('_', ' ').split(' ').map(word => 
-              word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ')
-          }))
-        ],
-        departments: [
-          { value: 'all', label: 'All Departments' },
-          ...departments.filter(d => d).map(d => ({ 
-            value: d, 
-            label: d 
-          }))
-        ],
-        courses: [
-          { value: 'all', label: 'All Courses' },
-          ...courses.filter(c => c).map(c => ({ 
-            value: c, 
-            label: c 
-          }))
-        ]
+      message: "Staff created successfully",
+      staff: {
+        _id: staff._id,
+        staffId: staff.userId,
+        userId: staff.userId,
+        name: staff.name,
+        email: staff.email,
+        phone: staff.phone,
+        staffRole: staff.staffRole,
+        status: staff.status,
+        department: staff.department,
+        salary: staff.fees?.salary || 0,
+        paidSalary: staff.fees?.paidSalary || 0,
+        dueSalary: staff.fees?.dueSalary || 0,
+        joinDate: staff.joinDate
       }
     });
   } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Create staff error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error",
+      error: error.message 
+    });
   }
-});
+};
 
-// ✅ Export Data
-exports.exportData = asyncHandler(async (req, res) => {
-    try {
-        const { type } = req.params;
-        const { format, startDate, endDate, status, category, department, course } = req.body;
-
-        console.log(`📤 Export request: ${type}, format: ${format}, status: ${status || 'all'}, category: ${category || 'all'}, department: ${department || 'all'}, course: ${course || 'all'}`);
-
-        let data;
-        let filename = `${type}_${new Date().toISOString().split('T')[0]}`;
-        
-        // Add filters to filename
-        if (status && status !== 'all') filename += `_${status}`;
-        if (category && category !== 'all') filename += `_${category}`;
-        if (department && department !== 'all') filename += `_${department}`;
-        if (course && course !== 'all') filename += `_${course}`;
-
-        // ✅ Fetch data based on type from User model
-        switch (type) {
-            case 'students':
-                let studentQuery = { userType: 'student' };
-                
-                if (status && status !== 'all') studentQuery.status = status;
-                if (category && category !== 'all') studentQuery.studentCategory = category;
-                if (course && course !== 'all') studentQuery.course = course;
-                
-                data = await User.find(studentQuery)
-                    .select('-password')
-                    .lean();
-                break;
-            
-            case 'staff':
-                let staffQuery = { userType: 'staff' };
-                
-                if (status && status !== 'all') staffQuery.status = status;
-                if (category && category !== 'all') staffQuery.staffRole = category;
-                if (department && department !== 'all') staffQuery.department = department;
-                
-                data = await User.find(staffQuery)
-                    .select('-password')
-                    .lean();
-                break;
-            
-            case 'payments':
-                let paymentUserQuery = {
-                    'fees.paymentHistory.0': { $exists: true }
-                };
-                
-                if (status && status !== 'all') paymentUserQuery.status = status;
-                if (category && category !== 'all') {
-                    if (category === 'staff') {
-                        paymentUserQuery.userType = 'staff';
-                    } else {
-                        paymentUserQuery.userType = 'student';
-                        paymentUserQuery.studentCategory = category;
-                    }
-                }
-                
-                const users = await User.find(paymentUserQuery)
-                    .select('name userId userType fees.paymentHistory status studentCategory staffRole department')
-                    .lean();
-                
-                data = [];
-                users.forEach(user => {
-                    if (user.fees?.paymentHistory) {
-                        user.fees.paymentHistory.forEach(payment => {
-                            data.push({
-                                ...payment,
-                                userName: user.name,
-                                userId: user.userId,
-                                userType: user.userType,
-                                userCategory: user.studentCategory || user.staffRole,
-                                userStatus: user.status,
-                                userDepartment: user.department
-                            });
-                        });
-                    }
-                });
-
-                if (startDate && endDate) {
-                    const start = new Date(startDate);
-                    const end = new Date(endDate);
-                    data = data.filter(p => 
-                        new Date(p.date) >= start && new Date(p.date) <= end
-                    );
-                }
-                break;
-            
-            case 'courses':
-                const students = await User.find({ 
-                    userType: 'student',
-                    course: { $exists: true, $ne: '' }
-                }).select('course studentCategory').lean();
-                
-                const courseMap = new Map();
-                students.forEach(s => {
-                    if (s.course) {
-                        const key = s.course;
-                        if (!courseMap.has(key)) {
-                            courseMap.set(key, {
-                                course: s.course,
-                                category: s.studentCategory,
-                                count: 0
-                            });
-                        }
-                        courseMap.get(key).count++;
-                    }
-                });
-                data = Array.from(courseMap.values());
-                
-                // Apply filters
-                if (category && category !== 'all') {
-                    data = data.filter(c => c.category === category);
-                }
-                if (course && course !== 'all') {
-                    data = data.filter(c => c.course === course);
-                }
-                break;
-            
-            case 'attendance':
-                let attendanceQuery = {
-                    'attendance.present': { $exists: true }
-                };
-                
-                if (status && status !== 'all') attendanceQuery.status = status;
-                if (category && category !== 'all') {
-                    if (category === 'staff') {
-                        attendanceQuery.userType = 'staff';
-                    } else {
-                        attendanceQuery.userType = 'student';
-                        attendanceQuery.studentCategory = category;
-                    }
-                }
-                
-                const usersWithAttendance = await User.find(attendanceQuery)
-                    .select('name userId attendance status userType studentCategory staffRole')
-                    .lean();
-                
-                data = usersWithAttendance.map(u => ({
-                    name: u.name,
-                    userId: u.userId,
-                    userType: u.userType,
-                    category: u.studentCategory || u.staffRole,
-                    status: u.status,
-                    present: u.attendance?.present || 0,
-                    absent: u.attendance?.absent || 0,
-                    percentage: u.attendance?.percentage || 0
-                }));
-                break;
-            
-            default:
-                return res.status(400).json({ 
-                    message: 'Invalid data type. Use: students, staff, payments, courses, or attendance' 
-                });
-        }
-
-        if (!data || data.length === 0) {
-            return res.status(404).json({ message: `No ${type} data found with selected filters` });
-        }
-
-        console.log(`✅ Found ${data.length} records for ${type}`);
-
-        // ✅ CSV Export
-        if (format === 'csv') {
-            let csvContent = '';
-            
-            if (type === 'students') {
-                csvContent = 'User ID,Name,Email,Phone,Course,Category,Department,Total Fees,Paid Fees,Due Fees,Status,Admission Date,Expiry Date\n';
-                data.forEach(s => {
-                    csvContent += `"${s.userId || ''}","${s.name || ''}","${s.email || ''}","${s.phone || ''}",` +
-                        `"${s.course || ''}","${s.studentCategory || ''}","${s.department || ''}",${s.fees?.totalFee || 0},${s.fees?.paidFee || 0},` +
-                        `${s.fees?.dueFee || 0},"${s.status || ''}","${s.admissionDate ? new Date(s.admissionDate).toISOString().split('T')[0] : ''}",` +
-                        `"${s.endDate ? new Date(s.endDate).toISOString().split('T')[0] : ''}"\n`;
-                });
-            }
-            else if (type === 'staff') {
-                csvContent = 'User ID,Name,Email,Phone,Role,Department,Salary,Paid Salary,Due Salary,Status,Join Date\n';
-                data.forEach(s => {
-                    csvContent += `"${s.userId || ''}","${s.name || ''}","${s.email || ''}","${s.phone || ''}",` +
-                        `"${s.staffRole || ''}","${s.department || ''}",${s.fees?.salary || 0},${s.fees?.paidSalary || 0},` +
-                        `${s.fees?.dueSalary || 0},"${s.status || ''}","${s.joinDate ? new Date(s.joinDate).toISOString().split('T')[0] : ''}"\n`;
-                });
-            }
-            else if (type === 'payments') {
-                csvContent = 'Date,User Name,User ID,User Type,Category,Department,User Status,Amount,Type,Payment Method,Status,Receipt No,Description\n';
-                data.forEach(p => {
-                    csvContent += `"${new Date(p.date).toISOString().split('T')[0]}","${p.userName || ''}","${p.userId || ''}",` +
-                        `"${p.userType || ''}","${p.userCategory || ''}","${p.userDepartment || ''}","${p.userStatus || ''}",${p.amount || 0},"${p.type || ''}","${p.paymentMethod || ''}",` +
-                        `"${p.status || ''}","${p.receiptNo || ''}","${p.description || ''}"\n`;
-                });
-            }
-            else if (type === 'courses') {
-                csvContent = 'Course,Category,Student Count\n';
-                data.forEach(c => {
-                    csvContent += `"${c.course || ''}","${c.category || ''}",${c.count || 0}\n`;
-                });
-            }
-            else if (type === 'attendance') {
-                csvContent = 'Name,User ID,User Type,Category,Status,Present Days,Absent Days,Attendance %\n';
-                data.forEach(a => {
-                    csvContent += `"${a.name || ''}","${a.userId || ''}","${a.userType || ''}","${a.category || ''}","${a.status || ''}",${a.present || 0},${a.absent || 0},${a.percentage || 0}\n`;
-                });
-            }
-
-            res.setHeader('Content-Type', 'text/csv');
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}.csv`);
-            return res.send(csvContent);
-        }
-
-        // ✅ Excel Export
-        if (format === 'excel') {
-            const workbook = new excelJs.Workbook();
-            const worksheet = workbook.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
-
-            if (type === 'students') {
-                worksheet.columns = [
-                    { header: 'User ID', key: 'userId', width: 15 },
-                    { header: 'Name', key: 'name', width: 25 },
-                    { header: 'Email', key: 'email', width: 30 },
-                    { header: 'Phone', key: 'phone', width: 15 },
-                    { header: 'Course', key: 'course', width: 20 },
-                    { header: 'Category', key: 'category', width: 15 },
-                    { header: 'Department', key: 'department', width: 15 },
-                    { header: 'Total Fees', key: 'totalFees', width: 12, style: { numFmt: '#,##0' } },
-                    { header: 'Paid Fees', key: 'paidFees', width: 12, style: { numFmt: '#,##0' } },
-                    { header: 'Due Fees', key: 'dueFees', width: 12, style: { numFmt: '#,##0' } },
-                    { header: 'Status', key: 'status', width: 12 },
-                    { header: 'Admission Date', key: 'admissionDate', width: 15 },
-                    { header: 'Expiry Date', key: 'expiryDate', width: 15 }
-                ];
-
-                data.forEach(s => {
-                    worksheet.addRow({
-                        userId: s.userId || '',
-                        name: s.name || '',
-                        email: s.email || '',
-                        phone: s.phone || '',
-                        course: s.course || '',
-                        category: s.studentCategory || '',
-                        department: s.department || '',
-                        totalFees: s.fees?.totalFee || 0,
-                        paidFees: s.fees?.paidFee || 0,
-                        dueFees: s.fees?.dueFee || 0,
-                        status: s.status || '',
-                        admissionDate: s.admissionDate ? new Date(s.admissionDate).toISOString().split('T')[0] : '',
-                        expiryDate: s.endDate ? new Date(s.endDate).toISOString().split('T')[0] : ''
-                    });
-                });
-            }
-            else if (type === 'staff') {
-                worksheet.columns = [
-                    { header: 'User ID', key: 'userId', width: 15 },
-                    { header: 'Name', key: 'name', width: 25 },
-                    { header: 'Email', key: 'email', width: 30 },
-                    { header: 'Phone', key: 'phone', width: 15 },
-                    { header: 'Role', key: 'role', width: 15 },
-                    { header: 'Department', key: 'department', width: 20 },
-                    { header: 'Salary', key: 'salary', width: 12, style: { numFmt: '#,##0' } },
-                    { header: 'Paid Salary', key: 'paidSalary', width: 12, style: { numFmt: '#,##0' } },
-                    { header: 'Due Salary', key: 'dueSalary', width: 12, style: { numFmt: '#,##0' } },
-                    { header: 'Status', key: 'status', width: 12 },
-                    { header: 'Join Date', key: 'joinDate', width: 15 }
-                ];
-
-                data.forEach(s => {
-                    worksheet.addRow({
-                        userId: s.userId || '',
-                        name: s.name || '',
-                        email: s.email || '',
-                        phone: s.phone || '',
-                        role: s.staffRole || '',
-                        department: s.department || '',
-                        salary: s.fees?.salary || 0,
-                        paidSalary: s.fees?.paidSalary || 0,
-                        dueSalary: s.fees?.dueSalary || 0,
-                        status: s.status || '',
-                        joinDate: s.joinDate ? new Date(s.joinDate).toISOString().split('T')[0] : ''
-                    });
-                });
-            }
-            else if (type === 'payments') {
-                worksheet.columns = [
-                    { header: 'Date', key: 'date', width: 15 },
-                    { header: 'User Name', key: 'userName', width: 25 },
-                    { header: 'User ID', key: 'userId', width: 15 },
-                    { header: 'User Type', key: 'userType', width: 12 },
-                    { header: 'Category', key: 'category', width: 15 },
-                    { header: 'Department', key: 'department', width: 15 },
-                    { header: 'User Status', key: 'userStatus', width: 12 },
-                    { header: 'Amount', key: 'amount', width: 12, style: { numFmt: '#,##0' } },
-                    { header: 'Type', key: 'type', width: 15 },
-                    { header: 'Payment Method', key: 'paymentMethod', width: 15 },
-                    { header: 'Status', key: 'status', width: 12 },
-                    { header: 'Receipt No', key: 'receiptNo', width: 20 },
-                    { header: 'Description', key: 'description', width: 30 }
-                ];
-
-                data.forEach(p => {
-                    worksheet.addRow({
-                        date: p.date ? new Date(p.date).toISOString().split('T')[0] : '',
-                        userName: p.userName || '',
-                        userId: p.userId || '',
-                        userType: p.userType || '',
-                        category: p.userCategory || '',
-                        department: p.userDepartment || '',
-                        userStatus: p.userStatus || '',
-                        amount: p.amount || 0,
-                        type: p.type || '',
-                        paymentMethod: p.paymentMethod || '',
-                        status: p.status || '',
-                        receiptNo: p.receiptNo || '',
-                        description: p.description || ''
-                    });
-                });
-            }
-            else if (type === 'courses') {
-                worksheet.columns = [
-                    { header: 'Course', key: 'course', width: 30 },
-                    { header: 'Category', key: 'category', width: 15 },
-                    { header: 'Student Count', key: 'count', width: 15 }
-                ];
-
-                data.forEach(c => {
-                    worksheet.addRow({
-                        course: c.course || '',
-                        category: c.category || '',
-                        count: c.count || 0
-                    });
-                });
-            }
-            else if (type === 'attendance') {
-                worksheet.columns = [
-                    { header: 'Name', key: 'name', width: 25 },
-                    { header: 'User ID', key: 'userId', width: 15 },
-                    { header: 'User Type', key: 'userType', width: 12 },
-                    { header: 'Category', key: 'category', width: 15 },
-                    { header: 'Status', key: 'status', width: 12 },
-                    { header: 'Present Days', key: 'present', width: 12 },
-                    { header: 'Absent Days', key: 'absent', width: 12 },
-                    { header: 'Attendance %', key: 'percentage', width: 12 }
-                ];
-
-                data.forEach(a => {
-                    worksheet.addRow({
-                        name: a.name || '',
-                        userId: a.userId || '',
-                        userType: a.userType || '',
-                        category: a.category || '',
-                        status: a.status || '',
-                        present: a.present || 0,
-                        absent: a.absent || 0,
-                        percentage: a.percentage || 0
-                    });
-                });
-            }
-
-            worksheet.getRow(1).eachCell(cell => {
-                cell.font = { bold: true };
-                cell.fill = {
-                    type: 'pattern',
-                    pattern: 'solid',
-                    fgColor: { argb: 'FFE0E0E0' }
-                };
-            });
-
-            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}.xlsx`);
-            
-            await workbook.xlsx.write(res);
-            return res.end();
-        }
-
-        // ✅ PDF Export
-        if (format === 'pdf') {
-            const PDFDocument = require('pdfkit');
-            const doc = new PDFDocument({ margin: 50 });
-            
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=${filename}.pdf`);
-            
-            doc.pipe(res);
-            
-            doc.fontSize(20).text(`${type.toUpperCase()} REPORT`, { align: 'center' });
-            doc.fontSize(10).text(`Generated on: ${new Date().toLocaleString()} | Total Records: ${data.length}`, { align: 'center' });
-            if (status && status !== 'all') doc.fontSize(10).text(`Status Filter: ${status}`, { align: 'center' });
-            if (category && category !== 'all') doc.fontSize(10).text(`Category Filter: ${category}`, { align: 'center' });
-            if (department && department !== 'all') doc.fontSize(10).text(`Department Filter: ${department}`, { align: 'center' });
-            if (course && course !== 'all') doc.fontSize(10).text(`Course Filter: ${course}`, { align: 'center' });
-            doc.moveDown(2);
-            
-            let y = doc.y;
-            const leftMargin = 50;
-            const rowHeight = 20;
-            
-            if (type === 'students') {
-                doc.fontSize(10).font('Helvetica-Bold');
-                doc.text('User ID', leftMargin, y);
-                doc.text('Name', leftMargin + 80, y);
-                doc.text('Course', leftMargin + 200, y);
-                doc.text('Category', leftMargin + 300, y);
-                doc.text('Status', leftMargin + 380, y);
-                doc.text('Due Fees', leftMargin + 440, y);
-                
-                y += rowHeight;
-                doc.font('Helvetica');
-                doc.fontSize(9);
-                
-                data.forEach(s => {
-                    if (y > 700) { doc.addPage(); y = 50; }
-                    doc.text(s.userId || '', leftMargin, y);
-                    doc.text(s.name || '', leftMargin + 80, y);
-                    doc.text(s.course || '', leftMargin + 200, y);
-                    doc.text(s.studentCategory || '', leftMargin + 300, y);
-                    doc.text(s.status || '', leftMargin + 380, y);
-                    doc.text(`₹${s.fees?.dueFee || 0}`, leftMargin + 440, y);
-                    y += rowHeight;
-                });
-            }
-            else if (type === 'staff') {
-                doc.fontSize(10).font('Helvetica-Bold');
-                doc.text('User ID', leftMargin, y);
-                doc.text('Name', leftMargin + 80, y);
-                doc.text('Role', leftMargin + 200, y);
-                doc.text('Department', leftMargin + 280, y);
-                doc.text('Status', leftMargin + 380, y);
-                doc.text('Due Salary', leftMargin + 440, y);
-                
-                y += rowHeight;
-                doc.font('Helvetica');
-                doc.fontSize(9);
-                
-                data.forEach(s => {
-                    if (y > 700) { doc.addPage(); y = 50; }
-                    doc.text(s.userId || '', leftMargin, y);
-                    doc.text(s.name || '', leftMargin + 80, y);
-                    doc.text(s.staffRole || '', leftMargin + 200, y);
-                    doc.text(s.department || '', leftMargin + 280, y);
-                    doc.text(s.status || '', leftMargin + 380, y);
-                    doc.text(`₹${s.fees?.dueSalary || 0}`, leftMargin + 440, y);
-                    y += rowHeight;
-                });
-            }
-            else if (type === 'payments') {
-                doc.fontSize(10).font('Helvetica-Bold');
-                doc.text('Date', leftMargin, y);
-                doc.text('User', leftMargin + 70, y);
-                doc.text('Type', leftMargin + 190, y);
-                doc.text('Amount', leftMargin + 260, y);
-                doc.text('Method', leftMargin + 330, y);
-                doc.text('Status', leftMargin + 410, y);
-                
-                y += rowHeight;
-                doc.font('Helvetica');
-                doc.fontSize(9);
-                
-                data.forEach(p => {
-                    if (y > 700) { doc.addPage(); y = 50; }
-                    const date = p.date ? new Date(p.date).toISOString().split('T')[0] : '';
-                    doc.text(date, leftMargin, y);
-                    doc.text(p.userName || '', leftMargin + 70, y, { width: 120, truncate: true });
-                    doc.text(p.type || '', leftMargin + 190, y);
-                    doc.text(`₹${p.amount || 0}`, leftMargin + 260, y);
-                    doc.text(p.paymentMethod || '', leftMargin + 330, y);
-                    doc.text(p.status || '', leftMargin + 410, y);
-                    y += rowHeight;
-                });
-            }
-            
-            doc.end();
-            return;
-        }
-
-        res.status(400).json({ message: 'Format not supported. Use csv, excel or pdf.' });
-        
-    } catch (error) {
-        console.error('❌ Export error:', error);
-        res.status(500).json({ 
-            message: `Export failed for ${req.params.type}`, 
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error' 
-        });
+// ✅ GET ALL STAFF
+exports.getAllStaff = async (req, res) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 10, 
+      search = '',
+      status = '',
+      staffRole = ''
+    } = req.query;
+    
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+    
+    const filter = { userType: "staff" };
+    
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+        { userId: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } }
+      ];
     }
-});
+    
+    if (status && status !== 'all') filter.status = status;
+    if (staffRole && staffRole !== 'all') filter.staffRole = staffRole;
+    
+    const total = await User.countDocuments(filter);
+    
+    const staff = await User.find(filter)
+      .select('-password')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limitNum)
+      .lean();
+    
+    const formattedStaff = staff.map(staffMember => ({
+      _id: staffMember._id,
+      staffId: staffMember.userId,
+      userId: staffMember.userId,
+      name: staffMember.name,
+      email: staffMember.email,
+      phone: staffMember.phone || '',
+      profileImage: staffMember.profileImage || '',
+      staffRole: staffMember.staffRole || 'teacher',
+      status: staffMember.status || 'active',
+      salary: staffMember.fees?.salary || 0,
+      paidSalary: staffMember.fees?.paidSalary || 0,
+      dueSalary: staffMember.fees?.dueSalary || 0,
+      joinDate: staffMember.joinDate || staffMember.createdAt,
+      department: staffMember.department || '',
+      address: staffMember.address || '',
+      bankDetails: staffMember.fees?.bankDetails || {},
+      createdAt: staffMember.createdAt,
+      updatedAt: staffMember.updatedAt
+    }));
+    
+    res.json({
+      success: true,
+      staff: formattedStaff,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+      limit: limitNum
+    });
+  } catch (error) {
+    console.error("Get all staff error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ GET STAFF BY ID
+exports.getStaffById = async (req, res) => {
+  try {
+    const staff = await User.findOne({ 
+      _id: req.params.id, 
+      userType: "staff" 
+    }).select('-password').lean();
+    
+    if (!staff) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Staff not found" 
+      });
+    }
+    
+    const formattedStaff = {
+      _id: staff._id,
+      staffId: staff.userId,
+      userId: staff.userId,
+      name: staff.name,
+      email: staff.email,
+      phone: staff.phone || '',
+      profileImage: staff.profileImage || '',
+      staffRole: staff.staffRole || 'teacher',
+      status: staff.status || 'active',
+      salary: staff.fees?.salary || 0,
+      paidSalary: staff.fees?.paidSalary || 0,
+      dueSalary: staff.fees?.dueSalary || 0,
+      joinDate: staff.joinDate || staff.createdAt,
+      department: staff.department || '',
+      address: staff.address || '',
+      bankDetails: staff.fees?.bankDetails || {},
+      createdAt: staff.createdAt,
+      updatedAt: staff.updatedAt,
+      fees: staff.fees || {}
+    };
+    
+    res.json({ 
+      success: true, 
+      staff: formattedStaff 
+    });
+  } catch (error) {
+    console.error("Get staff by ID error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ UPDATE STAFF
+exports.updateStaff = async (req, res) => {
+  try {
+    const { salary, paidSalary, ...otherUpdates } = req.body;
+    const updateData = { ...otherUpdates };
+    
+    if (salary !== undefined || paidSalary !== undefined) {
+      const amount = parseFloat(salary) || 0;
+      const paid = parseFloat(paidSalary) || 0;
+      
+      updateData.$set = updateData.$set || {};
+      
+      updateData.$set['fees.salary'] = amount;
+      updateData.$set['fees.paidSalary'] = paid;
+      updateData.$set['fees.dueSalary'] = amount - paid;
+      
+      if (req.body.bankDetails) {
+        updateData.$set['fees.bankDetails'] = req.body.bankDetails;
+      }
+    }
+    
+    const updatedStaff = await User.findOneAndUpdate(
+      { _id: req.params.id, userType: "staff" },
+      updateData,
+      { new: true, runValidators: true }
+    ).select('-password').lean();
+    
+    if (!updatedStaff) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Staff not found" 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: "Staff updated successfully", 
+      staff: updatedStaff 
+    });
+  } catch (error) {
+    console.error("Update staff error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ DELETE STAFF
+exports.deleteStaff = async (req, res) => {
+  try {
+    const staff = await User.findOneAndDelete({ 
+      _id: req.params.id, 
+      userType: "staff" 
+    });
+    
+    if (!staff) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Staff not found" 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: "Staff deleted successfully" 
+    });
+  } catch (error) {
+    console.error("Delete staff error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ UPDATE STAFF STATUS
+exports.updateStaffStatus = async (req, res) => {
+  try {
+    const { status } = req.body;
+    
+    if (!['active', 'inactive'].includes(status)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Invalid status" 
+      });
+    }
+    
+    const staff = await User.findOneAndUpdate(
+      { _id: req.params.id, userType: "staff" },
+      { status },
+      { new: true }
+    ).select('-password').lean();
+    
+    if (!staff) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Staff not found" 
+      });
+    }
+    
+    res.json({ 
+      success: true, 
+      message: "Staff status updated", 
+      staff 
+    });
+  } catch (error) {
+    console.error("Update staff status error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ GET ACTIVE STAFF
+exports.getActiveStaff = async (req, res) => {
+  try {
+    const activeStaff = await User.find({ 
+      userType: "staff", 
+      status: "active" 
+    })
+      .select('userId name email phone staffRole department joinDate')
+      .sort({ name: 1 })
+      .limit(50)
+      .lean();
+    
+    const formattedStaff = activeStaff.map(staff => ({
+      _id: staff._id,
+      staffId: staff.userId,
+      name: staff.name,
+      email: staff.email,
+      phone: staff.phone || '',
+      staffRole: staff.staffRole || 'teacher',
+      department: staff.department || '',
+      joinDate: staff.joinDate || staff.createdAt
+    }));
+    
+    res.json({ 
+      success: true, 
+      staff: formattedStaff,
+      count: activeStaff.length 
+    });
+  } catch (error) {
+    console.error("Get active staff error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ GET STAFF STATS - FIXED
+exports.getStaffStats = async (req, res) => {
+  try {
+    console.log("📊 Fetching staff stats...");
+    
+    const total = await User.countDocuments({ userType: "staff" });
+    const active = await User.countDocuments({ userType: "staff", status: "active" });
+    
+    // Calculate avgSalary separately
+    const allStaff = await User.find({ userType: "staff" }).select('fees staffRole').lean();
+    const salaryMap = {};
+    
+    allStaff.forEach(s => {
+      const role = s.staffRole || 'other';
+      const salary = s.fees?.salary || 0;
+      
+      if (!salaryMap[role]) {
+        salaryMap[role] = { total: 0, count: 0 };
+      }
+      salaryMap[role].total += salary;
+      salaryMap[role].count += 1;
+    });
+    
+    // Get roles with counts
+    const roles = await User.aggregate([
+      { $match: { userType: "staff" } },
+      { $group: { 
+        _id: "$staffRole", 
+        count: { $sum: 1 }
+      }},
+      { $sort: { count: -1 } }
+    ]);
+    
+    // Add avgSalary to roles
+    const rolesWithAvgSalary = roles.map(role => ({
+      ...role,
+      avgSalary: salaryMap[role._id] ? Math.round(salaryMap[role._id].total / salaryMap[role._id].count) : 0
+    }));
+    
+    const departments = await User.aggregate([
+      { $match: { userType: "staff", department: { $exists: true, $ne: "" } } },
+      { $group: { _id: "$department", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    
+    console.log("✅ Staff stats fetched");
+    
+    res.json({ 
+      success: true, 
+      roles: rolesWithAvgSalary || [],
+      departments: departments || [],
+      stats: { 
+        total: total || 0, 
+        active: active || 0, 
+        inactive: (total || 0) - (active || 0) 
+      } 
+    });
+    
+  } catch (error) {
+    console.error("❌ Get staff stats error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ EXPORT STAFF DATA
+exports.exportStaff = async (req, res) => {
+  try {
+    const staff = await User.find({ userType: "staff" })
+      .select('-password')
+      .lean();
+    
+    const exportData = staff.map(staffMember => ({
+      "Staff ID": staffMember.userId || "N/A",
+      "Name": staffMember.name || "N/A",
+      "Email": staffMember.email || "N/A",
+      "Phone": staffMember.phone || "N/A",
+      "Role": staffMember.staffRole || "N/A",
+      "Status": staffMember.status || "N/A",
+      "Department": staffMember.department || "N/A",
+      "Salary": staffMember.fees?.salary || 0,
+      "Paid": staffMember.fees?.paidSalary || 0,
+      "Due": staffMember.fees?.dueSalary || 0,
+      "Join Date": staffMember.joinDate ? 
+        new Date(staffMember.joinDate).toISOString().split("T")[0] : "N/A",
+      "Address": staffMember.address || "N/A",
+      "Bank Account": staffMember.fees?.bankDetails?.accountNumber || "N/A",
+      "Bank Name": staffMember.fees?.bankDetails?.bankName || "N/A"
+    }));
+    
+    res.json({ 
+      success: true, 
+      data: exportData, 
+      count: staff.length 
+    });
+  } catch (error) {
+    console.error("Export staff error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error" 
+    });
+  }
+};
+
+// ✅ GET STAFF DASHBOARD STATS - ULTIMATE FIXED VERSION
+exports.getStaffDashboardStats = async (req, res) => {
+  try {
+    console.log("📊 Fetching staff dashboard stats...");
+    
+    // Simple counts
+    const totalStaff = await User.countDocuments({ userType: "staff" });
+    const activeStaff = await User.countDocuments({ userType: "staff", status: "active" });
+    
+    // Get all staff for calculations
+    const allStaff = await User.find({ userType: "staff" })
+      .select('fees staffRole name email status joinDate department createdAt')
+      .lean();
+    
+    // Calculate role distribution with avgSalary
+    const roleMap = {};
+    allStaff.forEach(s => {
+      const role = s.staffRole || 'other';
+      if (!roleMap[role]) {
+        roleMap[role] = { count: 0, totalSalary: 0 };
+      }
+      roleMap[role].count++;
+      roleMap[role].totalSalary += s.fees?.salary || 0;
+    });
+    
+    const staffByRole = Object.keys(roleMap).map(role => ({
+      _id: role,
+      count: roleMap[role].count,
+      avgSalary: roleMap[role].count > 0 ? Math.round(roleMap[role].totalSalary / roleMap[role].count) : 0
+    }));
+    
+    // Recent staff (last 7)
+    const recentStaff = allStaff
+      .sort((a, b) => new Date(b.createdAt || b.joinDate) - new Date(a.createdAt || a.joinDate))
+      .slice(0, 7)
+      .map(s => ({
+        _id: s._id,
+        name: s.name,
+        email: s.email,
+        staffRole: s.staffRole || 'teacher',
+        status: s.status,
+        salary: s.fees?.salary || 0,
+        joinDate: s.joinDate
+      }));
+    
+    // Department distribution
+    const deptMap = {};
+    allStaff.forEach(s => {
+      if (s.department) {
+        deptMap[s.department] = (deptMap[s.department] || 0) + 1;
+      }
+    });
+    
+    const departments = Object.keys(deptMap).map(dept => ({
+      _id: dept,
+      count: deptMap[dept]
+    })).sort((a, b) => b.count - a.count).slice(0, 5);
+    
+    // Salary calculations
+    let totalSalary = 0, totalPaid = 0, totalDue = 0;
+    allStaff.forEach(s => {
+      const salary = s.fees?.salary || 0;
+      const paid = s.fees?.paidSalary || 0;
+      totalSalary += salary;
+      totalPaid += paid;
+      totalDue += (salary - paid);
+    });
+    
+    const avgSalary = totalStaff > 0 ? totalSalary / totalStaff : 0;
+    
+    // Active staff list
+    const activeStaffList = allStaff
+      .filter(s => s.status === 'active')
+      .slice(0, 5)
+      .map(s => ({
+        _id: s._id,
+        name: s.name,
+        email: s.email,
+        staffRole: s.staffRole || 'teacher',
+        department: s.department || 'General',
+        joinDate: s.joinDate
+      }));
+    
+    console.log("✅ Staff dashboard stats fetched successfully");
+    
+    res.json({
+      success: true,
+      stats: {
+        totalStaff: totalStaff || 0,
+        activeStaff: activeStaff || 0,
+        inactiveStaff: (totalStaff || 0) - (activeStaff || 0),
+        totalSalary: totalSalary || 0,
+        paidSalary: totalPaid || 0,
+        dueSalary: totalDue || 0,
+        avgSalary: Math.round(avgSalary) || 0
+      },
+      recentStaff: recentStaff,
+      roles: staffByRole || [],
+      departments: departments || [],
+      activeStaffList
+    });
+    
+  } catch (error) {
+    console.error("❌ Get staff dashboard stats error:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error: " + error.message 
+    });
+  }
+};

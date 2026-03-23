@@ -6,17 +6,10 @@ const excelJs = require('exceljs');
 exports.getCategories = asyncHandler(async (req, res) => {
   try {
     // Get unique student categories
-    let studentCategories = await User.distinct('studentCategory', { 
-      userType: 'student'
+    const studentCategories = await User.distinct('studentCategory', { 
+      userType: 'student',
+      studentCategory: { $exists: true, $ne: '' }
     });
-    
-    // Filter out empty/null values
-    studentCategories = studentCategories.filter(c => c && c !== '');
-    
-    // ✅ Agar database mein koi category nahi hai to default add karo
-    if (studentCategories.length === 0) {
-      studentCategories = ['academy', 'library'];
-    }
     
     // Get unique staff roles
     const staffRoles = await User.distinct('staffRole', { 
