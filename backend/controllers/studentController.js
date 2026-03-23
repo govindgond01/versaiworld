@@ -4,9 +4,9 @@ const User = require('../models/User');
 exports.createStudent = async (req, res) => {
   try {
     console.log('🔥 CREATE STUDENT REQUEST');
-console.log('📦 Body:', JSON.stringify(req.body, null, 2));
-console.log('📌 Course value:', req.body.course);
-console.log('📌 Course type:', typeof req.body.course);
+    console.log('📦 Body:', JSON.stringify(req.body, null, 2));
+    console.log('📌 Course value:', req.body.course);
+    console.log('📌 Course type:', typeof req.body.course);
     
     const { 
       name, 
@@ -26,8 +26,8 @@ console.log('📌 Course type:', typeof req.body.course);
     
     console.log('📌 After destructure - course:', course);
     
-    // ✅ FIX: Default course to "RS CIT" if not provided or empty for academy students
-    let finalCourse = course;
+    // ✅ FIXED: Course only for academy students (Library students ke liye undefined)
+    let finalCourse = undefined;
     if (studentCategory === 'academy') {
       finalCourse = course && course.trim() !== '' ? course : 'RS CIT';
     }
