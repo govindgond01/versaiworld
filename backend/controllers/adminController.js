@@ -37,11 +37,11 @@ exports.getDashboardStats = async (req, res) => {
 // Get All Students
 exports.getAllStudents = async (req, res) => {
   try {
-    const { page = 1, limit = 10, status, search, studentType } = req.query;
+    const { page = 1, limit = 10, status, search, studentCategory } = req.query;
     let query = { userType: 'student' };
     
     if (status && status !== 'all') query.status = status;
-    if (studentType && studentType !== 'all') query.studentCategory = studentType;
+    if (studentCategory && studentCategory !== 'all') query.studentCategory = studentCategory;
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },
@@ -58,8 +58,8 @@ exports.getAllStudents = async (req, res) => {
       .select('-password');
     
     // ✅ FORCE FILTER - Double check category
-    if (studentType && studentType !== 'all') {
-      students = students.filter(s => s.studentCategory === studentType);
+    if (studentCategory && studentCategory !== 'all') {
+      students = students.filter(s => s.studentCategory === studentCategory);
     }
     
     const count = students.length;
