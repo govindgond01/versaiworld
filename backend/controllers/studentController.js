@@ -26,6 +26,12 @@ console.log('📌 Course type:', typeof req.body.course);
     
     console.log('📌 After destructure - course:', course);
     
+    // ✅ FIX: Default course to "RS CIT" if not provided or empty for academy students
+    let finalCourse = course;
+    if (studentCategory === 'academy') {
+      finalCourse = course && course.trim() !== '' ? course : 'RS CIT';
+    }
+    
     // Check existing
     const existing = await User.findOne({ email });
     if (existing) {
@@ -46,7 +52,7 @@ console.log('📌 Course type:', typeof req.body.course);
       password: phone || "password123",
       userType: "student",
       studentCategory,
-      course,
+      course: finalCourse,
       
       // ✅ Purane system ke liye - financials
       financials: {

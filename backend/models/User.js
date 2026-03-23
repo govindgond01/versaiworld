@@ -31,24 +31,12 @@ const UserSchema = new mongoose.Schema({
   
   course: { 
     type: String, 
-    enum: ["", "RS CIT", "Excel", "Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
+    enum: ["RS CIT", "Excel", "Advance Excel", "Web Development", "php", "Graphic Design", "Digital Marketing", "Tally"],
     required: function() {
       return this.userType === 'student' && this.studentCategory === 'academy';
     },
     default: function() {
-      return this.userType === 'student' && this.studentCategory === 'academy' ? '' : undefined;
-    },
-    validate: {
-      validator: function(v) {
-        if (this.userType !== 'student') {
-          return true;
-        }
-        if (this.studentCategory === 'academy') {
-          return v && v !== '';
-        }
-        return true;
-      },
-      message: 'Course is required for academy students'
+      return this.userType === 'student' && this.studentCategory === 'academy' ? 'RS CIT' : undefined;
     }
   },
   batch: String,
