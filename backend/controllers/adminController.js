@@ -34,6 +34,7 @@ exports.getDashboardStats = async (req, res) => {
 };
 
 // Get All Students
+// Get All Students
 exports.getAllStudents = async (req, res) => {
   try {
     const { page = 1, limit = 10, status, search, studentType } = req.query;
@@ -50,15 +51,31 @@ exports.getAllStudents = async (req, res) => {
       ];
     }
     
-    const students = await User.find(query).limit(limit * 1).skip((page - 1) * limit).sort({ createdAt: -1 }).select('-password');
-    const count = await User.countDocuments(query);
+    let students = await User.find(query)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ createdAt: -1 })
+      .select('-password');
     
-    res.json({ success: true, count, totalPages: Math.ceil(count / limit), currentPage: page, students });
+    // ✅ FORCE FILTER - Double check category
+    if (studentType && studentType !== 'all') {
+      students = students.filter(s => s.studentCategory === studentType);
+    }
+    
+    const count = students.length;
+    
+    res.json({ 
+      success: true, 
+      count, 
+      totalPages: Math.ceil(count / limit), 
+      currentPage: page, 
+      students 
+    });
   } catch (error) {
+    console.error("Get all students error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
-
 // ✅ FIXED: Create Student - Now handles studentCategory properly
 exports.addStudent = async (req, res) => {
   try {
