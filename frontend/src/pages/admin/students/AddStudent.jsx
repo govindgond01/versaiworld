@@ -38,74 +38,69 @@ const AddStudent = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   // 👇 SIRF YEH DEBUG LINE ADD KI HAI
-  //   console.log('📤 Submitting student with category:', formData.studentCategory);
-
-  //   if (!formData.name || !formData.email || !formData.phone) {
-  //     setError("Please fill all required fields");
-  //     return;
-  //   }
-  //   if (!/^[0-9]{10}$/.test(formData.phone)) {
-  //     setError("Phone must be 10 digits");
-  //     return;
-  //   }
-
-  //   setLoading(true);
-  //   setError("");
-  //   setSuccess("");
-
-  //   try {
-  //     const response = await api.post('/admin/students', {
-  //       ...formData,
-  //       totalFees: parseFloat(formData.totalFees) || 5000,
-  //       course: formData.course
-  //     });
-
-  //     if (response.data.success) {
-  //       const studentId = response.data.student?.studentId || response.data.student?.userId;
-  //       setGeneratedStudentId(studentId);
-  //       setSuccess(`Student created! ID: ${studentId}`);
-  //       setFormData({
-  //         name: "",
-  //         fatherName: "",
-  //         dob: "",
-  //         email: "",
-  //         phone: "",
-  //         totalFees: "",
-  //         admissionDate: new Date().toISOString().split('T')[0],
-  //         userType: "student",
-  //         studentCategory: "",
-  //         membershipDuration: "1_month",
-  //         course: "",
-  //         address: ""
-  //       });
-  //     } else {
-  //       setError(response.data.message || "Failed");
-  //     }
-  //   } catch (error) {
-  //     setError(error.response?.data?.message || 'Failed');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  console.log('📤 FORM DATA:', {
-    ...formData,
-    totalFees: parseFloat(formData.totalFees) || 5000,
-    course: formData.course
-  });
-
   const inputClass = "w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm focus:outline-none";
 
   const courseOptions = [
     "RS CIT", "Excel", "Advance Excel", "Web Development",
     "php", "Graphic Design", "Digital Marketing", "Tally"
   ];
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log('📤 FORM DATA:', {
+      ...formData,
+      totalFees: parseFloat(formData.totalFees) || 5000,
+      course: formData.course
+    });
+
+    if (!formData.name || !formData.email || !formData.phone) {
+      setError("Please fill all required fields");
+      return;
+    }
+    if (!/^[0-9]{10}$/.test(formData.phone)) {
+      setError("Phone must be 10 digits");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const response = await api.post('/admin/students', {
+        ...formData,
+        totalFees: parseFloat(formData.totalFees) || 5000,
+        course: formData.course
+      });
+
+      if (response.data.success) {
+        const studentId = response.data.student?.studentId || response.data.student?.userId;
+        setGeneratedStudentId(studentId);
+        setSuccess(`Student created! ID: ${studentId}`);
+        setFormData({
+          name: "",
+          fatherName: "",
+          dob: "",
+          email: "",
+          phone: "",
+          totalFees: "",
+          admissionDate: new Date().toISOString().split('T')[0],
+          userType: "student",
+          studentCategory: "",
+          membershipDuration: "1_month",
+          course: "",
+          address: ""
+        });
+      } else {
+        setError(response.data.message || "Failed");
+      }
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -217,7 +212,7 @@ const AddStudent = () => {
                 name="studentCategory"
                 value={formData.studentCategory}
                 onChange={(e) => {
-                  console.log('Dropdown changed to:', e.target.value);  // Debug line
+                  console.log('Dropdown changed to:', e.target.value);
                   setFormData(prev => ({ ...prev, studentCategory: e.target.value }));
                 }}
                 className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg appearance-none text-sm"
