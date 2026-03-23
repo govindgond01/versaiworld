@@ -74,10 +74,10 @@ const AddStudent = () => {
           dob: "",
           email: "",
           phone: "",
-          totalFees: "5000",
+          totalFees: "",
           admissionDate: new Date().toISOString().split('T')[0],
           userType: "student",
-          studentCategory: "academy",
+          studentCategory: "",
           membershipDuration: "1_month",
           course: "",
           address: ""
