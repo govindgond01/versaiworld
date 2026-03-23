@@ -15,9 +15,7 @@ const AddStudent = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "", 
-    // ===== NEW: Father's Name =====
     fatherName: "",
-    // ===== NEW: Date of Birth =====
     dob: "",
     email: "", 
     phone: "", 
@@ -26,7 +24,6 @@ const AddStudent = () => {
     userType: "student", 
     studentCategory: "academy",
     membershipDuration: "1_month", 
-    // ===== CHANGED: department → course =====
     course: "", 
     address: ""
   });
@@ -43,6 +40,10 @@ const AddStudent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // 👇 SIRF YEH DEBUG LINE ADD KI HAI
+    console.log('📤 Submitting student with category:', formData.studentCategory);
+    
     if (!formData.name || !formData.email || !formData.phone) {
       setError("Please fill all required fields");
       return;
@@ -60,7 +61,6 @@ const AddStudent = () => {
       const response = await api.post('/admin/students', { 
         ...formData, 
         totalFees: parseFloat(formData.totalFees) || 5000,
-        // Ensure course is sent instead of department
         course: formData.course
       });
 
@@ -94,7 +94,6 @@ const AddStudent = () => {
 
   const inputClass = "w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 text-sm focus:outline-none";
 
-  // Course options from User model
   const courseOptions = [
     "RS CIT", "Excel", "Advance Excel", "Web Development", 
     "php", "Graphic Design", "Digital Marketing", "Tally"
@@ -147,7 +146,7 @@ const AddStudent = () => {
             </div>
           </div>
 
-          {/* ===== NEW: Father's Name ===== */}
+          {/* Father's Name */}
           <div>
             <label className="flex items-center gap-1 text-xs font-medium text-gray-600 mb-1.5"><FaUserTie /> Father's Name</label>
             <div className="relative">
@@ -174,7 +173,7 @@ const AddStudent = () => {
             </div>
           </div>
 
-          {/* ===== NEW: Date of Birth ===== */}
+          {/* Date of Birth */}
           <div>
             <label className="flex items-center gap-1 text-xs font-medium text-gray-600 mb-1.5"><FaCalendarAlt /> Date of Birth</label>
             <div className="relative">
@@ -229,7 +228,7 @@ const AddStudent = () => {
             </div>
           </div>
 
-          {/* ===== CHANGED: Department → Course with Book Icon ===== */}
+          {/* Course */}
           <div>
             <label className="flex items-center gap-1 text-xs font-medium text-gray-600 mb-1.5"><FaBook /> Course</label>
             <div className="relative">
