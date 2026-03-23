@@ -72,16 +72,17 @@ exports.getCategories = asyncHandler(async (req, res) => {
 exports.exportData = asyncHandler(async (req, res) => {
     try {
         const { type } = req.params;
-        const { format, startDate, endDate, status, category, department, course } = req.body;
+        const { format, startDate, endDate, status, category, department, course, studentCategory, staffRole, paymentStatus } = req.body;
 
-        console.log(`📤 Export request: ${type}, format: ${format}, status: ${status || 'all'}, category: ${category || 'all'}, department: ${department || 'all'}, course: ${course || 'all'}`);
+        console.log(`📤 Export request: ${type}, format: ${format}, status: ${status || 'all'}, category: ${category || 'all'}, studentCategory: ${studentCategory || 'all'}, staffRole: ${staffRole || 'all'}, department: ${department || 'all'}, course: ${course || 'all'}, paymentStatus: ${paymentStatus || 'all'}`);
 
         let data;
         let filename = `${type}_${new Date().toISOString().split('T')[0]}`;
         
         // Add filters to filename
         if (status && status !== 'all') filename += `_${status}`;
-        if (category && category !== 'all') filename += `_${category}`;
+        if (studentCategory && studentCategory !== 'all') filename += `_${studentCategory}`;
+        if (staffRole && staffRole !== 'all') filename += `_${staffRole}`;
         if (department && department !== 'all') filename += `_${department}`;
         if (course && course !== 'all') filename += `_${course}`;
 
@@ -91,8 +92,17 @@ exports.exportData = asyncHandler(async (req, res) => {
                 let studentQuery = { userType: 'student' };
                 
                 if (status && status !== 'all') studentQuery.status = status;
-                if (category && category !== 'all') studentQuery.studentCategory = category;
+                // Use studentCategory (from frontend) or fallback to category
+                const finalStudentCategory = studentCategory || category;
+                if (finalStudentCategory && finalStudentCategory !== 'all') studentQuery.studentCategory = finalStudentCategory;
                 if (course && course !== 'all') studentQuery.course = course;
+                
+                // ✅ Date range filter on admissionDate
+                if (startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    studentQuery.admissionDate = { $gte: start, $lte: end };
+                }
                 
                 data = await User.find(studentQuery)
                     .select('-password')
@@ -103,8 +113,17 @@ exports.exportData = asyncHandler(async (req, res) => {
                 let staffQuery = { userType: 'staff' };
                 
                 if (status && status !== 'all') staffQuery.status = status;
-                if (category && category !== 'all') staffQuery.staffRole = category;
+                // Use staffRole (from frontend) or fallback to category
+                const finalStaffRole = staffRole || category;
+                if (finalStaffRole && finalStaffRole !== 'all') staffQuery.staffRole = finalStaffRole;
                 if (department && department !== 'all') staffQuery.department = department;
+                
+                // ✅ Date range filter on joinDate
+                if (startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    staffQuery.joinDate = { $gte: start, $lte: end };
+                }
                 
                 data = await User.find(staffQuery)
                     .select('-password')
@@ -116,7 +135,7 @@ exports.exportData = asyncHandler(async (req, res) => {
                     'fees.paymentHistory.0': { $exists: true }
                 };
                 
-                if (status && status !== 'all') paymentUserQuery.status = status;
+                // Handle category filter
                 if (category && category !== 'all') {
                     if (category === 'staff') {
                         paymentUserQuery.userType = 'staff';
@@ -124,6 +143,15 @@ exports.exportData = asyncHandler(async (req, res) => {
                         paymentUserQuery.userType = 'student';
                         paymentUserQuery.studentCategory = category;
                     }
+                }
+                // Override with specific filters if provided
+                if (studentCategory && studentCategory !== 'all') {
+                    paymentUserQuery.userType = 'student';
+                    paymentUserQuery.studentCategory = studentCategory;
+                }
+                if (staffRole && staffRole !== 'all') {
+                    paymentUserQuery.userType = 'staff';
+                    paymentUserQuery.staffRole = staffRole;
                 }
                 
                 const users = await User.find(paymentUserQuery)
@@ -147,6 +175,13 @@ exports.exportData = asyncHandler(async (req, res) => {
                     }
                 });
 
+                // ✅ Filter by payment status AFTER flattening
+                const finalPaymentStatus = paymentStatus || status;
+                if (finalPaymentStatus && finalPaymentStatus !== 'all') {
+                    data = data.filter(p => p.status === finalPaymentStatus);
+                }
+
+                // ✅ Date range filter on payment date
                 if (startDate && endDate) {
                     const start = new Date(startDate);
                     const end = new Date(endDate);
@@ -157,10 +192,27 @@ exports.exportData = asyncHandler(async (req, res) => {
                 break;
             
             case 'courses':
-                const students = await User.find({ 
+                let courseQuery = { 
                     userType: 'student',
                     course: { $exists: true, $ne: '' }
-                }).select('course studentCategory').lean();
+                };
+                
+                // Apply student category filter
+                const finalCourseCategory = studentCategory || category;
+                if (finalCourseCategory && finalCourseCategory !== 'all') {
+                    courseQuery.studentCategory = finalCourseCategory;
+                }
+                
+                // ✅ Date range filter on admissionDate
+                if (startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    courseQuery.admissionDate = { $gte: start, $lte: end };
+                }
+                
+                const students = await User.find(courseQuery)
+                    .select('course studentCategory admissionDate')
+                    .lean();
                 
                 const courseMap = new Map();
                 students.forEach(s => {
@@ -178,10 +230,7 @@ exports.exportData = asyncHandler(async (req, res) => {
                 });
                 data = Array.from(courseMap.values());
                 
-                // Apply filters
-                if (category && category !== 'all') {
-                    data = data.filter(c => c.category === category);
-                }
+                // Apply course filter after aggregation
                 if (course && course !== 'all') {
                     data = data.filter(c => c.course === course);
                 }
@@ -192,7 +241,7 @@ exports.exportData = asyncHandler(async (req, res) => {
                     'attendance.present': { $exists: true }
                 };
                 
-                if (status && status !== 'all') attendanceQuery.status = status;
+                // Handle category filter
                 if (category && category !== 'all') {
                     if (category === 'staff') {
                         attendanceQuery.userType = 'staff';
@@ -200,6 +249,18 @@ exports.exportData = asyncHandler(async (req, res) => {
                         attendanceQuery.userType = 'student';
                         attendanceQuery.studentCategory = category;
                     }
+                }
+                // Override with specific filters if provided
+                if (studentCategory && studentCategory !== 'all') {
+                    attendanceQuery.userType = 'student';
+                    attendanceQuery.studentCategory = studentCategory;
+                }
+                if (staffRole && staffRole !== 'all') {
+                    attendanceQuery.userType = 'staff';
+                    attendanceQuery.staffRole = staffRole;
+                }
+                if (status && status !== 'all') {
+                    attendanceQuery.status = status;
                 }
                 
                 const usersWithAttendance = await User.find(attendanceQuery)
@@ -453,7 +514,8 @@ exports.exportData = asyncHandler(async (req, res) => {
             doc.fontSize(20).text(`${type.toUpperCase()} REPORT`, { align: 'center' });
             doc.fontSize(10).text(`Generated on: ${new Date().toLocaleString()} | Total Records: ${data.length}`, { align: 'center' });
             if (status && status !== 'all') doc.fontSize(10).text(`Status Filter: ${status}`, { align: 'center' });
-            if (category && category !== 'all') doc.fontSize(10).text(`Category Filter: ${category}`, { align: 'center' });
+            if (studentCategory && studentCategory !== 'all') doc.fontSize(10).text(`Student Category Filter: ${studentCategory}`, { align: 'center' });
+            if (staffRole && staffRole !== 'all') doc.fontSize(10).text(`Staff Role Filter: ${staffRole}`, { align: 'center' });
             if (department && department !== 'all') doc.fontSize(10).text(`Department Filter: ${department}`, { align: 'center' });
             if (course && course !== 'all') doc.fontSize(10).text(`Course Filter: ${course}`, { align: 'center' });
             doc.moveDown(2);
