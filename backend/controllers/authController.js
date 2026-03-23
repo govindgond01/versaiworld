@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
-// ✅ REGISTER USER
 exports.register = async (req, res) => {
   try {
     console.log('Register request:', req.body);
@@ -13,14 +12,14 @@ exports.register = async (req, res) => {
       name, 
       email, 
       password, 
-      role, // This should be 'userType' in your model
+      role,
+      userType,
       phone,
       studentCategory,
       staffRole,
       course
     } = req.body;
     
-    // Validation
     if (!name || !email || !password) {
       return res.status(400).json({ 
         success: false,
@@ -28,7 +27,6 @@ exports.register = async (req, res) => {
       });
     }
     
-    // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ 
@@ -37,79 +35,71 @@ exports.register = async (req, res) => {
       });
     }
     
-    // Validate role/userType
+    const finalUserType = userType || role || 'student';
     const allowedUserTypes = ['admin', 'student', 'staff'];
-    const userType = role || 'student';
     
-    if (!allowedUserTypes.includes(userType)) {
+    if (!allowedUserTypes.includes(finalUserType)) {
       return res.status(400).json({ 
         success: false,
         message: 'Invalid user type' 
       });
     }
     
-    // Additional validations based on userType
-    if (userType === 'student' && !studentCategory) {
+    if (finalUserType === 'student' && !studentCategory) {
       return res.status(400).json({ 
         success: false,
         message: 'Student category is required for students' 
       });
     }
     
-    if (userType === 'staff' && !staffRole) {
+    if (finalUserType === 'staff' && !staffRole) {
       return res.status(400).json({ 
         success: false,
         message: 'Staff role is required for staff' 
       });
     }
     
-    // Create user data object
     const userData = {
       name,
       email,
       phone: phone || '',
       password,
-      userType,
+      userType: finalUserType,
       status: 'active',
       isActive: true,
       profileImage: req.body.profileImage || '',
-      studentCategory: userType === 'student' ? studentCategory : undefined,
-      staffRole: userType === 'staff' ? staffRole : undefined
+      studentCategory: finalUserType === 'student' ? studentCategory : undefined,
+      staffRole: finalUserType === 'staff' ? staffRole : undefined
     };
     
-    // Handle course for academy students
-    if (userType === 'student' && studentCategory === 'academy') {
-      userData.course = course || 'RS-CIT';  // Default to RS-CIT if not provided
+    if (finalUserType === 'student' && studentCategory === 'academy') {
+      userData.course = course || 'RS CIT';
     } else {
-      userData.course = '';  // Staff/admin/library student ke liye empty string
+      userData.course = '';
     }
     
-    // Add specific fields based on userType
-    if (userType === 'student') {
+    if (finalUserType === 'student') {
       userData.membershipDuration = '1_month';
     }
     
-    if (userType === 'staff') {
+    if (finalUserType === 'staff') {
       userData.salaryType = 'monthly';
     }
     
     const user = await User.create(userData);
     
-    // Generate tokens
     const token = generateToken(user);
     const refreshToken = generateRefreshToken(user);
     
-    // Save refresh token
     user.refreshToken = refreshToken;
     await user.save();
     
-    // Prepare response
     const userResponse = {
       id: user._id,
       userId: user.userId,
       name: user.name,
       email: user.email,
-      role: user.userType, // Map userType to role for frontend
+      role: user.userType,
       phone: user.phone,
       status: user.status,
       profileImage: user.profileImage,
@@ -117,7 +107,6 @@ exports.register = async (req, res) => {
       createdAt: user.createdAt
     };
     
-    // Add type-specific fields
     if (user.userType === 'student') {
       userResponse.studentCategory = user.studentCategory;
       userResponse.membershipDuration = user.membershipDuration;
@@ -129,19 +118,18 @@ exports.register = async (req, res) => {
       userResponse.salaryType = user.salaryType;
     }
     
-    // Set httpOnly cookies
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      maxAge: 15 * 60 * 1000 // 15 minutes
+      maxAge: 15 * 60 * 1000
     });
     
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
     res.status(201).json({
@@ -153,7 +141,6 @@ exports.register = async (req, res) => {
   } catch (error) {
     console.error('Register error:', error);
     
-    // Handle duplicate key errors
     if (error.code === 11000) {
       if (error.keyPattern && error.keyPattern.email) {
         return res.status(400).json({
@@ -177,14 +164,12 @@ exports.register = async (req, res) => {
   }
 };
 
-// ✅ LOGIN USER
 exports.login = async (req, res) => {
   try {
     console.log('Login request:', req.body);
     
     const { email, password } = req.body;
 
-    // Validation
     if (!email || !password) {
       return res.status(400).json({ 
         success: false,
@@ -192,7 +177,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ 
@@ -201,7 +185,6 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check if account is locked
     if (user.lockUntil && user.lockUntil > Date.now()) {
       return res.status(423).json({ 
         success: false,
@@ -209,15 +192,12 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Check password
     const isPasswordMatch = await user.comparePassword(password);
     if (!isPasswordMatch) {
-      // Increment login attempts
       user.loginAttempts += 1;
       
-      // Lock account after 5 failed attempts for 2 hours
       if (user.loginAttempts >= 5) {
-        user.lockUntil = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
+        user.lockUntil = Date.now() + 2 * 60 * 60 * 1000;
       }
       
       await user.save();
@@ -228,13 +208,11 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Reset login attempts on successful login
     user.loginAttempts = 0;
     user.lockUntil = undefined;
     user.lastLogin = new Date();
     user.isActive = true;
     
-    // Check if user is active
     if (user.status !== 'active' || !user.isActive) {
       return res.status(403).json({ 
         success: false,
@@ -242,21 +220,18 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Generate tokens
     const token = generateToken(user);
     const refreshToken = generateRefreshToken(user);
     
-    // Save refresh token to user
     user.refreshToken = refreshToken;
     await user.save();
 
-    // Prepare response
     const userResponse = {
       id: user._id,
       userId: user.userId,
       name: user.name,
       email: user.email,
-      role: user.userType, // userType -> role mapping for frontend
+      role: user.userType,
       phone: user.phone,
       status: user.status,
       profileImage: user.profileImage,
@@ -264,7 +239,6 @@ exports.login = async (req, res) => {
       createdAt: user.createdAt
     };
     
-    // Add type-specific fields
     if (user.userType === 'student') {
       userResponse.studentCategory = user.studentCategory;
       userResponse.membershipDuration = user.membershipDuration;
@@ -281,27 +255,26 @@ exports.login = async (req, res) => {
       userResponse.isAdmin = true;
     }
 
-    // Set httpOnly cookies
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      maxAge: 15 * 60 * 1000 // 15 minutes
+      maxAge: 15 * 60 * 1000
     });
     
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
     res.json({
-  success: true,
-  message: 'Login successful',
-  token: token,  
-  user: userResponse
-});
+      success: true,
+      message: 'Login successful',
+      token: token,  
+      user: userResponse
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ 
@@ -312,7 +285,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// ✅ GET CURRENT USER
 exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -324,13 +296,12 @@ exports.getMe = async (req, res) => {
       });
     }
     
-    // Prepare response
     const userResponse = {
       id: user._id,
       userId: user.userId,
       name: user.name,
       email: user.email,
-      role: user.userType, // Map userType to role
+      role: user.userType,
       phone: user.phone,
       status: user.status,
       profileImage: user.profileImage,
@@ -341,14 +312,11 @@ exports.getMe = async (req, res) => {
       updatedAt: user.updatedAt
     };
     
-    // Add type-specific fields
     if (user.userType === 'student') {
       userResponse.studentCategory = user.studentCategory;
       userResponse.membershipDuration = user.membershipDuration;
       userResponse.admissionDate = user.admissionDate;
       userResponse.expiryDate = user.expiryDate;
-      
-      // Financial info for students
       userResponse.financials = user.financials || {};
     }
     
@@ -356,8 +324,6 @@ exports.getMe = async (req, res) => {
       userResponse.staffRole = user.staffRole;
       userResponse.salaryType = user.financials?.salaryType;
       userResponse.joinDate = user.joinDate;
-      
-      // Financial info for staff
       userResponse.financials = user.financials || {};
     }
     
@@ -379,7 +345,6 @@ exports.getMe = async (req, res) => {
   }
 };
 
-// ✅ LOGOUT (Clear cookies)
 exports.logout = (req, res) => {
   res.clearCookie('token');
   res.clearCookie('refreshToken');
@@ -389,7 +354,6 @@ exports.logout = (req, res) => {
   });
 };
 
-// ✅ REFRESH TOKEN
 exports.refreshToken = async (req, res) => {
   try {
     const { refreshToken } = req.cookies;
@@ -401,10 +365,8 @@ exports.refreshToken = async (req, res) => {
       });
     }
 
-    // Verify refresh token
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'default_secret');
     
-    // Find user and check if refresh token matches
     const user = await User.findById(decoded.id);
     if (!user || user.refreshToken !== refreshToken) {
       return res.status(401).json({
@@ -413,7 +375,6 @@ exports.refreshToken = async (req, res) => {
       });
     }
 
-    // Check if user is still active
     if (!user.isActive || user.status !== 'active') {
       return res.status(401).json({
         success: false,
@@ -421,27 +382,24 @@ exports.refreshToken = async (req, res) => {
       });
     }
 
-    // Generate new tokens
     const newToken = generateToken(user);
     const newRefreshToken = generateRefreshToken(user);
 
-    // Update refresh token in database
     user.refreshToken = newRefreshToken;
     await user.save();
 
-    // Set new cookies
     res.cookie('token', newToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      maxAge: 15 * 60 * 1000 // 15 minutes
+      maxAge: 15 * 60 * 1000
     });
     
     res.cookie('refreshToken', newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
     res.json({
@@ -457,7 +415,6 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
-// ✅ FORGOT PASSWORD
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
@@ -471,24 +428,20 @@ exports.forgotPassword = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      // Don't reveal if email exists or not for security
       return res.json({
         success: true,
         message: 'If an account with this email exists, a password reset link has been sent.'
       });
     }
 
-    // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpiry = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const resetTokenExpiry = Date.now() + 10 * 60 * 1000;
 
-    // Save reset token to user
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = resetTokenExpiry;
     await user.save();
 
-    // Create transporter
-    const transporter = nodemailer.createTransporter({
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
@@ -496,7 +449,6 @@ exports.forgotPassword = async (req, res) => {
       }
     });
 
-    // Email template
     const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
     
     const mailOptions = {
@@ -536,7 +488,6 @@ exports.forgotPassword = async (req, res) => {
   }
 };
 
-// ✅ RESET PASSWORD
 exports.resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -549,7 +500,6 @@ exports.resetPassword = async (req, res) => {
       });
     }
 
-    // Find user with valid reset token
     const user = await User.findOne({
       resetPasswordToken: token,
       resetPasswordExpires: { $gt: Date.now() }
@@ -562,12 +512,11 @@ exports.resetPassword = async (req, res) => {
       });
     }
 
-    // Update password and clear reset token
-    user.password = password; // Will be hashed by pre-save middleware
+    user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
-    user.loginAttempts = 0; // Reset failed login attempts
-    user.lockUntil = undefined; // Unlock account if locked
+    user.loginAttempts = 0;
+    user.lockUntil = undefined;
     await user.save();
 
     res.json({
@@ -583,7 +532,6 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-// ✅ GET USER PROFILE
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -595,7 +543,6 @@ exports.getProfile = async (req, res) => {
       });
     }
     
-    // Prepare response based on user type
     const userResponse = {
       id: user._id,
       userId: user.userId,
@@ -612,7 +559,6 @@ exports.getProfile = async (req, res) => {
       updatedAt: user.updatedAt
     };
     
-    // Add type-specific fields
     if (user.userType === 'student') {
       userResponse.studentCategory = user.studentCategory;
       userResponse.membershipDuration = user.membershipDuration;
@@ -620,8 +566,6 @@ exports.getProfile = async (req, res) => {
       userResponse.expiryDate = user.endDate;
       userResponse.fatherName = user.fatherName;
       userResponse.dob = user.dob;
-      
-      // Financial info
       userResponse.totalFees = user.financials?.amount || user.fees?.totalFee || 0;
       userResponse.paidFees = user.financials?.paid || user.fees?.paidFee || 0;
       userResponse.dueFees = user.financials?.due || user.fees?.dueFee || 0;
