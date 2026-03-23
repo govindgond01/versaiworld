@@ -26,7 +26,11 @@ const AdminLibraryDashboard = () => {
         api.get('/admin/students/stats?category=library')
       ]);
 
-      const students = studentsRes.data?.students || [];
+      // 👇 FORCE FILTER - SIRF LIBRARY STUDENTS RAKHO
+      let students = studentsRes.data?.students || [];
+      students = students.filter(s => s.studentCategory === 'library');
+      console.log('📊 Library students after force filter:', students.length);
+
       const stats = statsRes.data || {};
 
       const libraryCategories = stats.categories || [];
