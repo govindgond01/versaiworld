@@ -59,18 +59,27 @@ exports.getAllStudents = async (req, res) => {
   }
 };
 
-// Create Student
+// ✅ FIXED: Create Student - Now handles studentCategory properly
 exports.addStudent = async (req, res) => {
   try {
-    const { name, email, phone, totalFees, admissionDate, studentType = "academy", membershipDuration = "1_month", course } = req.body;
+    const { 
+      name, email, phone, totalFees, admissionDate, 
+      studentType = "academy", 
+      membershipDuration = "1_month", 
+      course,
+      studentCategory  // 👈 ADDED - to receive category from frontend
+    } = req.body;
     
     if (await User.findOne({ email })) {
       return res.status(400).json({ success: false, error: 'User already exists' });
     }
     
+    // ✅ Priority: studentCategory (from frontend) > studentType (backup)
+    const finalCategory = studentCategory || studentType;
+    
     // ✅ Set default course for academy students
-    let finalCourse = course;
-    if (studentType === 'academy') {
+    let finalCourse = undefined;
+    if (finalCategory === 'academy') {
       finalCourse = course && course.trim() !== '' ? course : 'RS CIT';
     }
     
@@ -78,7 +87,10 @@ exports.addStudent = async (req, res) => {
     
     const student = await User.create({
       name, email, phone, password: phone || "password123", userType: "student",
-      studentCategory: studentType, admissionDate: admission, membershipDuration, status: 'active',
+      studentCategory: finalCategory,  // 👈 USES THE CORRECT CATEGORY
+      admissionDate: admission, 
+      membershipDuration, 
+      status: 'active',
       financials: { amount: totalFees || 0, paid: 0, due: totalFees || 0 },
       fees: { totalFee: totalFees || 0, paidFee: 0, dueFee: totalFees || 0, paymentHistory: [] },
       course: finalCourse
@@ -86,6 +98,7 @@ exports.addStudent = async (req, res) => {
     
     res.status(201).json({ success: true, message: 'Student added successfully', student });
   } catch (error) {
+    console.error("Add student error:", error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
