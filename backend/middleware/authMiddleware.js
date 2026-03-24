@@ -61,7 +61,7 @@ const adminOnly = (req, res, next) => {
     });
   }
 
-  if (req.user.userType === 'admin') {
+  if (req.user.userType === 'admin' || req.user.userType === 'superAdmin') {
     next();
   } else {
     res.status(403).json({
