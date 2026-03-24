@@ -164,42 +164,42 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 px-4 sm:px-0">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600 mt-1">Manage all users in the system</p>
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">User Management</h1>
+          <p className="text-xs sm:text-sm text-gray-600 mt-1">Manage all users in the system</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <button
             onClick={fetchUsers}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 w-full sm:w-auto"
           >
-            <FaDownload className="w-4 h-4" /> Refresh
+            <FaDownload className="w-3 h-3 sm:w-4 sm:h-4" /> Refresh
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <form onSubmit={handleSearch} className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <form onSubmit={handleSearch} className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <div className="relative">
-            <FaSearch className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
+            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
             />
           </div>
           <div className="relative">
-            <FaFilter className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
+            <FaFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg appearance-none text-sm"
+              className="w-full pl-9 sm:pl-10 pr-8 sm:pr-10 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-lg appearance-none text-xs sm:text-sm"
             >
               <option value="all">All Roles</option>
               <option value="superAdmin">Super Admin</option>
@@ -209,11 +209,11 @@ const UserManagement = () => {
             </select>
           </div>
           <div className="relative">
-            <FaUserCheck className="absolute left-3 top-3 text-gray-400 w-4 h-4" />
+            <FaUserCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg appearance-none text-sm"
+              className="w-full pl-9 sm:pl-10 pr-8 sm:pr-10 py-2 sm:py-2.5 bg-white border border-gray-200 rounded-lg appearance-none text-xs sm:text-sm"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -224,9 +224,9 @@ const UserManagement = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="flex-1 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
+              className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 bg-blue-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-blue-700 flex items-center justify-center gap-1 sm:gap-2"
             >
-              <FaSearch className="w-4 h-4" /> Search
+              <FaSearch className="w-3 h-3 sm:w-4 sm:h-4" /> Search
             </button>
             <button
               type="button"
@@ -237,7 +237,7 @@ const UserManagement = () => {
                 setCurrentPage(1);
                 fetchUsers();
               }}
-              className="px-4 py-2.5 border border-gray-200 bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+              className="px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-200 bg-white text-gray-700 text-xs sm:text-sm font-medium rounded-lg hover:bg-gray-50"
             >
               Clear
             </button>
@@ -250,18 +250,19 @@ const UserManagement = () => {
         {loading ? (
           <Loader type="table" rows={8} cols={5} />
         ) : !users.length ? (
-          <div className="text-center py-12">
-            <FaUser className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">No users found</p>
+          <div className="text-center py-8 sm:py-12">
+            <FaUser className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+            <p className="text-sm sm:text-base text-gray-500">No users found</p>
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden lg:block overflow-x-auto">
               <table className="min-w-full">
                 <thead className="bg-gray-50">
                   <tr>
                     {['User Details', 'Role', 'Status', 'Last Login', 'Actions'].map(h => (
-                      <th key={h} className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">{h}</th>
+                      <th key={h} className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -271,63 +272,63 @@ const UserManagement = () => {
                     const statusConfig = getStatusBadge(user.isActive, user.status);
                     return (
                       <tr key={user._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                              <FaUser className="w-5 h-5 text-gray-600" />
+                        <td className="px-4 sm:px-6 py-3 sm:py-4">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                              <FaUser className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                             </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{user.name}</p>
-                              <p className="text-sm text-gray-500">{user.email}</p>
-                              <p className="text-xs text-gray-400">ID: {user.userId}</p>
+                            <div className="min-w-0">
+                              <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{user.name}</p>
+                              <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                              <p className="text-[10px] sm:text-xs text-gray-400 truncate">ID: {user.userId}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full ${roleConfig.color}`}>
+                        <td className="px-4 sm:px-6 py-3 sm:py-4">
+                          <span className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium rounded-full ${roleConfig.color}`}>
                             {roleConfig.icon} {user.userType}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full ${statusConfig.color}`}>
-                            {user.isActive ? <FaUserCheck className="w-3 h-3" /> : <FaUserTimes className="w-3 h-3" />}
+                        <td className="px-4 sm:px-6 py-3 sm:py-4">
+                          <span className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium rounded-full ${statusConfig.color}`}>
+                            {user.isActive ? <FaUserCheck className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> : <FaUserTimes className="w-2.5 h-2.5 sm:w-3 sm:h-3" />}
                             {statusConfig.text}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
-                          <p className="text-sm text-gray-900">
+                        <td className="px-4 sm:px-6 py-3 sm:py-4">
+                          <p className="text-xs sm:text-sm text-gray-900">
                             {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-[10px] sm:text-xs text-gray-500">
                             {user.lastLogin ? new Date(user.lastLogin).toLocaleTimeString() : ''}
                           </p>
                         </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
+                        <td className="px-4 sm:px-6 py-3 sm:py-4">
+                          <div className="flex items-center gap-1.5 sm:gap-2">
                             <button
                               onClick={() => {
                                 setSelectedUser(user);
                                 setNewRole(user.userType);
                                 setShowRoleModal(true);
                               }}
-                              className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
+                              className="p-1.5 sm:p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
                               title="Change Role"
                             >
-                              <FaEdit className="w-4 h-4" />
+                              <FaEdit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </button>
                             <button
                               onClick={() => handleBlockUser(user._id, user.isActive)}
-                              className={`p-2 rounded-lg ${user.isActive ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-green-600 bg-green-50 hover:bg-green-100'}`}
+                              className={`p-1.5 sm:p-2 rounded-lg ${user.isActive ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-green-600 bg-green-50 hover:bg-green-100'}`}
                               title={user.isActive ? 'Block User' : 'Unblock User'}
                             >
-                              {user.isActive ? <FaUserTimes className="w-4 h-4" /> : <FaUserCheck className="w-4 h-4" />}
+                              {user.isActive ? <FaUserTimes className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <FaUserCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                             </button>
                             <button
                               onClick={() => handleDeleteUser(user._id, user.name)}
-                              className="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100"
+                              className="p-1.5 sm:p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100"
                               title="Delete User"
                             >
-                              <FaTrash className="w-4 h-4" />
+                              <FaTrash className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                             </button>
                           </div>
                         </td>
@@ -338,24 +339,98 @@ const UserManagement = () => {
               </table>
             </div>
 
+            {/* Mobile Cards */}
+            <div className="lg:hidden space-y-3 p-4">
+              {users.map(user => {
+                const roleConfig = getRoleBadge(user.userType);
+                const statusConfig = getStatusBadge(user.isActive, user.status);
+                return (
+                  <div key={user._id} className="bg-white border border-gray-200 rounded-xl p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          <FaUser className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{user.name}</p>
+                          <p className="text-xs text-gray-500">{user.email}</p>
+                          <p className="text-xs text-gray-400">ID: {user.userId}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${roleConfig.color}`}>
+                          {roleConfig.icon} {user.userType}
+                        </span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${statusConfig.color}`}>
+                          {user.isActive ? <FaUserCheck className="w-3 h-3" /> : <FaUserTimes className="w-3 h-3" />}
+                          {statusConfig.text}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="bg-gray-50 rounded-lg p-2">
+                        <p className="text-xs text-gray-500 mb-1">Last Login</p>
+                        <p className="text-xs font-medium">
+                          {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never'}
+                        </p>
+                        <p className="text-[10px] text-gray-400">
+                          {user.lastLogin ? new Date(user.lastLogin).toLocaleTimeString() : ''}
+                        </p>
+                      </div>
+                      <div className="bg-gray-50 rounded-lg p-2">
+                        <p className="text-xs text-gray-500 mb-1">Status</p>
+                        <p className="text-xs font-medium capitalize">{user.status || 'active'}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-3 border-t">
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setNewRole(user.userType);
+                          setShowRoleModal(true);
+                        }}
+                        className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
+                      >
+                        <FaEdit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleBlockUser(user._id, user.isActive)}
+                        className={`p-2 rounded-lg ${user.isActive ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-green-600 bg-green-50 hover:bg-green-100'}`}
+                      >
+                        {user.isActive ? <FaUserTimes className="w-4 h-4" /> : <FaUserCheck className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUser(user._id, user.name)}
+                        className="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100"
+                      >
+                        <FaTrash className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="px-6 py-4 border-t bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <p className="text-sm text-gray-600">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-t bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                <p className="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
                   Page {currentPage} of {totalPages} • {totalUsers} users
                 </p>
-                <div className="flex gap-2">
+                <div className="flex gap-2 justify-center">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 border bg-white text-gray-700 text-sm rounded-lg disabled:opacity-50"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 border bg-white text-gray-700 text-xs sm:text-sm rounded-lg disabled:opacity-50"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 border bg-white text-gray-700 text-sm rounded-lg disabled:opacity-50"
+                    className="px-3 sm:px-4 py-1.5 sm:py-2 border bg-white text-gray-700 text-xs sm:text-sm rounded-lg disabled:opacity-50"
                   >
                     Next
                   </button>
@@ -366,25 +441,25 @@ const UserManagement = () => {
         )}
       </div>
 
-      {/* Role Change Modal */}
+      {/* Role Change Modal - Responsive */}
       {showRoleModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900">Change User Role</h3>
-              <p className="text-sm text-gray-600 mt-1">Update role for {selectedUser.name}</p>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
+            <div className="px-4 sm:px-6 py-4 border-b border-gray-200">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900">Change User Role</h3>
+              <p className="text-xs sm:text-sm text-gray-600 mt-1">Update role for {selectedUser.name}</p>
             </div>
 
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                     New Role
                   </label>
                   <select
                     value={newRole}
                     onChange={(e) => setNewRole(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
                     <option value="student">Student</option>
                     <option value="staff">Staff</option>
@@ -395,21 +470,21 @@ const UserManagement = () => {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-200 flex justify-end gap-2 sm:gap-3">
               <button
                 onClick={() => {
                   setShowRoleModal(false);
                   setSelectedUser(null);
                   setNewRole('');
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleRoleChange}
                 disabled={!newRole || newRole === selectedUser.userType}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 Update Role
               </button>
