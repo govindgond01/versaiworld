@@ -294,7 +294,8 @@ const Header = ({ toggleSidebar }) => {
       <div className='h-16'>
         <div className='flex h-full items-center'>
           <div className='w-[300px] h-full border-r border-zinc-200 hidden md:flex items-center'>
-            <img className='h-10' src={logoImg} alt="Logo" />
+            
+            ' src={logoImg} alt="Logo" />
           </div>
 
           <div className='flex items-center md:hidden'>
