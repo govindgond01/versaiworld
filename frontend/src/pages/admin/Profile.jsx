@@ -10,7 +10,7 @@ import { GiTeacher, GiGraduateCap } from 'react-icons/gi';
 import { MdLocalLibrary } from 'react-icons/md';
 import { BsPersonWorkspace } from 'react-icons/bs';
 import { toast } from 'react-hot-toast';
-import api from '../../services/api';  // 👈 CORRECT PATH - services folder
+import api from '../../services/api';  //  CORRECT PATH - services folder
 import Loader from '../../components/common/Loader';
 
 const Profile = () => {
@@ -25,7 +25,7 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  // ✅ FETCH USER DATA
+  //  FETCH USER DATA
   const fetchUserData = async () => {
     try {
       const res = await api.get('/auth/me');
@@ -41,7 +41,7 @@ const Profile = () => {
     }
   };
 
-  // ✅ GET IMAGE URL
+  //  GET IMAGE URL
   const getImageUrl = () => {
     if (!user?.profileImage) return null;
     
@@ -63,7 +63,7 @@ const Profile = () => {
     return null;
   };
 
-  // ✅ IMAGE UPLOAD
+  //  IMAGE UPLOAD
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -83,7 +83,7 @@ const Profile = () => {
 
     setUploading(true);
     try {
-      // 👈 CLOUDINARY UPLOAD
+      //  CLOUDINARY UPLOAD
       const res = await api.post('/upload/profile-image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
@@ -100,7 +100,7 @@ const Profile = () => {
     }
   };
 
-  // ✅ UPDATE PROFILE
+  //  UPDATE PROFILE
   const handleUpdate = async () => {
     try {
       const res = await api.put('/auth/me', formData);

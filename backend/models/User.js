@@ -210,15 +210,15 @@
     return this.userType === 'admin';
   });
 
-  // ✅ FINAL FIXED Pre-save hook
+  //  FINAL FIXED Pre-save hook
   UserSchema.pre("save", async function(next) {
     // NULL CHECK
     if (!this) {
-      console.log('❌ No document in pre-save hook');
+      console.log(' No document in pre-save hook');
       return next();
     }
     
-    // ✅ ADMIN KE LIYE SAB STUDENT FIELDS HATA DO
+    //  ADMIN KE LIYE SAB STUDENT FIELDS HATA DO
     if (this.userType === 'admin') {
       this.attendance = undefined;
       this.fees = undefined;

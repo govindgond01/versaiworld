@@ -312,7 +312,7 @@ const PaymentsDashboard = () => {
           {duePayments.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
               <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl sm:text-4xl">✅</span>
+                <span className="text-3xl sm:text-4xl"></span>
               </div>
               <p className="text-sm sm:text-base font-medium text-gray-900">No pending due payments</p>
               <p className="text-xs sm:text-sm text-gray-500 mt-1">All members are up to date!</p>

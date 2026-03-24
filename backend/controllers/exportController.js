@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/User');
 const excelJs = require('exceljs');
 
-// ✅ Get all categories for filters
+//  Get all categories for filters
 exports.getCategories = asyncHandler(async (req, res) => {
   try {
     // Get unique student categories
@@ -68,7 +68,7 @@ exports.getCategories = asyncHandler(async (req, res) => {
   }
 });
 
-// ✅ Export Data
+//  Export Data
 exports.exportData = asyncHandler(async (req, res) => {
     try {
         const { type } = req.params;
@@ -86,7 +86,7 @@ exports.exportData = asyncHandler(async (req, res) => {
         if (department && department !== 'all') filename += `_${department}`;
         if (course && course !== 'all') filename += `_${course}`;
 
-        // ✅ Fetch data based on type from User model
+        //  Fetch data based on type from User model
         switch (type) {
             case 'students':
                 let studentQuery = { userType: 'student' };
@@ -97,7 +97,7 @@ exports.exportData = asyncHandler(async (req, res) => {
                 if (finalStudentCategory && finalStudentCategory !== 'all') studentQuery.studentCategory = finalStudentCategory;
                 if (course && course !== 'all') studentQuery.course = course;
                 
-                // ✅ Date range filter on admissionDate
+                //  Date range filter on admissionDate
                 if (startDate && endDate) {
                     const start = new Date(startDate);
                     const end = new Date(endDate);
@@ -118,7 +118,7 @@ exports.exportData = asyncHandler(async (req, res) => {
                 if (finalStaffRole && finalStaffRole !== 'all') staffQuery.staffRole = finalStaffRole;
                 if (department && department !== 'all') staffQuery.department = department;
                 
-                // ✅ Date range filter on joinDate
+                //  Date range filter on joinDate
                 if (startDate && endDate) {
                     const start = new Date(startDate);
                     const end = new Date(endDate);
@@ -175,13 +175,13 @@ exports.exportData = asyncHandler(async (req, res) => {
                     }
                 });
 
-                // ✅ Filter by payment status AFTER flattening
+                //  Filter by payment status AFTER flattening
                 const finalPaymentStatus = paymentStatus || status;
                 if (finalPaymentStatus && finalPaymentStatus !== 'all') {
                     data = data.filter(p => p.status === finalPaymentStatus);
                 }
 
-                // ✅ Date range filter on payment date
+                //  Date range filter on payment date
                 if (startDate && endDate) {
                     const start = new Date(startDate);
                     const end = new Date(endDate);
@@ -203,7 +203,7 @@ exports.exportData = asyncHandler(async (req, res) => {
                     courseQuery.studentCategory = finalCourseCategory;
                 }
                 
-                // ✅ Date range filter on admissionDate
+                //  Date range filter on admissionDate
                 if (startDate && endDate) {
                     const start = new Date(startDate);
                     const end = new Date(endDate);
@@ -289,9 +289,9 @@ exports.exportData = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: `No ${type} data found with selected filters` });
         }
 
-        console.log(`✅ Found ${data.length} records for ${type}`);
+        console.log(` Found ${data.length} records for ${type}`);
 
-        // ✅ CSV Export
+        //  CSV Export
         if (format === 'csv') {
             let csvContent = '';
             
@@ -338,7 +338,7 @@ exports.exportData = asyncHandler(async (req, res) => {
             return res.send(csvContent);
         }
 
-        // ✅ Excel Export
+        //  Excel Export
         if (format === 'excel') {
             const workbook = new excelJs.Workbook();
             const worksheet = workbook.addWorksheet(type.charAt(0).toUpperCase() + type.slice(1));
@@ -501,7 +501,7 @@ exports.exportData = asyncHandler(async (req, res) => {
             return res.end();
         }
 
-        // ✅ PDF Export
+        //  PDF Export
         if (format === 'pdf') {
             const PDFDocument = require('pdfkit');
             const doc = new PDFDocument({ margin: 50 });
@@ -605,7 +605,7 @@ exports.exportData = asyncHandler(async (req, res) => {
         res.status(400).json({ message: 'Format not supported. Use csv, excel or pdf.' });
         
     } catch (error) {
-        console.error('❌ Export error:', error);
+        console.error(' Export error:', error);
         res.status(500).json({ 
             message: `Export failed for ${req.params.type}`, 
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error' 

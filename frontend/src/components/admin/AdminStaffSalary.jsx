@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../services/api';  // ✅ Using api instance instead of axios
+import api from '../../services/api';  //  Using api instance instead of axios
 import { toast } from 'react-hot-toast';
 import Loader from '../common/Loader';
 
@@ -53,7 +53,7 @@ const AdminStaffSalary = () => {
     if (!selectedStaff) return;
     
     try {
-      await api.post('/payments/make', {  // ✅ Using api instance
+      await api.post('/payments/make', {  //  Using api instance
         userId: selectedStaff._id,
         ...paymentData,
         type: 'salary'
@@ -81,7 +81,7 @@ const AdminStaffSalary = () => {
     if (!selectedStaff) return;
     
     try {
-      await api.put(`/payments/update-total/${selectedStaff._id}`, {  // ✅ Using api instance
+      await api.put(`/payments/update-total/${selectedStaff._id}`, {  //  Using api instance
         totalAmount: updateData.salary
       });
 

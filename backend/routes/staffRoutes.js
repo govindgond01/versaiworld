@@ -3,11 +3,11 @@ const router = express.Router();
 const staffController = require('../controllers/staffController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
-// ✅ ALL ROUTES REQUIRE AUTHENTICATION
+//  ALL ROUTES REQUIRE AUTHENTICATION
 router.use(protect);
 
 // ==========================================
-// ✅ STATIC ROUTES - PEHLE (MOST SPECIFIC)
+//  STATIC ROUTES - PEHLE (MOST SPECIFIC)
 // ==========================================
 router.get('/dashboard-stats', adminOnly, staffController.getStaffDashboardStats);
 router.get('/stats', adminOnly, staffController.getStaffStats);
@@ -17,7 +17,7 @@ router.post('/', adminOnly, staffController.createStaff);
 router.get('/', adminOnly, staffController.getAllStaff);
 
 // ==========================================
-// ✅ DYNAMIC ROUTES - BAAD MEIN (LESS SPECIFIC)
+//  DYNAMIC ROUTES - BAAD MEIN (LESS SPECIFIC)
 // ==========================================
 router.get('/:id', staffController.getStaffById);
 router.put('/:id', adminOnly, staffController.updateStaff);

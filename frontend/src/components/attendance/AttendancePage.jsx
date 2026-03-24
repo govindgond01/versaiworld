@@ -52,7 +52,7 @@ const AttendancePage = ({
         }
     };
 
-    // ✅ FIXED: Mark attendance with proper error handling
+    //  FIXED: Mark attendance with proper error handling
     const markAttendance = async (status) => {
         try {
             setMarking(true);
@@ -86,7 +86,7 @@ const AttendancePage = ({
                     const present = month.stats.present || 0;
                     const halfDay = month.stats.halfDay || 0;
 
-                    // ✅ FIX: Total days = month ke total days
+                    //  FIX: Total days = month ke total days
                     const weightedPresent = present + (halfDay * 0.5);
                     const percentage = Math.round((weightedPresent / totalDaysInMonth) * 100);
 
@@ -108,8 +108,8 @@ const AttendancePage = ({
         }
     };
 
-    // ✅ FIXED: Percentage calculation
-    // ✅ FIXED: Overall percentage calculation
+    //  FIXED: Percentage calculation
+    //  FIXED: Overall percentage calculation
 const calculateStats = () => {
   let present = 0, absent = 0, halfDay = 0;
   let totalDaysInYear = 0;

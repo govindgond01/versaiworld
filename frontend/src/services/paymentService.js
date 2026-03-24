@@ -1,14 +1,14 @@
 // src/services/paymentService.js
-import api from './api'; // ✅ Use the api instance
+import api from './api'; //  Use the api instance
 
 const paymentService = {
-  // ✅ Record manual payment (offline)
+  //  Record manual payment (offline)
   recordPayment: async (paymentData) => {
     const response = await api.post('/payments/record', paymentData);
     return response.data;
   },
 
-  // ✅ Get users by category (academy/library/staff)
+  //  Get users by category (academy/library/staff)
   getUsersByCategory: async (category, search = '') => {
     const response = await api.get(
       `/payments/${category}${search ? `?search=${search}` : ''}`
@@ -16,7 +16,7 @@ const paymentService = {
     return response.data;
   },
 
-  // ✅ Search users (quick search for recording payment)
+  //  Search users (quick search for recording payment)
   searchUsers: async (searchTerm, category = '') => {
     const response = await api.get(
       `/payments/search?q=${searchTerm}&category=${category}`
@@ -24,13 +24,13 @@ const paymentService = {
     return response.data;
   },
 
-  // ✅ Get payment history for a user
+  //  Get payment history for a user
   getPaymentHistory: async (userId) => {
     const response = await api.get(`/payments/history/${userId}`);
     return response.data;
   },
 
-  // ✅ Print receipt (offline - manual payment)
+  //  Print receipt (offline - manual payment)
   printReceipt: (paymentData) => {
     // ... same as before
   }

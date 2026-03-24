@@ -1,10 +1,10 @@
 const User = require('../models/User');
 
-// ✅ CREATE STUDENT - WITH FATHERNAME & DOB
+//  CREATE STUDENT - WITH FATHERNAME & DOB
 exports.createStudent = async (req, res) => {
   try {
-    console.log('🔥 CREATE STUDENT REQUEST');
-    console.log('📦 Body:', JSON.stringify(req.body, null, 2));
+    console.log(' CREATE STUDENT REQUEST');
+    console.log(' Body:', JSON.stringify(req.body, null, 2));
     console.log('📌 Course value:', req.body.course);
     console.log('📌 Course type:', typeof req.body.course);
     
@@ -25,7 +25,7 @@ exports.createStudent = async (req, res) => {
     
     console.log('📌 After destructure - course:', course);
     
-    // ✅ Course only for academy students
+    //  Course only for academy students
     let finalCourse = undefined;
     if (studentCategory === 'academy') {
       finalCourse = course && course.trim() !== '' ? course : 'RS CIT';
@@ -116,7 +116,7 @@ exports.createStudent = async (req, res) => {
   }
 };
 
-// ✅ GET ALL STUDENTS - WITH FORCE FILTER (FINAL FIX)
+//  GET ALL STUDENTS - WITH FORCE FILTER (FINAL FIX)
 exports.getAllStudents = async (req, res) => {
   try {
     const { 
@@ -143,7 +143,7 @@ exports.getAllStudents = async (req, res) => {
     if (status && status !== "all") filter.status = status;
     if (course && course !== "all") filter.course = course;
     
-    // ✅ STRICT CATEGORY FILTER
+    //  STRICT CATEGORY FILTER
     if (studentCategory && studentCategory !== "all") {
       filter.studentCategory = studentCategory;
     }
@@ -155,7 +155,7 @@ exports.getAllStudents = async (req, res) => {
       .limit(+limit)
       .lean();
     
-    // ✅ FORCE FILTER - Double check to ensure correct category
+    //  FORCE FILTER - Double check to ensure correct category
     let finalStudents = students;
     if (studentCategory && studentCategory !== "all") {
       finalStudents = students.filter(s => s.studentCategory === studentCategory);
@@ -203,7 +203,7 @@ exports.getAllStudents = async (req, res) => {
   }
 };
 
-// ✅ GET STUDENT BY ID - WITH FATHERNAME & DOB
+//  GET STUDENT BY ID - WITH FATHERNAME & DOB
 exports.getStudentById = async (req, res) => {
   try {
     const student = await User.findOne({ 
@@ -259,7 +259,7 @@ exports.getStudentById = async (req, res) => {
   }
 };
 
-// ✅ UPDATE STUDENT - WITH FATHERNAME & DOB
+//  UPDATE STUDENT - WITH FATHERNAME & DOB
 exports.updateStudent = async (req, res) => {
   try {
     const { totalFees, paidFees, fatherName, dob, ...otherUpdates } = req.body;
@@ -329,7 +329,7 @@ exports.updateStudent = async (req, res) => {
   }
 };
 
-// ✅ DELETE STUDENT
+//  DELETE STUDENT
 exports.deleteStudent = async (req, res) => {
   try {
     const student = await User.findOneAndDelete({ 
@@ -357,7 +357,7 @@ exports.deleteStudent = async (req, res) => {
   }
 };
 
-// ✅ UPDATE STUDENT STATUS
+//  UPDATE STUDENT STATUS
 exports.updateStudentStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -389,7 +389,7 @@ exports.updateStudentStatus = async (req, res) => {
   }
 };
 
-// ✅ GET ACTIVE STUDENTS
+//  GET ACTIVE STUDENTS
 exports.getActiveStudents = async (req, res) => {
   try {
     const startOfMonth = new Date();
@@ -440,7 +440,7 @@ exports.getActiveStudents = async (req, res) => {
   }
 };
 
-// ✅ GET STUDENT STATS
+//  GET STUDENT STATS
 exports.getStudentStats = async (req, res) => {
   try {
     const [categories, courses, active, total, departments] = await Promise.all([
@@ -489,7 +489,7 @@ exports.getStudentStats = async (req, res) => {
   }
 };
 
-// ✅ GET EXPIRING STUDENTS
+//  GET EXPIRING STUDENTS
 exports.getExpiringStudents = async (req, res) => {
   try {
     const today = new Date();
@@ -519,7 +519,7 @@ exports.getExpiringStudents = async (req, res) => {
   }
 };
 
-// ✅ RENEW MEMBERSHIP
+//  RENEW MEMBERSHIP
 exports.renewMembership = async (req, res) => {
   try {
     const { id } = req.params;
@@ -570,7 +570,7 @@ exports.renewMembership = async (req, res) => {
   }
 };
 
-// ✅ EXPORT STUDENTS
+//  EXPORT STUDENTS
 exports.exportStudents = async (req, res) => {
   try {
     const students = await User.find({ userType: "student" })
@@ -615,7 +615,7 @@ exports.exportStudents = async (req, res) => {
   }
 };
 
-// ✅ GET STUDENT BY EMAIL
+//  GET STUDENT BY EMAIL
 exports.getStudentByEmail = async (req, res) => {
   try {
     const { email } = req.params;
@@ -659,7 +659,7 @@ exports.getStudentByEmail = async (req, res) => {
   }
 };
 
-// ✅ GET STUDENTS BY COURSE
+//  GET STUDENTS BY COURSE
 exports.getStudentsByCourse = async (req, res) => {
   try {
     const { course } = req.params;

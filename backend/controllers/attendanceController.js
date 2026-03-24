@@ -26,7 +26,7 @@ async function updateUserAttendance(userId) {
 // USER ROUTES - Sirf today mark kar sakte hain
 // ==========================================
 
-// ✅ Mark attendance
+//  Mark attendance
 exports.markMyAttendance = async (req, res) => {
   try {
     const { status } = req.body;
@@ -70,7 +70,7 @@ exports.markMyAttendance = async (req, res) => {
   }
 };
 
-// ✅ Get today's attendance
+//  Get today's attendance
 exports.getMyTodayAttendance = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -93,7 +93,7 @@ exports.getMyTodayAttendance = async (req, res) => {
   }
 };
 
-// ✅ Get monthly attendance
+//  Get monthly attendance
 exports.getMyMonthlyAttendance = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -126,7 +126,7 @@ exports.getMyMonthlyAttendance = async (req, res) => {
   }
 };
 
-// ✅ Get all attendance history (year wise)
+//  Get all attendance history (year wise)
 exports.getMyAllAttendance = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -175,7 +175,7 @@ exports.getMyAllAttendance = async (req, res) => {
 // ADMIN ROUTES - Full control
 // ==========================================
 
-// ✅ Admin: Mark user attendance - FIXED
+//  Admin: Mark user attendance - FIXED
 exports.markUserAttendance = async (req, res) => {
   try {
     const { userId, status, date } = req.body;
@@ -245,7 +245,7 @@ exports.markUserAttendance = async (req, res) => {
   }
 };
 
-// ✅ Admin: Update attendance - FIXED
+//  Admin: Update attendance - FIXED
 exports.updateAttendance = async (req, res) => {
   try {
     const { attendanceId } = req.params;
@@ -295,7 +295,7 @@ exports.updateAttendance = async (req, res) => {
   }
 };
 
-// ✅ Admin: Delete attendance
+//  Admin: Delete attendance
 exports.deleteAttendance = async (req, res) => {
   try {
     const { attendanceId } = req.params;
@@ -336,7 +336,7 @@ exports.deleteAttendance = async (req, res) => {
   }
 };
 
-// ✅ Admin: Get user's today attendance
+//  Admin: Get user's today attendance
 exports.getUserTodayAttendance = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -359,7 +359,7 @@ exports.getUserTodayAttendance = async (req, res) => {
   }
 };
 
-// ✅ Admin: Get user's monthly attendance
+//  Admin: Get user's monthly attendance
 exports.getUserMonthlyAttendance = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -392,7 +392,7 @@ exports.getUserMonthlyAttendance = async (req, res) => {
   }
 };
 
-// ✅ Admin: Get all attendances
+//  Admin: Get all attendances
 exports.getAllAttendances = async (req, res) => {
   try {
     const { date, status, userId, page = 1, limit = 20 } = req.query;
@@ -431,7 +431,7 @@ exports.getAllAttendances = async (req, res) => {
   }
 };
 
-// ✅ Admin: Get all attendance for a date
+//  Admin: Get all attendance for a date
 exports.getAllAttendanceByDate = async (req, res) => {
   try {
     const { date } = req.query;

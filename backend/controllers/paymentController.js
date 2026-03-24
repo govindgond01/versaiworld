@@ -2,9 +2,9 @@ const User = require('../models/User');
 const Payment = require('../models/Payment');
 
 // ==========================================
-// ✅ ADD PAYMENT - 100% WORKING
+//  ADD PAYMENT - 100% WORKING
 // ==========================================
-// ✅ ADD PAYMENT - 100% WORKING (ADDRESS FIXED)
+//  ADD PAYMENT - 100% WORKING (ADDRESS FIXED)
 exports.addPayment = async (req, res) => {
   try {
     const { userId, amount, type, paymentMethod, month, description, transactionId, receiptNo } = req.body;
@@ -24,7 +24,7 @@ exports.addPayment = async (req, res) => {
       });
     }
     
-    // 🔥🔥🔥 CRITICAL FIX - ADDRESS KO OBJECT BANAO AGAR STRING HAI
+    //  CRITICAL FIX - ADDRESS KO OBJECT BANAO AGAR STRING HAI
     if (typeof user.address === 'string') {
       user.address = {
         street: user.address || "",
@@ -92,7 +92,7 @@ exports.addPayment = async (req, res) => {
       user.fees.paymentHistory.push(paymentData);
     }
     
-    // ✅ Create Payment record in standalone Payment collection
+    //  Create Payment record in standalone Payment collection
     const paymentRecord = await Payment.create({
       user: user._id,
       amount: paymentData.amount,
@@ -116,7 +116,7 @@ exports.addPayment = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Add payment error:", error);
+    console.error(" Add payment error:", error);
     res.status(500).json({ 
       success: false, 
       message: "Server error", 
@@ -126,7 +126,7 @@ exports.addPayment = async (req, res) => {
 };
 
 // ==========================================
-// ✅ GET PAYMENTS BY CATEGORY - WORKING
+//  GET PAYMENTS BY CATEGORY - WORKING
 // ==========================================
 exports.getPaymentsByCategory = async (req, res) => {
   try {
@@ -147,7 +147,7 @@ exports.getPaymentsByCategory = async (req, res) => {
     let totalDue = 0;
     
     const formattedUsers = users.map(user => {
-      // ✅ FINANCIALS SE DATA LO, NAHI TO FEES SE
+      //  FINANCIALS SE DATA LO, NAHI TO FEES SE
       const financials = user.financials || {};
       const fees = user.fees || {};
       
@@ -212,13 +212,13 @@ exports.getPaymentsByCategory = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Get payments by category error:", error);
+    console.error(" Get payments by category error:", error);
     res.status(500).json({ success: false, message: "Server error", error: error.message });
   }
 };
 
 // ==========================================
-// ✅ GET MY PAYMENTS - WORKING
+//  GET MY PAYMENTS - WORKING
 // ==========================================
 exports.getMyPayments = async (req, res) => {
   try {
@@ -254,13 +254,13 @@ exports.getMyPayments = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Get my payments error:", error);
+    console.error(" Get my payments error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 // ==========================================
-// ✅ GET PAYMENT HISTORY - WORKING
+//  GET PAYMENT HISTORY - WORKING
 // ==========================================
 exports.getPaymentHistory = async (req, res) => {
   try {
@@ -323,13 +323,13 @@ exports.getPaymentHistory = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Get payment history error:", error);
+    console.error(" Get payment history error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 // ==========================================
-// ✅ GET USERS WITH DUE PAYMENTS - WORKING
+//  GET USERS WITH DUE PAYMENTS - WORKING
 // ==========================================
 exports.getUsersWithDuePayments = async (req, res) => {
   try {
@@ -407,13 +407,13 @@ exports.getUsersWithDuePayments = async (req, res) => {
     res.json({ success: true, users: formattedUsers, count: formattedUsers.length });
     
   } catch (error) {
-    console.error("❌ Get users with due payments error:", error);
+    console.error(" Get users with due payments error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 // ==========================================
-// ✅ GET PAYMENT SUMMARY - WORKING
+//  GET PAYMENT SUMMARY - WORKING
 // ==========================================
 exports.getPaymentSummary = async (req, res) => {
   try {
@@ -476,13 +476,13 @@ exports.getPaymentSummary = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Get payment summary error:", error);
+    console.error(" Get payment summary error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 // ==========================================
-// ✅ GENERATE RECEIPT - WORKING
+//  GENERATE RECEIPT - WORKING
 // ==========================================
 exports.generateReceipt = async (req, res) => {
   try {
@@ -529,7 +529,7 @@ exports.generateReceipt = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Generate receipt error:", error);
+    console.error(" Generate receipt error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

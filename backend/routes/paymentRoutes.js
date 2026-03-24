@@ -4,11 +4,11 @@ const paymentController = require('../controllers/paymentController');
 const User = require('../models/User');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
-// ✅ ALL ROUTES REQUIRE AUTHENTICATION
+//  ALL ROUTES REQUIRE AUTHENTICATION
 router.use(protect);
 
 // ==========================================
-// ✅ PUBLIC ROUTES - Koi bhi authenticated user
+//  PUBLIC ROUTES - Koi bhi authenticated user
 // ==========================================
 
 // 📌 Apni payments dekhna
@@ -33,7 +33,7 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/receipt/:userId/:paymentId', paymentController.generateReceipt);
 
 // ==========================================
-// ✅ ADMIN ONLY ROUTES - Sirf admin
+//  ADMIN ONLY ROUTES - Sirf admin
 // ==========================================
 
 // 📌 Category wise payments
@@ -41,7 +41,7 @@ router.get('/category/:category', adminOnly, paymentController.getPaymentsByCate
 
 // 📌 Naya payment add karna (RESTful: POST to collection)
 router.post('/', adminOnly, paymentController.addPayment);
-// ✅ BACKWARD COMPATIBILITY: Keep old /add endpoint for 6 months
+//  BACKWARD COMPATIBILITY: Keep old /add endpoint for 6 months
 router.post('/add', adminOnly, paymentController.addPayment);
 
 // 📌 Complete payment history with filters

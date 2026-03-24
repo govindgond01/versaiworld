@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-// ✅ GET MY SETTINGS
+//  GET MY SETTINGS
 exports.getMySettings = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -44,7 +44,7 @@ exports.getMySettings = async (req, res) => {
   }
 };
 
-// ✅ UPDATE PROFILE SETTINGS
+//  UPDATE PROFILE SETTINGS
 exports.updateProfile = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -84,7 +84,7 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-// ✅ UPDATE NOTIFICATION SETTINGS
+//  UPDATE NOTIFICATION SETTINGS
 exports.updateNotificationSettings = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -117,7 +117,7 @@ exports.updateNotificationSettings = async (req, res) => {
   }
 };
 
-// ✅ CHANGE PASSWORD
+//  CHANGE PASSWORD
 exports.changePassword = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -163,7 +163,7 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-// ✅ UPDATE PROFILE IMAGE (URL only - Cloudinary upload handled separately)
+//  UPDATE PROFILE IMAGE (URL only - Cloudinary upload handled separately)
 exports.updateProfileImage = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -195,7 +195,7 @@ exports.updateProfileImage = async (req, res) => {
   }
 };
 
-// ✅ DELETE ACCOUNT (Admin only or self)
+//  DELETE ACCOUNT (Admin only or self)
 exports.deleteAccount = async (req, res) => {
   try {
     const userId = req.user.id;

@@ -179,7 +179,7 @@ const CategoryPayments = ({ category }) => {
           {!usersWithDue.length ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-2xl">✅</span>
+                <span className="text-2xl"></span>
               </div>
               <p className="text-gray-900 font-medium">No pending due payments</p>
               <p className="text-sm text-gray-500 mt-1">All members are up to date!</p>
@@ -237,7 +237,7 @@ const CategoryPayments = ({ category }) => {
           {!usersWithDue.length ? (
             <div className="text-center py-8">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-2xl">✅</span>
+                <span className="text-2xl"></span>
               </div>
               <p className="text-gray-900 font-medium">No pending due payments</p>
               <p className="text-sm text-gray-500 mt-1">All members are up to date!</p>

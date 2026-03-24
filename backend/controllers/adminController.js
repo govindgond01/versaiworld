@@ -57,7 +57,7 @@ exports.getAllStudents = async (req, res) => {
       .sort({ createdAt: -1 })
       .select('-password');
     
-    // ✅ FORCE FILTER - Double check category
+    //  FORCE FILTER - Double check category
     if (studentCategory && studentCategory !== 'all') {
       students = students.filter(s => s.studentCategory === studentCategory);
     }
@@ -76,7 +76,7 @@ exports.getAllStudents = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-// ✅ FIXED: Create Student - Now handles studentCategory properly
+//  FIXED: Create Student - Now handles studentCategory properly
 exports.addStudent = async (req, res) => {
   try {
     const { 
@@ -84,17 +84,17 @@ exports.addStudent = async (req, res) => {
       studentType = "academy", 
       membershipDuration = "1_month", 
       course,
-      studentCategory  // 👈 ADDED - to receive category from frontend
+      studentCategory  //  ADDED - to receive category from frontend
     } = req.body;
     
     if (await User.findOne({ email })) {
       return res.status(400).json({ success: false, error: 'User already exists' });
     }
     
-    // ✅ Priority: studentCategory (from frontend) > studentType (backup)
+    //  Priority: studentCategory (from frontend) > studentType (backup)
     const finalCategory = studentCategory || studentType;
     
-    // ✅ Set default course for academy students
+    //  Set default course for academy students
     let finalCourse = undefined;
     if (finalCategory === 'academy') {
       finalCourse = course && course.trim() !== '' ? course : 'RS CIT';
@@ -104,7 +104,7 @@ exports.addStudent = async (req, res) => {
     
     const student = await User.create({
       name, email, phone, password: phone || "password123", userType: "student",
-      studentCategory: finalCategory,  // 👈 USES THE CORRECT CATEGORY
+      studentCategory: finalCategory,  //  USES THE CORRECT CATEGORY
       admissionDate: admission, 
       membershipDuration, 
       status: 'active',

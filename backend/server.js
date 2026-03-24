@@ -56,7 +56,7 @@ app.use((req, res, next) => {
 });
 
 // ==========================================
-// 🚀 API VERSIONING - INDUSTRY STANDARD
+//  API VERSIONING - INDUSTRY STANDARD
 // ==========================================
 // Apply versioning middleware early
 app.use(apiVersioning);
@@ -75,7 +75,7 @@ app.use('/api/v1/search', searchRoutes);
 app.use('/api/v1/upload', uploadRoutes);
 
 // ==========================================
-// ⚠️  BACKWARD COMPATIBILITY - DEPRECATED
+//   BACKWARD COMPATIBILITY - DEPRECATED
 // ==========================================
 // Old /api/ endpoints maintained for backward compatibility
 // These will continue working but send deprecation warnings
@@ -162,15 +162,15 @@ const startServer = async () => {
 
     app.listen(PORT, () => {
       console.log(`
-✅ Server running on http://localhost:${PORT}
-📊 Student API: http://localhost:${PORT}/api/admin/students
-🔐 Auth API: http://localhost:${PORT}/api/auth
+ Server running on http://localhost:${PORT}
+ Student API: http://localhost:${PORT}/api/admin/students
+ Auth API: http://localhost:${PORT}/api/auth
 Payment API: http://localhost:${PORT}/api/payments
-🖼️ Upload API: http://localhost:${PORT}/api/upload  // 👈 New line
+ Upload API: http://localhost:${PORT}/api/upload  //  New line
       `);
     });
   } catch (error) {
-    console.error("❌ Failed to start:", error.message);
+    console.error(" Failed to start:", error.message);
     process.exit(1);
   }
 };

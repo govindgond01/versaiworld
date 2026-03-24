@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-// ✅ CREATE STAFF
+//  CREATE STAFF
 exports.createStaff = async (req, res) => {
   try {
     const { 
@@ -88,7 +88,7 @@ exports.createStaff = async (req, res) => {
   }
 };
 
-// ✅ GET ALL STAFF
+//  GET ALL STAFF
 exports.getAllStaff = async (req, res) => {
   try {
     const { 
@@ -164,7 +164,7 @@ exports.getAllStaff = async (req, res) => {
   }
 };
 
-// ✅ GET STAFF BY ID
+//  GET STAFF BY ID
 exports.getStaffById = async (req, res) => {
   try {
     const staff = await User.findOne({ 
@@ -214,7 +214,7 @@ exports.getStaffById = async (req, res) => {
   }
 };
 
-// ✅ UPDATE STAFF
+//  UPDATE STAFF
 exports.updateStaff = async (req, res) => {
   try {
     const { salary, paidSalary, ...otherUpdates } = req.body;
@@ -262,7 +262,7 @@ exports.updateStaff = async (req, res) => {
   }
 };
 
-// ✅ DELETE STAFF
+//  DELETE STAFF
 exports.deleteStaff = async (req, res) => {
   try {
     const staff = await User.findOneAndDelete({ 
@@ -290,7 +290,7 @@ exports.deleteStaff = async (req, res) => {
   }
 };
 
-// ✅ UPDATE STAFF STATUS
+//  UPDATE STAFF STATUS
 exports.updateStaffStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -329,7 +329,7 @@ exports.updateStaffStatus = async (req, res) => {
   }
 };
 
-// ✅ GET ACTIVE STAFF
+//  GET ACTIVE STAFF
 exports.getActiveStaff = async (req, res) => {
   try {
     const activeStaff = await User.find({ 
@@ -366,10 +366,10 @@ exports.getActiveStaff = async (req, res) => {
   }
 };
 
-// ✅ GET STAFF STATS - FIXED
+//  GET STAFF STATS - FIXED
 exports.getStaffStats = async (req, res) => {
   try {
-    console.log("📊 Fetching staff stats...");
+    console.log(" Fetching staff stats...");
     
     const total = await User.countDocuments({ userType: "staff" });
     const active = await User.countDocuments({ userType: "staff", status: "active" });
@@ -412,7 +412,7 @@ exports.getStaffStats = async (req, res) => {
       { $limit: 10 }
     ]);
     
-    console.log("✅ Staff stats fetched");
+    console.log(" Staff stats fetched");
     
     res.json({ 
       success: true, 
@@ -426,7 +426,7 @@ exports.getStaffStats = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Get staff stats error:", error);
+    console.error(" Get staff stats error:", error);
     res.status(500).json({ 
       success: false, 
       message: "Server error" 
@@ -434,7 +434,7 @@ exports.getStaffStats = async (req, res) => {
   }
 };
 
-// ✅ EXPORT STAFF DATA
+//  EXPORT STAFF DATA
 exports.exportStaff = async (req, res) => {
   try {
     const staff = await User.find({ userType: "staff" })
@@ -473,10 +473,10 @@ exports.exportStaff = async (req, res) => {
   }
 };
 
-// ✅ GET STAFF DASHBOARD STATS - ULTIMATE FIXED VERSION
+//  GET STAFF DASHBOARD STATS - ULTIMATE FIXED VERSION
 exports.getStaffDashboardStats = async (req, res) => {
   try {
-    console.log("📊 Fetching staff dashboard stats...");
+    console.log(" Fetching staff dashboard stats...");
     
     // Simple counts
     const totalStaff = await User.countDocuments({ userType: "staff" });
@@ -556,7 +556,7 @@ exports.getStaffDashboardStats = async (req, res) => {
         joinDate: s.joinDate
       }));
     
-    console.log("✅ Staff dashboard stats fetched successfully");
+    console.log(" Staff dashboard stats fetched successfully");
     
     res.json({
       success: true,
@@ -576,7 +576,7 @@ exports.getStaffDashboardStats = async (req, res) => {
     });
     
   } catch (error) {
-    console.error("❌ Get staff dashboard stats error:", error);
+    console.error(" Get staff dashboard stats error:", error);
     res.status(500).json({ 
       success: false, 
       message: "Server error: " + error.message 

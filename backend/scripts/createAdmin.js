@@ -10,7 +10,7 @@ async function createAdmin(email, name, password) {
     // Check if exists
     const existing = await User.findOne({ email });
     if (existing) {
-      console.log('⚠️ Admin already exists:', email);
+      console.log(' Admin already exists:', email);
       process.exit();
       return;
     }
@@ -21,19 +21,19 @@ async function createAdmin(email, name, password) {
       email: email,
       password: await bcrypt.hash(password || 'Admin@123', 10),
       phone: '9876543210',
-      userType: 'admin',  // 👈 SIRF ADMIN
+      userType: 'admin',  //  SIRF ADMIN
       status: 'active',
       isActive: true
-      // ⚠️ KOI STUDENT FIELD NAHI
+      //  KOI STUDENT FIELD NAHI
     });
     
-    console.log('✅ Admin created successfully!');
+    console.log(' Admin created successfully!');
     console.log('📧 Email:', admin.email);
-    console.log('🔑 Password:', password || 'Admin@123');
+    console.log(' Password:', password || 'Admin@123');
     console.log('🆔 User ID:', admin.userId);
     
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error(' Error:', error.message);
   } finally {
     await mongoose.disconnect();
     process.exit();

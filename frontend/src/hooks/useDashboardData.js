@@ -40,7 +40,7 @@ const useDashboardData = (dashboardType = 'academy') => {
         return;
       }
 
-      // ✅ No need to define API_URL - api instance handles baseURL
+      //  No need to define API_URL - api instance handles baseURL
 
       // Fetch user data based on type
       let userResponse;

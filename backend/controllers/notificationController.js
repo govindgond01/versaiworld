@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-// ✅ GET MY NOTIFICATIONS
+//  GET MY NOTIFICATIONS
 exports.getMyNotifications = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -56,7 +56,7 @@ exports.getMyNotifications = async (req, res) => {
   }
 };
 
-// ✅ MARK NOTIFICATION AS READ
+//  MARK NOTIFICATION AS READ
 exports.markNotificationRead = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -87,7 +87,7 @@ exports.markNotificationRead = async (req, res) => {
   }
 };
 
-// ✅ MARK ALL AS READ
+//  MARK ALL AS READ
 exports.markAllNotificationsRead = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -109,7 +109,7 @@ exports.markAllNotificationsRead = async (req, res) => {
   }
 };
 
-// ✅ DELETE NOTIFICATION
+//  DELETE NOTIFICATION
 exports.deleteNotification = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -139,7 +139,7 @@ exports.deleteNotification = async (req, res) => {
   }
 };
 
-// ✅ CREATE NOTIFICATION (Admin/System use)
+//  CREATE NOTIFICATION (Admin/System use)
 exports.createNotification = async (req, res) => {
   try {
     const { userId, title, message, type = 'system', sendEmail = false } = req.body;
@@ -185,7 +185,7 @@ exports.createNotification = async (req, res) => {
   }
 };
 
-// ✅ GET UNREAD COUNT
+//  GET UNREAD COUNT
 exports.getUnreadCount = async (req, res) => {
   try {
     const userId = req.user.id;

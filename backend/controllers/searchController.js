@@ -1,5 +1,5 @@
 const User = require('../models/User');
-// ✅ COMMENT OUT - Remove Notification model dependency
+//  COMMENT OUT - Remove Notification model dependency
 // const Notification = require('../models/Notification');
 // const Payment = require('../models/Payment');
 // const Attendance = require('../models/Attendance');
@@ -14,7 +14,7 @@ exports.globalSearch = async (req, res) => {
     const userId = req.user.id;
     const userCategory = req.user.studentCategory;
 
-    console.log('🔍 Search Query:', q);
+    console.log(' Search Query:', q);
     console.log('👤 User Type:', userType);
     console.log('🆔 User ID:', userId);
 
@@ -40,7 +40,7 @@ exports.globalSearch = async (req, res) => {
       .select('name email userId userType studentCategory staffRole phone course profileImage')
       .limit(10);
 
-      console.log('📊 Admin Search Results:', users.length);
+      console.log(' Admin Search Results:', users.length);
 
       results = users.map(u => ({
         id: u._id,
@@ -142,7 +142,7 @@ exports.globalSearch = async (req, res) => {
       }
     }
 
-    console.log('✅ Search completed. Results:', results.length);
+    console.log(' Search completed. Results:', results.length);
 
     res.json({ 
       success: true, 
@@ -151,7 +151,7 @@ exports.globalSearch = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Search error:', error);
+    console.error(' Search error:', error);
     res.status(500).json({ 
       success: false, 
       message: error.message 

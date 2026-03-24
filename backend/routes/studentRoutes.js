@@ -4,7 +4,7 @@ const studentController = require('../controllers/studentController');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
 // ==========================================
-// ✅ STATIC ROUTES - PEHLE (MOST SPECIFIC)
+//  STATIC ROUTES - PEHLE (MOST SPECIFIC)
 // ==========================================
 router.get('/expiring-soon', protect, adminOnly, studentController.getExpiringStudents);
 router.get('/stats', protect, adminOnly, studentController.getStudentStats);
@@ -14,12 +14,12 @@ router.get('/email/:email', protect, studentController.getStudentByEmail);
 router.get('/course/:course', protect, studentController.getStudentsByCourse);
 
 // ==========================================
-// ✅ DYNAMIC ROUTES - BAAD MEIN (LESS SPECIFIC)
+//  DYNAMIC ROUTES - BAAD MEIN (LESS SPECIFIC)
 // ==========================================
 router.get('/:id', protect, studentController.getStudentById);
 
 // ==========================================
-// ✅ MUTATION ROUTES
+//  MUTATION ROUTES
 // ==========================================
 router.post('/', protect, adminOnly, studentController.createStudent);
 router.get('/', protect, adminOnly, studentController.getAllStudents);

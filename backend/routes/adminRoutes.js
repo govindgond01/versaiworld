@@ -37,8 +37,8 @@ router.delete('/students/:id', deleteStudent);
 router.get('/students/active', getActiveStudents);
 router.get('/students/expiring', getExpiringStudents);
 router.get('/students/types', getStudentTypes); // Deprecated - use /stats instead
-router.get('/students/stats', getStudentStats); // ✅ NEW ENDPOINT FOR DASHBOARDS
-router.put('/students/:id/renew', renewMembership); // ✅ NEW ROUTE
+router.get('/students/stats', getStudentStats); //  NEW ENDPOINT FOR DASHBOARDS
+router.put('/students/:id/renew', renewMembership); //  NEW ROUTE
 
 // Staff Management
 router.get('/staff', getAllStaff);
