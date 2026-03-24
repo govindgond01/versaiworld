@@ -8,6 +8,14 @@ exports.register = async (req, res) => {
   try {
     console.log('Register request:', req.body);
     
+    // Check if user is authenticated and has admin or superAdmin role
+    if (!req.user) {
+      return res.status(401).json({ 
+        success: false,
+        message: 'Not authenticated' 
+      });
+    }
+    
     const { 
       name, 
       email, 
@@ -37,6 +45,30 @@ exports.register = async (req, res) => {
     
     const finalUserType = userType || role || 'student';
     const allowedUserTypes = ['admin', 'student', 'staff'];
+    
+    // Role-based access control for user creation
+    if (req.user.userType === 'admin') {
+      // Admin can only create students and staff (not other admins)
+      if (finalUserType === 'admin') {
+        return res.status(403).json({ 
+          success: false,
+          message: 'Admin users cannot create other admins. Only super admin can create admins.' 
+        });
+      }
+      // Admin can create students and staff
+      if (!['student', 'staff'].includes(finalUserType)) {
+        return res.status(403).json({ 
+          success: false,
+          message: 'Admin can only create students and staff' 
+        });
+      }
+    } else if (req.user.userType !== 'superAdmin') {
+      // Only admin and superAdmin can access this endpoint
+      return res.status(403).json({ 
+        success: false,
+        message: 'Only admin and super admin can create users' 
+      });
+    }
     
     if (!allowedUserTypes.includes(finalUserType)) {
       return res.status(400).json({ 

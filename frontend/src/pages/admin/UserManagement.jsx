@@ -16,6 +16,13 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [newRole, setNewRole] = useState('');
+  const [showAddAdminModal, setShowAddAdminModal] = useState(false);
+  const [newAdmin, setNewAdmin] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -107,6 +114,53 @@ const UserManagement = () => {
       case 'suspended': return { text: 'Suspended', color: 'bg-red-100 text-red-800' };
       default: return { text: 'Unknown', color: 'bg-gray-100 text-gray-800' };
     }
+  };
+
+  const userRole = localStorage.getItem('role') || '';
+
+  const handleAddAdmin = async (e) => {
+    e.preventDefault();
+    
+    if (!newAdmin.name || !newAdmin.email || !newAdmin.password) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (newAdmin.password !== newAdmin.confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    if (newAdmin.password.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      const response = await api.post('/auth/register-admin', {
+        name: newAdmin.name,
+        email: newAdmin.email,
+        password: newAdmin.password,
+        userType: 'admin'
+      });
+
+      if (response.data.success) {
+        toast.success('Admin user created successfully');
+        setShowAddAdminModal(false);
+        setNewAdmin({ name: '', email: '', password: '', confirmPassword: '' });
+        fetchUsers();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.error || 'Failed to create admin user');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewAdmin(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   return (

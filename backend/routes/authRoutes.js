@@ -50,7 +50,7 @@ const passwordResetLimiter = rateLimit({
 });
 
 // Public routes
-router.post('/register', registerLimiter, register);
+router.post('/register', protect, registerLimiter, register);
 router.post('/login', loginLimiter, login);
 router.post('/refresh-token', authLimiter, refreshToken);
 router.post('/forgot-password', passwordResetLimiter, forgotPassword);

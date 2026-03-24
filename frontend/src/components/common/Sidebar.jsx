@@ -28,7 +28,15 @@ const Sidebar = ({ isOpen, onClose }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const menuData = useMemo(() => {
-    if (userRole === 'admin') return adminMenu;
+    if (userRole === 'admin') {
+      // Filter out super-admin menu items for regular admins
+      const filteredAdminMenu = adminMenu.map(section => ({
+        ...section,
+        items: section.items.filter(item => item.key !== 'super-admin')
+      }));
+      return filteredAdminMenu;
+    }
+    if (userRole === 'superAdmin') return adminMenu;
     if (userRole === 'staff') return staffMenu;
     if (userRole === 'student') {
       if (studentCategory === 'academy') return academyMenu;

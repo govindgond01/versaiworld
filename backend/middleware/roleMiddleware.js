@@ -4,9 +4,9 @@ const authorize = (...roles) => {
             return res.status(401).json({ error: 'Not authenticated' });
         }
         
-        if (!roles.includes(req.user.role)) {
+        if (!roles.includes(req.user.userType)) {
             return res.status(403).json({ 
-                error: `User role ${req.user.role} is not authorized` 
+                error: `User role ${req.user.userType} is not authorized` 
             });
         }
         next();
