@@ -361,7 +361,12 @@ exports.updateUserRole = async (req, res) => {
     const { id } = req.params;
     const { userType, studentCategory, staffRole } = req.body;
 
-    console.log('📝 Updating user role:', { id, userType, studentCategory, staffRole });
+    console.log('📝 Update request received:', { id, userType, studentCategory, staffRole });
+
+    // Validate ID format
+    if (!id || id.length !== 24) {
+      return res.status(400).json({ success: false, error: 'Invalid user ID format' });
+    }
 
     const allowedRoles = ['superAdmin', 'admin', 'staff', 'student'];
     if (!allowedRoles.includes(userType)) {
@@ -374,33 +379,26 @@ exports.updateUserRole = async (req, res) => {
     }
 
     // Prevent superAdmin modification
-    if (user.userType === 'superAdmin' && req.user.userType !== 'superAdmin') {
+    if (user.userType === 'superAdmin' && req.user?.userType !== 'superAdmin') {
       return res.status(403).json({ success: false, error: 'Cannot modify super admin role' });
     }
 
-    // Update main role
+    // Update fields - safely
     user.userType = userType;
     
-    // Update student category if provided
-    if (studentCategory !== undefined) {
-      user.studentCategory = studentCategory;
-    }
-    
-    // Update staff role if provided
-    if (staffRole !== undefined) {
-      user.staffRole = staffRole;
-    }
-    
-    // Clean up fields based on new role
     if (userType === 'student') {
+      if (studentCategory) user.studentCategory = studentCategory;
       user.staffRole = undefined;
-    } else if (userType === 'staff') {
+    } 
+    else if (userType === 'staff') {
+      if (staffRole) user.staffRole = staffRole;
       user.studentCategory = undefined;
-    } else {
+    } 
+    else {
       user.studentCategory = undefined;
       user.staffRole = undefined;
     }
-    
+
     await user.save();
 
     res.json({ 
@@ -412,9 +410,7 @@ exports.updateUserRole = async (req, res) => {
         email: user.email,
         userType: user.userType,
         studentCategory: user.studentCategory,
-        staffRole: user.staffRole,
-        status: user.status,
-        isActive: user.isActive
+        staffRole: user.staffRole
       }
     });
   } catch (error) {
