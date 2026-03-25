@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const Payment = require('../models/Payment');
-
+const mongoose = require('mongoose'); 
 // Generate sequential student ID
 const generateStudentId = async () => {
   const last = await User.findOne({ userType: "student" }, 'userId').sort({ userId: -1 });
@@ -355,255 +355,58 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// Update User Role (Super Admin) - FIXED
+// Update User Role - SIMPLE WORKING VERSION
 exports.updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { userType, studentCategory, staffRole } = req.body;
 
-    // Prevent caching
-    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
-
-    console.log('📝 ===== UPDATE USER ROLE =====');
-    console.log('ID:', id);
-    console.log('userType:', userType);
-    console.log('studentCategory:', studentCategory);
-    console.log('staffRole:', staffRole);
-    console.log('Request body:', req.body);
-    console.log('Authenticated user:', req.user?.userType, req.user?._id);
-
-    // ========== INPUT VALIDATION ==========
-    if (!id) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'User ID is required',
-        code: 'MISSING_ID'
-      });
+    const allowedRoles = ['superAdmin', 'admin', 'staff', 'student'];
+    if (!allowedRoles.includes(userType)) {
+      return res.status(400).json({ success: false, error: 'Invalid user type' });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid user ID format',
-        code: 'INVALID_ID'
-      });
-    }
-
-    if (!userType) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'userType is required',
-        code: 'MISSING_USER_TYPE'
-      });
-    }
-
-    const validUserTypes = ['superAdmin', 'admin', 'staff', 'student'];
-    if (!validUserTypes.includes(userType)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: `Invalid user type. Allowed: ${validUserTypes.join(', ')}`,
-        code: 'INVALID_USER_TYPE'
-      });
-    }
-
-    // Validate studentCategory if userType is student
-    const validStudentCategories = ['academy', 'library', 'both'];
-    if (userType === 'student') {
-      if (!studentCategory) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'studentCategory is required when userType is student',
-          code: 'MISSING_STUDENT_CATEGORY'
-        });
-      }
-      if (!validStudentCategories.includes(studentCategory)) {
-        return res.status(400).json({ 
-          success: false, 
-          error: `Invalid studentCategory. Allowed: ${validStudentCategories.join(', ')}`,
-          code: 'INVALID_STUDENT_CATEGORY'
-        });
-      }
-    }
-
-    // Validate staffRole if userType is staff
-    const validStaffRoles = ['teacher', 'Digital Marketer', 'Web Developer', 'Front-End Developer', 'Back-End Developer', 'Full-Stack Developer', 'other'];
-    if (userType === 'staff') {
-      if (!staffRole) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'staffRole is required when userType is staff',
-          code: 'MISSING_STAFF_ROLE'
-        });
-      }
-      if (!validStaffRoles.includes(staffRole)) {
-        return res.status(400).json({ 
-          success: false, 
-          error: `Invalid staffRole. Allowed: ${validStaffRoles.join(', ')}`,
-          code: 'INVALID_STAFF_ROLE'
-        });
-      }
-    }
-
-    // ========== AUTHORIZATION CHECK ==========
-    // Check if trying to modify superAdmin
-    const user = await User.findById(id).select('-password -refreshToken -resetPasswordToken -resetPasswordExpires');
+    const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        error: 'User not found',
-        code: 'USER_NOT_FOUND'
-      });
+      return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    console.log('👤 BEFORE UPDATE:', {
-      _id: user._id,
-      name: user.name,
-      currentUserType: user.userType,
-      currentStudentCategory: user.studentCategory,
-      currentStaffRole: user.staffRole
-    });
-
-    // Prevent modifying superAdmin unless you are superAdmin
     if (user.userType === 'superAdmin' && req.user?.userType !== 'superAdmin') {
-      return res.status(403).json({ 
-        success: false, 
-        error: 'Insufficient permissions. Only superAdmin can modify superAdmin roles.',
-        code: 'FORBIDDEN_SUPER_ADMIN'
-      });
+      return res.status(403).json({ success: false, error: 'Cannot modify super admin' });
     }
 
-    // Prevent elevating to superAdmin without permission
-    if (userType === 'superAdmin' && req.user?.userType !== 'superAdmin') {
-      return res.status(403).json({ 
-        success: false, 
-        error: 'Insufficient permissions to assign superAdmin role',
-        code: 'FORBIDDEN_ELEVATE_SUPER_ADMIN'
-      });
-    }
-
-    // ========== PERFORM UPDATE ==========
-    
-    // Store old values for logging
-    const oldUserType = user.userType;
-    const oldStudentCategory = user.studentCategory;
-    const oldStaffRole = user.staffRole;
-
-    // Update userType
     user.userType = userType;
-
-    // Handle studentCategory
+    
     if (userType === 'student') {
-      // Always set studentCategory (must be provided and validated above)
-      user.studentCategory = studentCategory;
-      console.log(`✓ Setting studentCategory: ${oldStudentCategory || 'none'} → ${studentCategory}`);
-      // Clear staffRole
+      user.studentCategory = studentCategory || 'academy';
       user.staffRole = undefined;
-    } else {
-      // For non-student types, clear studentCategory
-      if (user.studentCategory) {
-        console.log(`✓ Clearing studentCategory: ${user.studentCategory} → undefined`);
-        user.studentCategory = undefined;
-      }
-    }
-
-    // Handle staffRole
-    if (userType === 'staff') {
-      // Always set staffRole (must be provided and validated above)
+    } 
+    else if (userType === 'staff') {
       user.staffRole = staffRole;
-      console.log(`✓ Setting staffRole: ${oldStaffRole || 'none'} → ${staffRole}`);
-      // Clear studentCategory
       user.studentCategory = undefined;
-    } else {
-      // For non-staff types, clear staffRole
-      if (user.staffRole) {
-        console.log(`✓ Clearing staffRole: ${user.staffRole} → undefined`);
-        user.staffRole = undefined;
-      }
+    } 
+    else {
+      user.studentCategory = undefined;
+      user.staffRole = undefined;
     }
 
-    // Mark modified fields explicitly
-    user.markModified('userType');
-    user.markModified('studentCategory');
-    user.markModified('staffRole');
-
-    // Save with error handling
-    await user.save();
-
-    console.log('✅ UPDATE SUCCESS:', {
-      _id: user._id,
-      name: user.name,
-      userType: oldUserType + ' → ' + user.userType,
-      studentCategory: oldStudentCategory + ' → ' + user.studentCategory,
-      staffRole: oldStaffRole + ' → ' + user.staffRole
-    });
-
-    // Fetch fresh user
-    const freshUser = await User.findById(id).select('-password -refreshToken -resetPasswordToken -resetPasswordExpires');
-
-    // Success response
-    return res.json({ 
+    await user.save({ validateBeforeSave: false });
+    
+    res.json({ 
       success: true, 
-      message: 'User role updated successfully',
-      code: 'ROLE_UPDATE_SUCCESS',
+      message: 'User role updated successfully', 
       user: {
-        _id: freshUser._id,
-        name: freshUser.name,
-        email: freshUser.email,
-        userType: freshUser.userType,
-        studentCategory: freshUser.studentCategory,
-        staffRole: freshUser.staffRole,
-        userId: freshUser.userId,
-        status: freshUser.status,
-        isActive: freshUser.isActive
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        userType: user.userType,
+        studentCategory: user.studentCategory,
+        staffRole: user.staffRole
       }
     });
-
   } catch (error) {
     console.error('❌ Update role error:', error);
-    
-    // Check for MongoDB specific errors
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Validation error: ' + error.message,
-        code: 'VALIDATION_ERROR'
-      });
-    }
-
-    if (error.name === 'CastError') {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid data format provided',
-        code: 'CAST_ERROR'
-      });
-    }
-
-    if (error.code === 11000) {
-      return res.status(409).json({ 
-        success: false, 
-        error: 'Duplicate key error',
-        code: 'DUPLICATE_KEY'
-      });
-    }
-
-    // For authorization errors (handled above), don't override with 500
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ 
-        success: false, 
-        error: error.message,
-        code: error.code || 'AUTHORIZATION_ERROR'
-      });
-    }
-
-    // Generic server error
-    return res.status(500).json({ 
-      success: false, 
-      error: 'Internal server error. Please try again.',
-      code: 'INTERNAL_SERVER_ERROR',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 };
 
