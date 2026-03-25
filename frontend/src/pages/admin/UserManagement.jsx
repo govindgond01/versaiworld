@@ -16,6 +16,8 @@ const UserManagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [newRole, setNewRole] = useState('');
+  const [newStudentCategory, setNewStudentCategory] = useState('');
+  const [newStaffRole, setNewStaffRole] = useState('');
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
   const [newAdmin, setNewAdmin] = useState({
     name: '',
@@ -23,6 +25,24 @@ const UserManagement = () => {
     password: '',
     confirmPassword: ''
   });
+
+  // Staff role options
+  const staffRoleOptions = [
+    'teacher',
+    'Digital Marketer',
+    'Web Developer',
+    'Front-End Developer',
+    'Back-End Developer',
+    'Full-Stack Developer',
+    'other'
+  ];
+
+  // Student category options
+  const studentCategoryOptions = [
+    'academy',
+    'library',
+    'both'
+  ];
 
   useEffect(() => {
     fetchUsers();
@@ -60,18 +80,37 @@ const UserManagement = () => {
   };
 
   const handleRoleChange = async () => {
-    if (!selectedUser || !newRole) return;
+    if (!selectedUser) return;
 
     try {
-      await api.patch(`/admin/users/${selectedUser._id}/role`, { userType: newRole });
+      const updateData = { userType: newRole };
+      
+      // Add role-specific fields
+      if (newRole === 'student' && newStudentCategory) {
+        updateData.studentCategory = newStudentCategory;
+      } else if (newRole === 'staff' && newStaffRole) {
+        updateData.staffRole = newStaffRole;
+      }
+
+      await api.patch(`/admin/users/${selectedUser._id}/role`, updateData);
       toast.success('User role updated successfully');
       setShowRoleModal(false);
       setSelectedUser(null);
       setNewRole('');
+      setNewStudentCategory('');
+      setNewStaffRole('');
       fetchUsers();
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to update role');
     }
+  };
+
+  const openRoleModal = (user) => {
+    setSelectedUser(user);
+    setNewRole(user.userType);
+    setNewStudentCategory(user.studentCategory || '');
+    setNewStaffRole(user.staffRole || '');
+    setShowRoleModal(true);
   };
 
   const handleBlockUser = async (userId, isActive) => {
@@ -287,6 +326,12 @@ const UserManagement = () => {
                         <td className="px-4 sm:px-6 py-3 sm:py-4">
                           <span className={`inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium rounded-full ${roleConfig.color}`}>
                             {roleConfig.icon} {user.userType}
+                            {user.userType === 'student' && user.studentCategory && (
+                              <span className="ml-0.5 text-[8px] sm:text-[10px] opacity-75">({user.studentCategory})</span>
+                            )}
+                            {user.userType === 'staff' && user.staffRole && (
+                              <span className="ml-0.5 text-[8px] sm:text-[10px] opacity-75 truncate max-w-[60px] sm:max-w-[100px]">({user.staffRole})</span>
+                            )}
                           </span>
                         </td>
                         <td className="px-4 sm:px-6 py-3 sm:py-4">
@@ -306,11 +351,7 @@ const UserManagement = () => {
                         <td className="px-4 sm:px-6 py-3 sm:py-4">
                           <div className="flex items-center gap-1.5 sm:gap-2">
                             <button
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setNewRole(user.userType);
-                                setShowRoleModal(true);
-                              }}
+                              onClick={() => openRoleModal(user)}
                               className="p-1.5 sm:p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
                               title="Change Role"
                             >
@@ -360,6 +401,12 @@ const UserManagement = () => {
                       <div className="flex flex-col items-end gap-1">
                         <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${roleConfig.color}`}>
                           {roleConfig.icon} {user.userType}
+                          {user.userType === 'student' && user.studentCategory && (
+                            <span className="ml-0.5 text-[10px] opacity-75">({user.studentCategory})</span>
+                          )}
+                          {user.userType === 'staff' && user.staffRole && (
+                            <span className="ml-0.5 text-[10px] opacity-75 truncate max-w-[80px]">({user.staffRole})</span>
+                          )}
                         </span>
                         <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${statusConfig.color}`}>
                           {user.isActive ? <FaUserCheck className="w-3 h-3" /> : <FaUserTimes className="w-3 h-3" />}
@@ -386,11 +433,7 @@ const UserManagement = () => {
 
                     <div className="flex items-center justify-end gap-2 pt-3 border-t">
                       <button
-                        onClick={() => {
-                          setSelectedUser(user);
-                          setNewRole(user.userType);
-                          setShowRoleModal(true);
-                        }}
+                        onClick={() => openRoleModal(user)}
                         className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"
                       >
                         <FaEdit className="w-4 h-4" />
@@ -441,7 +484,7 @@ const UserManagement = () => {
         )}
       </div>
 
-      {/* Role Change Modal - Responsive */}
+      {/* Role Change Modal - With StudentCategory & StaffRole */}
       {showRoleModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
@@ -454,20 +497,70 @@ const UserManagement = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                    New Role
+                    Role
                   </label>
                   <select
                     value={newRole}
-                    onChange={(e) => setNewRole(e.target.value)}
+                    onChange={(e) => {
+                      setNewRole(e.target.value);
+                      // Reset role-specific fields when role changes
+                      setNewStudentCategory('');
+                      setNewStaffRole('');
+                    }}
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
-                    <option value="academy">Academy</option>
-                    <option value="library">Library</option>
+                    <option value="student">Student</option>
                     <option value="staff">Staff</option>
                     <option value="admin">Admin</option>
                     <option value="superAdmin">Super Admin</option>
                   </select>
                 </div>
+
+                {/* Student Category - Only for Student role */}
+                {newRole === 'student' && (
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                      Student Category
+                    </label>
+                    <select
+                      value={newStudentCategory}
+                      onChange={(e) => setNewStudentCategory(e.target.value)}
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    >
+                      <option value="">Select Category</option>
+                      {studentCategoryOptions.map(opt => (
+                        <option key={opt} value={opt}>{opt.charAt(0).toUpperCase() + opt.slice(1)}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Staff Role - Only for Staff role */}
+                {newRole === 'staff' && (
+                  <div>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                      Staff Role
+                    </label>
+                    <select
+                      value={newStaffRole}
+                      onChange={(e) => setNewStaffRole(e.target.value)}
+                      className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    >
+                      <option value="">Select Role</option>
+                      {staffRoleOptions.map(opt => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Validation Message */}
+                {(newRole === 'student' && !newStudentCategory) && (
+                  <p className="text-xs text-red-500">Student category is required for student role</p>
+                )}
+                {(newRole === 'staff' && !newStaffRole) && (
+                  <p className="text-xs text-red-500">Staff role is required for staff role</p>
+                )}
               </div>
             </div>
 
@@ -477,6 +570,8 @@ const UserManagement = () => {
                   setShowRoleModal(false);
                   setSelectedUser(null);
                   setNewRole('');
+                  setNewStudentCategory('');
+                  setNewStaffRole('');
                 }}
                 className="px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50"
               >
@@ -484,7 +579,14 @@ const UserManagement = () => {
               </button>
               <button
                 onClick={handleRoleChange}
-                disabled={!newRole || newRole === selectedUser.userType}
+                disabled={
+                  !newRole || 
+                  (newRole === 'student' && !newStudentCategory) ||
+                  (newRole === 'staff' && !newStaffRole) ||
+                  (newRole === selectedUser.userType && 
+                    newStudentCategory === (selectedUser.studentCategory || '') && 
+                    newStaffRole === (selectedUser.staffRole || ''))
+                }
                 className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 Update Role
