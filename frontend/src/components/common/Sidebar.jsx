@@ -29,7 +29,6 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const menuData = useMemo(() => {
     if (userRole === 'admin') {
-      // Filter out super-admin menu items for regular admins
       const filteredAdminMenu = adminMenu.map(section => ({
         ...section,
         items: section.items.filter(item => item.key !== 'super-admin')
@@ -104,9 +103,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     });
   }, []);
 
-  // Utility function to clear cookies
   const clearCookies = useCallback(() => {
-    // Clear all cookies by setting expiration to past date
     document.cookie.split(";").forEach((c) => {
       const eq = c.indexOf("=");
       const name = eq === -1 ? c.trim() : c.substring(0, eq).trim();
@@ -114,7 +111,6 @@ const Sidebar = ({ isOpen, onClose }) => {
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/; domain=.${window.location.hostname}`;
     });
     
-    // Also clear by setting empty with immediate expiration
     const cookies = document.cookie ? document.cookie.split(';') : [];
     for (let i = 0; i < cookies.length; i++) {
       const cookie = cookies[i];
@@ -131,20 +127,16 @@ const Sidebar = ({ isOpen, onClose }) => {
     logoutRef.current = true;
 
     try {
-      // Call the logout API
       await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout API error:', error);
-      // Continue with logout even if API fails
     } finally {
-      // Clear all storage
       localStorage.clear();
       sessionStorage.clear();
       clearCookies();
       
       toast.success('Logged out successfully');
       
-      // Force redirect to login
       setTimeout(() => {
         window.location.href = '/login';
       }, 100);
@@ -162,10 +154,12 @@ const Sidebar = ({ isOpen, onClose }) => {
     return false;
   }, [location.pathname]);
 
-  if (!menuData || menuData.length === 0) return null;
-
-  // FIXED: Removed gradient-primary class
+  // Active class with gradient
   const activeClass = "gradient-primary text-white";
+  // Parent dim background (no gradient)
+  const parentDimClass = "bg-gray-100 text-gray-700";
+
+  if (!menuData || menuData.length === 0) return null;
 
   if (isOpen === undefined) {
     return (
@@ -186,14 +180,20 @@ const Sidebar = ({ isOpen, onClose }) => {
                         <button
                           onClick={() => toggleMenu(item.key)}
                           className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                            isAnySubItemActive(item) || openMenus[item.key] ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                            isAnySubItemActive(item) 
+                              ? parentDimClass
+                              : (openMenus[item.key] ? 'bg-gray-50' : 'text-gray-600 hover:bg-gray-100')
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-lg">{iconMap[item.icon]}</span>
-                            <span className="text-sm font-medium">{item.label}</span>
+                            <span className={`text-lg ${isAnySubItemActive(item) ? 'text-blue-600' : ''}`}>
+                              {iconMap[item.icon]}
+                            </span>
+                            <span className={`text-sm font-medium ${isAnySubItemActive(item) ? 'text-blue-600' : ''}`}>
+                              {item.label}
+                            </span>
                           </div>
-                          <FiChevronDown className={`w-4 h-4 transition-transform duration-200 ${openMenus[item.key] ? 'rotate-180' : ''}`} />
+                          <FiChevronDown className={`w-4 h-4 transition-transform duration-200 ${openMenus[item.key] ? 'rotate-180' : ''} ${isAnySubItemActive(item) ? 'text-blue-600' : ''}`} />
                         </button>
                         <div className={`ml-4 mt-1 space-y-1 overflow-hidden transition-all duration-300 ${openMenus[item.key] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
                           {item.subItems?.map((sub, i) => (
@@ -203,7 +203,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                               onClick={handleNavClick}
                               className={({ isActive }) =>
                                 `block px-3 py-2 ml-6 rounded-lg text-sm transition-all duration-200 ${
-                                  isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                                  isActive 
+                                    ? activeClass
+                                    : 'text-gray-600 hover:bg-gray-100'
                                 }`
                               }
                             >
@@ -218,7 +220,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                         onClick={handleNavClick}
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                            isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                            isActive 
+                              ? activeClass
+                              : 'text-gray-600 hover:bg-gray-100'
                           }`
                         }
                       >
@@ -299,14 +303,20 @@ const Sidebar = ({ isOpen, onClose }) => {
                         <button
                           onClick={() => toggleMenu(item.key)}
                           className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                            isAnySubItemActive(item) || openMenus[item.key] ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                            isAnySubItemActive(item) 
+                              ? parentDimClass
+                              : (openMenus[item.key] ? 'bg-gray-50' : 'text-gray-600 hover:bg-gray-100')
                           }`}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-lg">{iconMap[item.icon]}</span>
-                            <span className="text-sm font-medium">{item.label}</span>
+                            <span className={`text-lg ${isAnySubItemActive(item) ? 'text-blue-600' : ''}`}>
+                              {iconMap[item.icon]}
+                            </span>
+                            <span className={`text-sm font-medium ${isAnySubItemActive(item) ? 'text-blue-600' : ''}`}>
+                              {item.label}
+                            </span>
                           </div>
-                          <FiChevronDown className={`w-4 h-4 transition-transform duration-200 ${openMenus[item.key] ? 'rotate-180' : ''}`} />
+                          <FiChevronDown className={`w-4 h-4 transition-transform duration-200 ${openMenus[item.key] ? 'rotate-180' : ''} ${isAnySubItemActive(item) ? 'text-blue-600' : ''}`} />
                         </button>
                         <div className={`ml-4 mt-1 space-y-1 overflow-hidden transition-all duration-300 ${openMenus[item.key] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
                           {item.subItems?.map((sub, i) => (
@@ -316,7 +326,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                               onClick={handleNavClick}
                               className={({ isActive }) =>
                                 `block px-3 py-2 ml-6 rounded-lg text-sm transition-all duration-200 ${
-                                  isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                                  isActive 
+                                    ? activeClass
+                                    : 'text-gray-600 hover:bg-gray-100'
                                 }`
                               }
                             >
@@ -331,7 +343,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                         onClick={handleNavClick}
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
-                            isActive ? activeClass : 'text-gray-600 hover:bg-gray-100'
+                            isActive 
+                              ? activeClass
+                              : 'text-gray-600 hover:bg-gray-100'
                           }`
                         }
                       >
