@@ -461,7 +461,8 @@ const UserManagement = () => {
                     onChange={(e) => setNewRole(e.target.value)}
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
-                    <option value="student">Student</option>
+                    <option value="academy">Academy</option>
+                    <option value="library">Library</option>
                     <option value="staff">Staff</option>
                     <option value="admin">Admin</option>
                     <option value="superAdmin">Super Admin</option>
