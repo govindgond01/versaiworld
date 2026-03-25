@@ -361,9 +361,14 @@ exports.updateUserRole = async (req, res) => {
     const { id } = req.params;
     const { userType, studentCategory, staffRole } = req.body;
 
-    console.log('📝 Update request received:', { id, userType, studentCategory, staffRole });
+    console.log('📝 ===== UPDATE USER ROLE =====');
+    console.log('ID:', id);
+    console.log('userType:', userType);
+    console.log('studentCategory:', studentCategory);
+    console.log('staffRole:', staffRole);
+    console.log('Full body:', req.body);
 
-    // Validate ID format
+    // Validate ID
     if (!id || id.length !== 24) {
       return res.status(400).json({ success: false, error: 'Invalid user ID format' });
     }
@@ -378,20 +383,39 @@ exports.updateUserRole = async (req, res) => {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
 
+    console.log('👤 BEFORE UPDATE:', {
+      userType: user.userType,
+      studentCategory: user.studentCategory,
+      staffRole: user.staffRole
+    });
+
     // Prevent superAdmin modification
     if (user.userType === 'superAdmin' && req.user?.userType !== 'superAdmin') {
       return res.status(403).json({ success: false, error: 'Cannot modify super admin role' });
     }
 
-    // Update fields - safely
+    //  CRITICAL: Update userType first
     user.userType = userType;
     
+    //  CRITICAL: Handle student category
     if (userType === 'student') {
-      if (studentCategory) user.studentCategory = studentCategory;
+      // Agar studentCategory aayi hai toh set karo
+      if (studentCategory) {
+        user.studentCategory = studentCategory;
+        console.log(' Setting studentCategory to:', studentCategory);
+      } else {
+        // Agar nahi aayi toh default 'academy' set karo
+        user.studentCategory = 'academy';
+        console.log('⚠️ No category, defaulting to academy');
+      }
       user.staffRole = undefined;
     } 
     else if (userType === 'staff') {
-      if (staffRole) user.staffRole = staffRole;
+      if (staffRole) {
+        user.staffRole = staffRole;
+      } else {
+        user.staffRole = 'other';
+      }
       user.studentCategory = undefined;
     } 
     else {
@@ -399,22 +423,38 @@ exports.updateUserRole = async (req, res) => {
       user.staffRole = undefined;
     }
 
+    //  Force save - mark modified fields
+    user.markModified('studentCategory');
+    user.markModified('staffRole');
+    
     await user.save();
+
+    console.log('AFTER UPDATE:', {
+      userType: user.userType,
+      studentCategory: user.studentCategory,
+      staffRole: user.staffRole
+    });
+
+    // Fetch fresh user to confirm
+    const freshUser = await User.findById(id).select('-password -refreshToken');
 
     res.json({ 
       success: true, 
       message: 'User role updated successfully', 
       user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        userType: user.userType,
-        studentCategory: user.studentCategory,
-        staffRole: user.staffRole
+        _id: freshUser._id,
+        name: freshUser.name,
+        email: freshUser.email,
+        userType: freshUser.userType,
+        studentCategory: freshUser.studentCategory,
+        staffRole: freshUser.staffRole,
+        userId: freshUser.userId,
+        status: freshUser.status,
+        isActive: freshUser.isActive
       }
     });
   } catch (error) {
-    console.error('❌ Update role error:', error);
+    console.error('Update role error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 };
