@@ -356,13 +356,12 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // Update User Role (Super Admin)
-// Update User Role (Super Admin)
 exports.updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
     const { userType, studentCategory, staffRole } = req.body;
 
-    console.log('📝 Update User Role Request:', { id, userType, studentCategory, staffRole });
+    console.log('📝 Updating user role:', { id, userType, studentCategory, staffRole });
 
     const allowedRoles = ['superAdmin', 'admin', 'staff', 'student'];
     if (!allowedRoles.includes(userType)) {
@@ -374,55 +373,36 @@ exports.updateUserRole = async (req, res) => {
       return res.status(404).json({ success: false, error: 'User not found' });
     }
 
-    console.log('👤 Before update:', {
-      userType: user.userType,
-      studentCategory: user.studentCategory,
-      staffRole: user.staffRole
-    });
-
-    // Prevent changing superAdmin role unless current user is superAdmin
+    // Prevent superAdmin modification
     if (user.userType === 'superAdmin' && req.user.userType !== 'superAdmin') {
       return res.status(403).json({ success: false, error: 'Cannot modify super admin role' });
     }
 
-    // ✅ Update main role
+    // Update main role
     user.userType = userType;
     
-    // ✅ CRITICAL FIX: Update studentCategory if provided
+    // Update student category if provided
     if (studentCategory !== undefined) {
       user.studentCategory = studentCategory;
-      console.log('✅ Setting studentCategory to:', studentCategory);
     }
     
-    // ✅ CRITICAL FIX: Update staffRole if provided
+    // Update staff role if provided
     if (staffRole !== undefined) {
       user.staffRole = staffRole;
-      console.log('✅ Setting staffRole to:', staffRole);
     }
     
-    // Clean up fields that shouldn't exist for the new role
+    // Clean up fields based on new role
     if (userType === 'student') {
       user.staffRole = undefined;
-      console.log('🧹 Cleared staffRole (now student)');
     } else if (userType === 'staff') {
       user.studentCategory = undefined;
-      console.log('🧹 Cleared studentCategory (now staff)');
     } else {
-      // For admin/superAdmin, remove both
       user.studentCategory = undefined;
       user.staffRole = undefined;
-      console.log('🧹 Cleared both fields (now admin)');
     }
     
     await user.save();
 
-    console.log('👤 After update:', {
-      userType: user.userType,
-      studentCategory: user.studentCategory,
-      staffRole: user.staffRole
-    });
-
-    // Return updated user
     res.json({ 
       success: true, 
       message: 'User role updated successfully', 
@@ -430,7 +410,6 @@ exports.updateUserRole = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        userId: user.userId,
         userType: user.userType,
         studentCategory: user.studentCategory,
         staffRole: user.staffRole,
