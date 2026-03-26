@@ -19,7 +19,7 @@ import StudentTypes from "./pages/admin/students/StudentTypes";
 import ExpiringSoon from "./pages/admin/students/ExpiringSoon";
 import ViewStudent from "./pages/admin/students/ViewStudent";
 import EditStudent from "./pages/admin/students/EditStudent";
-import Allemployees from "./components/employees/Allemployees";
+import AllEmployees from "./components/employees/AllEmployees";
 import Addemployees from "./components/employees/Addemployees";
 import Viewemployees from "./components/employees/Viewemployees";
 import Editemployees from "./components/employees/Editemployees";
@@ -190,8 +190,8 @@ function App() {
         <Route path="export" element={<ExportData />} />
         
         <Route path="employees">
-          <Route index element={<Allemployees />} />
-          <Route path="all" element={<Allemployees />} />
+          <Route index element={<AllEmployees />} />
+          <Route path="all" element={<AllEmployees />} />
           <Route path="add" element={<Addemployees />} />
           <Route path=":id" element={<Viewemployees />} />
           <Route path="edit/:id" element={<Editemployees />} />
