@@ -44,17 +44,17 @@ const useDashboardData = (dashboardType = 'academy') => {
 
       // Fetch user data based on type
       let userResponse;
-      if (dashboardType === 'staff') {
-        userResponse = await api.get(`/staff/${userId}`);
+      if (dashboardType === 'employees') {
+        userResponse = await api.get(`/employees/${userId}`);
       } else {
         userResponse = await api.get(`/admin/students/${userId}`);
       }
 
       if (userResponse.data.success) {
-        const user = userResponse.data.staff || userResponse.data.student;
+        const user = userResponse.data.employees || userResponse.data.student;
         
-        if (dashboardType === 'staff') {
-          // Staff dashboard data
+        if (dashboardType === 'employees') {
+          // employees dashboard data
           setStats([
             { 
               label: "Salary", 
@@ -83,7 +83,7 @@ const useDashboardData = (dashboardType = 'academy') => {
           ]);
 
           setInfoItems([
-            { label: "Role", value: user.staffRole || 'Staff' },
+            { label: "Role", value: user.employeesRole || 'employees' },
             { label: "Department", value: user.department || 'General' },
             { label: "Join Date", value: user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'N/A' },
           ]);

@@ -17,7 +17,7 @@ const UserManagement = () => {
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [newRole, setNewRole] = useState('');
   const [newStudentCategory, setNewStudentCategory] = useState('');
-  const [newStaffRole, setNewStaffRole] = useState('');
+  const [newemployeesRole, setNewemployeesRole] = useState('');
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
   const [newAdmin, setNewAdmin] = useState({
     name: '',
@@ -26,8 +26,8 @@ const UserManagement = () => {
     confirmPassword: ''
   });
 
-  // Staff role options
-  const staffRoleOptions = [
+  // employees role options
+  const employeesRoleOptions = [
     'teacher',
     'Digital Marketer',
     'Web Developer',
@@ -88,8 +88,8 @@ const UserManagement = () => {
       // Add role-specific fields
       if (newRole === 'student' && newStudentCategory) {
         updateData.studentCategory = newStudentCategory;
-      } else if (newRole === 'staff' && newStaffRole) {
-        updateData.staffRole = newStaffRole;
+      } else if (newRole === 'employees' && newemployeesRole) {
+        updateData.employeesRole = newemployeesRole;
       }
 
       await api.patch(`/admin/users/${selectedUser._id}/role`, updateData);
@@ -98,7 +98,7 @@ const UserManagement = () => {
       setSelectedUser(null);
       setNewRole('');
       setNewStudentCategory('');
-      setNewStaffRole('');
+      setNewemployeesRole('');
       fetchUsers();
     } catch (error) {
       toast.error(error.response?.data?.error || 'Failed to update role');
@@ -109,7 +109,7 @@ const UserManagement = () => {
     setSelectedUser(user);
     setNewRole(user.userType);
     setNewStudentCategory(user.studentCategory || '');
-    setNewStaffRole(user.staffRole || '');
+    setNewemployeesRole(user.employeesRole || '');
     setShowRoleModal(true);
   };
 
@@ -139,7 +139,7 @@ const UserManagement = () => {
     const roleConfig = {
       superAdmin: { color: 'bg-red-100 text-red-800', icon: <FaUserTie className="w-3 h-3" /> },
       admin: { color: 'bg-purple-100 text-purple-800', icon: <FaUserTie className="w-3 h-3" /> },
-      staff: { color: 'bg-blue-100 text-blue-800', icon: <FaUser className="w-3 h-3" /> },
+      employees: { color: 'bg-blue-100 text-blue-800', icon: <FaUser className="w-3 h-3" /> },
       student: { color: 'bg-green-100 text-green-800', icon: <FaUser className="w-3 h-3" /> }
     };
     return roleConfig[role] || roleConfig.student;
@@ -243,7 +243,7 @@ const UserManagement = () => {
               <option value="all">All Roles</option>
               <option value="superAdmin">Super Admin</option>
               <option value="admin">Admin</option>
-              <option value="staff">Staff</option>
+              <option value="employees">employees</option>
               <option value="student">Student</option>
             </select>
           </div>
@@ -329,8 +329,8 @@ const UserManagement = () => {
                             {user.userType === 'student' && user.studentCategory && (
                               <span className="ml-0.5 text-[8px] sm:text-[10px] opacity-75">({user.studentCategory})</span>
                             )}
-                            {user.userType === 'staff' && user.staffRole && (
-                              <span className="ml-0.5 text-[8px] sm:text-[10px] opacity-75 truncate max-w-[60px] sm:max-w-[100px]">({user.staffRole})</span>
+                            {user.userType === 'employees' && user.employeesRole && (
+                              <span className="ml-0.5 text-[8px] sm:text-[10px] opacity-75 truncate max-w-[60px] sm:max-w-[100px]">({user.employeesRole})</span>
                             )}
                           </span>
                         </td>
@@ -404,8 +404,8 @@ const UserManagement = () => {
                           {user.userType === 'student' && user.studentCategory && (
                             <span className="ml-0.5 text-[10px] opacity-75">({user.studentCategory})</span>
                           )}
-                          {user.userType === 'staff' && user.staffRole && (
-                            <span className="ml-0.5 text-[10px] opacity-75 truncate max-w-[80px]">({user.staffRole})</span>
+                          {user.userType === 'employees' && user.employeesRole && (
+                            <span className="ml-0.5 text-[10px] opacity-75 truncate max-w-[80px]">({user.employeesRole})</span>
                           )}
                         </span>
                         <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${statusConfig.color}`}>
@@ -484,7 +484,7 @@ const UserManagement = () => {
         )}
       </div>
 
-      {/* Role Change Modal - With StudentCategory & StaffRole */}
+      {/* Role Change Modal - With StudentCategory & employeesRole */}
       {showRoleModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4">
@@ -505,12 +505,12 @@ const UserManagement = () => {
                       setNewRole(e.target.value);
                       // Reset role-specific fields when role changes
                       setNewStudentCategory('');
-                      setNewStaffRole('');
+                      setNewemployeesRole('');
                     }}
                     className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   >
                     <option value="student">Student</option>
-                    <option value="staff">Staff</option>
+                    <option value="employees">employees</option>
                     <option value="admin">Admin</option>
                     <option value="superAdmin">Super Admin</option>
                   </select>
@@ -535,19 +535,19 @@ const UserManagement = () => {
                   </div>
                 )}
 
-                {/* Staff Role - Only for Staff role */}
-                {newRole === 'staff' && (
+                {/* employees Role - Only for employees role */}
+                {newRole === 'employees' && (
                   <div>
                     <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
-                      Staff Role
+                      employees Role
                     </label>
                     <select
-                      value={newStaffRole}
-                      onChange={(e) => setNewStaffRole(e.target.value)}
+                      value={newemployeesRole}
+                      onChange={(e) => setNewemployeesRole(e.target.value)}
                       className="w-full px-3 sm:px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     >
                       <option value="">Select Role</option>
-                      {staffRoleOptions.map(opt => (
+                      {employeesRoleOptions.map(opt => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>
@@ -558,8 +558,8 @@ const UserManagement = () => {
                 {(newRole === 'student' && !newStudentCategory) && (
                   <p className="text-xs text-red-500">Student category is required for student role</p>
                 )}
-                {(newRole === 'staff' && !newStaffRole) && (
-                  <p className="text-xs text-red-500">Staff role is required for staff role</p>
+                {(newRole === 'employees' && !newemployeesRole) && (
+                  <p className="text-xs text-red-500">employees role is required for employees role</p>
                 )}
               </div>
             </div>
@@ -571,7 +571,7 @@ const UserManagement = () => {
                   setSelectedUser(null);
                   setNewRole('');
                   setNewStudentCategory('');
-                  setNewStaffRole('');
+                  setNewemployeesRole('');
                 }}
                 className="px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50"
               >
@@ -582,10 +582,10 @@ const UserManagement = () => {
                 disabled={
                   !newRole || 
                   (newRole === 'student' && !newStudentCategory) ||
-                  (newRole === 'staff' && !newStaffRole) ||
+                  (newRole === 'employees' && !newemployeesRole) ||
                   (newRole === selectedUser.userType && 
                     newStudentCategory === (selectedUser.studentCategory || '') && 
-                    newStaffRole === (selectedUser.staffRole || ''))
+                    newemployeesRole === (selectedUser.employeesRole || ''))
                 }
                 className="px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >

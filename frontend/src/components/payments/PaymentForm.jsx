@@ -30,9 +30,9 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
   const userRole = localStorage.getItem('role');
 
   const getDefaultPaymentType = () => {
-    if (category === 'staff') return 'salary';
+    if (category === 'employees') return 'salary';
     if (category === 'academy' || category === 'library') return 'fee';
-    if (user?.userType === 'staff') return 'salary';
+    if (user?.userType === 'employees') return 'salary';
     return 'fee';
   };
 
@@ -66,30 +66,30 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
     try {
       setLoading(true);
       
-      let studentPromise, staffPromise;
+      let studentPromise, employeesPromise;
       
-      if (category === 'staff') {
+      if (category === 'employees') {
         studentPromise = Promise.resolve({ data: { students: [] } });
-        staffPromise = api.get(`/staff?search=${searchQuery}&limit=10`);
+        employeesPromise = api.get(`/employees?search=${searchQuery}&limit=10`);
       } else if (category === 'academy') {
         studentPromise = api.get(`/admin/students?search=${searchQuery}&studentCategory=academy&limit=10`);
-        staffPromise = Promise.resolve({ data: { staff: [] } });
+        employeesPromise = Promise.resolve({ data: { employees: [] } });
       } else if (category === 'library') {
         studentPromise = api.get(`/admin/students?search=${searchQuery}&studentCategory=library&limit=10`);
-        staffPromise = Promise.resolve({ data: { staff: [] } });
+        employeesPromise = Promise.resolve({ data: { employees: [] } });
       } else {
         studentPromise = api.get(`/admin/students?search=${searchQuery}&limit=10`);
-        staffPromise = api.get(`/staff?search=${searchQuery}&limit=10`);
+        employeesPromise = api.get(`/employees?search=${searchQuery}&limit=10`);
       }
 
-      const [studentResponse, staffResponse] = await Promise.all([studentPromise, staffPromise]);
+      const [studentResponse, employeesResponse] = await Promise.all([studentPromise, employeesPromise]);
 
       const students = studentResponse.data?.students || [];
-      const staff = staffResponse.data?.staff || [];
+      const employees = employeesResponse.data?.employees || [];
 
       const allUsers = [
         ...students.map(s => ({ ...s, userType: 'student' })),
-        ...staff.map(s => ({ ...s, userType: 'staff' }))
+        ...employees.map(s => ({ ...s, userType: 'employees' }))
       ];
       
       setUsers(allUsers);
@@ -165,7 +165,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
       { value: 'advance', label: 'Advance Payment', icon: <GiPayMoney className="w-3.5 h-3.5" /> },
       { value: 'refund', label: 'Refund', icon: <RiRefund2Line className="w-3.5 h-3.5" /> }
     ],
-    staff: [
+    employees: [
       { value: 'salary', label: 'Salary', icon: <BsCashStack className="w-3.5 h-3.5" /> },
       { value: 'advance', label: 'Advance Salary', icon: <GiMoneyStack className="w-3.5 h-3.5" /> },
       { value: 'other', label: 'Other Payment', icon: <MdPayment className="w-3.5 h-3.5" /> }
@@ -181,12 +181,12 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
   ];
 
   const currentUserType = selectedUser?.userType || user?.userType || 
-    (category === 'staff' ? 'staff' : 'student');
+    (category === 'employees' ? 'employees' : 'student');
 
   const getCategoryIcon = () => {
     if (category === 'academy') return <GiTeacher className="w-4 h-4" />;
     if (category === 'library') return <MdLocalLibrary className="w-4 h-4" />;
-    if (category === 'staff') return <RiGovernmentLine className="w-4 h-4" />;
+    if (category === 'employees') return <RiGovernmentLine className="w-4 h-4" />;
     return null;
   };
 
@@ -243,14 +243,14 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
                         setUsers([]);
                         setFormData(prev => ({
                           ...prev,
-                          type: u.userType === 'staff' ? 'salary' : 'fee'
+                          type: u.userType === 'employees' ? 'salary' : 'fee'
                         }));
                       }}
                       className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0"
                     >
                       <div className="flex items-center gap-2">
-                        <div className={`p-1.5 rounded-full ${u.userType === 'staff' ? 'bg-purple-100' : 'bg-green-100'}`}>
-                          {u.userType === 'staff' ? 
+                        <div className={`p-1.5 rounded-full ${u.userType === 'employees' ? 'bg-purple-100' : 'bg-green-100'}`}>
+                          {u.userType === 'employees' ? 
                             <FaBuilding className="w-3 h-3 text-purple-600" /> : 
                             <FaUser className="w-3 h-3 text-green-600" />
                           }
@@ -271,7 +271,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
                 <div className="flex justify-between items-start">
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-white rounded-full">
-                      {selectedUser.userType === 'staff' ? 
+                      {selectedUser.userType === 'employees' ? 
                         <FaBuilding className="w-4 h-4 text-purple-600" /> : 
                         <FaUser className="w-4 h-4 text-green-600" />
                       }
@@ -280,7 +280,7 @@ const PaymentForm = ({ user, category, onPaymentSuccess }) => {
                       <p className="text-sm font-medium text-gray-900">{selectedUser.name}</p>
                       <p className="text-xs text-gray-600 mt-0.5">ID: {selectedUser.userId}</p>
                       <p className="text-xs text-gray-500 mt-1">
-                        {selectedUser.userType === 'staff' ? selectedUser.staffRole : selectedUser.studentCategory}
+                        {selectedUser.userType === 'employees' ? selectedUser.employeesRole : selectedUser.studentCategory}
                       </p>
                     </div>
                   </div>

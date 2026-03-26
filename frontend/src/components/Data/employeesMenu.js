@@ -1,44 +1,43 @@
-// staffMenu.js (already correct)
-const staffMenu = [
+const employeesMenu = [
   {
     items: [
       {
-        path: "/staff-dashboard",
+        path: "/employees",
         icon: "dashboard",
         label: "Dashboard"
       },
       {
-        path: "/staff-dashboard/attendance",
+        path: "/employees/attendance",
         icon: "attendance",
         label: "Attendance"
       },
       {
-        path: "/staff-dashboard/payments",
+        path: "/employees/payments",
         icon: "rupees", 
         label: "My Payments"
       },
       {
-        path: "/staff-dashboard/activity",
+        path: "/employees/activity",
         icon: "report",
         label: "Activity Reports"
       },
       {
-        path: "/staff-dashboard/profile",
-        icon: "adminstaff",
+        path: "/employees/profile",
+        icon: "adminemployees",
         label: "My Profile"
       },
       {
-        path: "/staff-dashboard/settings",
+        path: "/employees/settings",
         icon: "setting",
         label: "Settings"
       },
       {
-        path: "/staff-dashboard/notifications",
+        path: "/employees/notifications",
         icon: "bell",
         label: "Notifications"
       },
       {
-        path: "/staff-dashboard/help",
+        path: "/employees/help",
         icon: "help",
         label: "Help & Support"
       }
@@ -46,4 +45,4 @@ const staffMenu = [
   }
 ];
 
-export default staffMenu;
+export default employeesMenu;

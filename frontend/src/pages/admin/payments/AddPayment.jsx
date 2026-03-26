@@ -40,7 +40,7 @@ const AddPayment = () => {
 
   const handlePaymentSuccess = () => {
     toast.success('Payment recorded!');
-    navigate(category ? `/admin-dashboard/payments/${category}` : '/admin-dashboard/payments/history');
+    navigate(category ? `/admin/payments/${category}` : '/admin/payments/history');
   };
 
   const categories = [
@@ -59,8 +59,8 @@ const AddPayment = () => {
       color: 'green' 
     },
     { 
-      value: 'staff', 
-      label: 'Staff', 
+      value: 'employees', 
+      label: 'employees', 
       icon: <BsPersonWorkspace className="w-4 h-4" />,
       icon2: <RiGovernmentLine className="w-5 h-5" />,
       color: 'purple' 

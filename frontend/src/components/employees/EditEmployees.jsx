@@ -20,31 +20,31 @@ import {
 } from 'react-icons/gi';
 import Loader from '../common/Loader';
 
-const EditStaff = () => {
+const EditEmployees = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', staffRole: 'teacher', salary: '', paidSalary: '',
+    name: '', email: '', phone: '', employeesRole: 'teacher', salary: '', paidSalary: '',
     joinDate: '', status: 'active', department: '', address: '',
     accountNumber: '', bankName: '', ifsc: ''
   });
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [staffDetails, setStaffDetails] = useState(null);
+  const [employeesDetails, setemployeesDetails] = useState(null);
 
-  useEffect(() => { fetchStaff(); }, [id]);
+  useEffect(() => { fetchemployees(); }, [id]);
 
-  const fetchStaff = async () => {
+  const fetchemployees = async () => {
     try {
       setFetching(true);
-      const res = await api.get(`/staff/${id}`);
+      const res = await api.get(`/employees/${id}`);
 
-      if (res.data.success && res.data.staff) {
-        const s = res.data.staff;
-        setStaffDetails(s);
+      if (res.data.success && res.data.employees) {
+        const s = res.data.employees;
+        setemployeesDetails(s);
         setFormData({
           name: s.name || '', email: s.email || '', phone: s.phone || '',
-          staffRole: s.staffRole || 'teacher', salary: s.salary || 0,
+          employeesRole: s.employeesRole || 'teacher', salary: s.salary || 0,
           paidSalary: s.paidSalary || 0,
           joinDate: s.joinDate ? new Date(s.joinDate).toISOString().split('T')[0] : '',
           status: s.status || 'active', department: s.department || '',
@@ -53,8 +53,8 @@ const EditStaff = () => {
           bankName: s.bankDetails?.bankName || '',
           ifsc: s.bankDetails?.ifsc || ''
         });
-      } else { toast.error('Staff not found'); navigate('/admin-dashboard/staff'); }
-    } catch (error) { toast.error('Failed to load staff'); navigate('/admin-dashboard/staff'); }
+      } else { toast.error('employees not found'); navigate('/admin/employees'); }
+    } catch (error) { toast.error('Failed to load employees'); navigate('/admin/employees'); }
     finally { setFetching(false); }
   };
 
@@ -69,16 +69,16 @@ const EditStaff = () => {
     try {
       const updateData = {
         name: formData.name, email: formData.email, phone: formData.phone,
-        staffRole: formData.staffRole, salary: parseFloat(formData.salary) || 0,
+        employeesRole: formData.employeesRole, salary: parseFloat(formData.salary) || 0,
         paidSalary: parseFloat(formData.paidSalary) || 0, joinDate: formData.joinDate,
         status: formData.status, department: formData.department, address: formData.address,
         bankDetails: { accountNumber: formData.accountNumber, bankName: formData.bankName, ifsc: formData.ifsc }
       };
-      const res = await api.put(`/staff/${id}`, updateData);
+      const res = await api.put(`/employees/${id}`, updateData);
 
       if (res.data.success) {
-        toast.success('Staff updated!');
-        setTimeout(() => navigate(`/admin-dashboard/staff/${id}`), 1000);
+        toast.success('employees updated!');
+        setTimeout(() => navigate(`/admin/employees/${id}`), 1000);
       } else toast.error(res.data.message || 'Update failed');
     } catch (error) { toast.error('Update failed'); }
     finally { setLoading(false); }
@@ -93,11 +93,11 @@ const EditStaff = () => {
       case 'librarian': return { name: 'Librarian', icon: <MdLocalLibrary className="w-5 h-5" />, color: 'purple' };
       case 'accountant': return { name: 'Accountant', icon: <BsCashStack className="w-5 h-5" />, color: 'green' };
       case 'admin': return { name: 'Admin', icon: <FaUserTie className="w-5 h-5" />, color: 'red' };
-      default: return { name: 'Staff', icon: <BsPersonWorkspace className="w-5 h-5" />, color: 'gray' };
+      default: return { name: 'employees', icon: <BsPersonWorkspace className="w-5 h-5" />, color: 'gray' };
     }
   };
 
-  const staffRoles = [
+  const employeesRoles = [
     { value: 'teacher', label: 'Teacher', icon: <GiTeacher className="w-5 h-5" /> },
     { value: 'librarian', label: 'Librarian', icon: <MdLocalLibrary className="w-5 h-5" /> },
     { value: 'accountant', label: 'Accountant', icon: <BsCashStack className="w-5 h-5" /> },
@@ -122,16 +122,16 @@ const EditStaff = () => {
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3 mb-4 md:mb-6">
-        <button onClick={() => navigate(`/admin-dashboard/staff/${id}`)} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+        <button onClick={() => navigate(`/admin/employees/${id}`)} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
           <FaArrowLeft className="w-4 h-4 text-gray-600" />
         </button>
         <div className="p-2 md:p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
           <FaUserTie className="w-4 h-4 md:w-5 md:h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Edit Staff</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-gray-900">Edit employees</h1>
           <p className="text-sm text-gray-600 flex items-center gap-1.5">
-            <FaIdCard className="w-4 h-4" /> {staffDetails?.staffId || staffDetails?.userId} • {staffDetails?.name}
+            <FaIdCard className="w-4 h-4" /> {employeesDetails?.employeesId || employeesDetails?.userId} • {employeesDetails?.name}
           </p>
         </div>
       </div>
@@ -174,14 +174,14 @@ const EditStaff = () => {
           <h2 className="text-base md:text-lg font-semibold mb-4 md:mb-5 flex items-center gap-2"><MdWork className="w-4 h-4 md:w-5 md:h-5 text-blue-600" /> Role & Status</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             <div className="space-y-2">
-              <label className={labelClass}>Staff Role</label>
+              <label className={labelClass}>employees Role</label>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {staffRoles.map((role) => (
-                  <button key={role.value} type="button" onClick={() => setFormData({...formData, staffRole: role.value})}
+                {employeesRoles.map((role) => (
+                  <button key={role.value} type="button" onClick={() => setFormData({...formData, employeesRole: role.value})}
                     className={`p-3 rounded-lg border-2 flex items-center gap-2 transition-all ${
-                      formData.staffRole === role.value ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:border-blue-300'
+                      formData.employeesRole === role.value ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 hover:border-blue-300'
                     }`}>
-                    <span className={formData.staffRole === role.value ? 'text-blue-600' : 'text-gray-600'}>{role.icon}</span>
+                    <span className={formData.employeesRole === role.value ? 'text-blue-600' : 'text-gray-600'}>{role.icon}</span>
                     <span className="text-sm font-medium">{role.label}</span>
                   </button>
                 ))}
@@ -297,7 +297,7 @@ const EditStaff = () => {
               {loading ? <Loader type="inline" size="small" /> : <FaSave className="w-4 h-4" />}
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
-            <button type="button" onClick={() => navigate(`/admin-dashboard/staff/${id}`)} className="px-4 md:px-6 py-2 md:py-2.5 border bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+            <button type="button" onClick={() => navigate(`/admin/employees/${id}`)} className="px-4 md:px-6 py-2 md:py-2.5 border bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
               Cancel
             </button>
           </div>
@@ -307,4 +307,4 @@ const EditStaff = () => {
   );
 };
 
-export default EditStaff;
+export default EditEmployees;

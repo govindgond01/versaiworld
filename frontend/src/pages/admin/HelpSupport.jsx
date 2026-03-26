@@ -25,16 +25,16 @@ const HelpSupport = () => {
   // FAQs based on admin menu structure
   const faqs = [
     // Dashboard Related
-    { q: 'What does the Dashboard show?', a: 'Dashboard shows overview stats for Library, Academy and Staff.', cat: 'dashboard' },
+    { q: 'What does the Dashboard show?', a: 'Dashboard shows overview stats for Library, Academy and employees.', cat: 'dashboard' },
     { q: 'How to view Library dashboard?', a: 'Go to Dashboard → Library Dashboard', cat: 'dashboard' },
     { q: 'How to view Academy dashboard?', a: 'Go to Dashboard → Academy Dashboard', cat: 'dashboard' },
-    { q: 'How to view Staff dashboard?', a: 'Go to Dashboard → Staff Dashboard', cat: 'dashboard' },
+    { q: 'How to view employees dashboard?', a: 'Go to Dashboard → employees Dashboard', cat: 'dashboard' },
     
     // Payments Related
     { q: 'How to view Payments dashboard?', a: 'Go to Payments → Dashboard Payments', cat: 'payments' },
     { q: 'How to check Academy payments?', a: 'Go to Payments → Academy Payments', cat: 'payments' },
     { q: 'How to check Library payments?', a: 'Go to Payments → Library Payments', cat: 'payments' },
-    { q: 'How to manage Staff payments?', a: 'Go to Payments → Staff Payments', cat: 'payments' },
+    { q: 'How to manage employees payments?', a: 'Go to Payments → employees Payments', cat: 'payments' },
     { q: 'How to add a new payment?', a: 'Go to Payments → Add Payment', cat: 'payments' },
     { q: 'How to view payment history?', a: 'Go to Payments → History Payments', cat: 'payments' },
     { q: 'How to check due payments?', a: 'Go to Payments → Due Payments', cat: 'payments' },
@@ -45,15 +45,15 @@ const HelpSupport = () => {
     { q: 'How to manage student types?', a: 'Go to Students → Student Types', cat: 'students' },
     { q: 'How to view expiring soon students?', a: 'Go to Students → Expiring Soon', cat: 'students' },
     
-    // Staff Related
-    { q: 'How to view all staff members?', a: 'Go to Staff Management → All Staffs', cat: 'staff' },
-    { q: 'How to add a new staff member?', a: 'Go to Staff Management → Add Staff', cat: 'staff' },
-    { q: 'How to view staff analytics?', a: 'Go to Staff Management → Staffs Analytics', cat: 'staff' },
+    // employees Related
+    { q: 'How to view all employees members?', a: 'Go to employees Management → All employeess', cat: 'employees' },
+    { q: 'How to add a new employees member?', a: 'Go to employees Management → Add employees', cat: 'employees' },
+    { q: 'How to view employees analytics?', a: 'Go to employees Management → employeess Analytics', cat: 'employees' },
     
     // Attendance Related
     { q: 'How to mark Academy attendance?', a: 'Go to Attendance → Attendance Academy', cat: 'attendance' },
     { q: 'How to mark Library attendance?', a: 'Go to Attendance → Attendance Library', cat: 'attendance' },
-    { q: 'How to mark Staff attendance?', a: 'Go to Attendance → Attendance Staffs', cat: 'attendance' },
+    { q: 'How to mark employees attendance?', a: 'Go to Attendance → Attendance employeess', cat: 'attendance' },
     
     // Other Features
     { q: 'How to export data?', a: 'Click on Export Data in the menu', cat: 'export' },
@@ -100,7 +100,7 @@ const HelpSupport = () => {
       dashboard: 'bg-blue-100 text-blue-700',
       payments: 'bg-green-100 text-green-700',
       students: 'bg-purple-100 text-purple-700',
-      staff: 'bg-orange-100 text-orange-700',
+      employees: 'bg-orange-100 text-orange-700',
       attendance: 'bg-pink-100 text-pink-700',
       export: 'bg-indigo-100 text-indigo-700',
       settings: 'bg-gray-100 text-gray-700',

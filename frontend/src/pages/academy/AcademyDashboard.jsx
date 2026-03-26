@@ -109,10 +109,10 @@ const AcademyDashboard = () => {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold mb-6">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-4 md:gap-6">
-              <UserQuickAction icon={FaBook} label="Courses" path="/academy-dashboard/courses" color="blue" />
-              <UserQuickAction icon={FaCalendar} label="Attendance" path="/academy-dashboard/attendance" color="green" />
-              <UserQuickAction icon={FaRupeeSign} label="Pay Fees" path="/academy-dashboard/payments" color="purple" />
-              <UserQuickAction icon={FaUserCheck} label="Profile" path="/academy-dashboard/profile" color="orange" />
+              <UserQuickAction icon={FaBook} label="Courses" path="/academy/courses" color="blue" />
+              <UserQuickAction icon={FaCalendar} label="Attendance" path="/academy/attendance" color="green" />
+              <UserQuickAction icon={FaRupeeSign} label="Pay Fees" path="/academy/payments" color="purple" />
+              <UserQuickAction icon={FaUserCheck} label="Profile" path="/academy/profile" color="orange" />
             </div>
           </div>
         </div>

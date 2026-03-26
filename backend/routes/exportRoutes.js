@@ -11,6 +11,6 @@ router.use(adminOnly);
 router.get('/categories', getCategories);
 
 // 📌 Export data endpoints
-router.post('/:type', exportData); // types: students, staff, payments, courses, attendance
+router.post('/:type', exportData); // types: students, employees, payments, courses, attendance
 
 module.exports = router;

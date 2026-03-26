@@ -17,7 +17,7 @@ import api from '../../services/api';
 
 import adminMenu from '../Data/adminMenu';
 import academyMenu from '../Data/academyMenu';
-import staffMenu from '../Data/staffMenu';
+import employeesMenu from '../Data/employeesMenu';
 import libraryMenu from '../Data/libraryMenu';
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -36,7 +36,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       return filteredAdminMenu;
     }
     if (userRole === 'superAdmin') return adminMenu;
-    if (userRole === 'staff') return staffMenu;
+    if (userRole === 'employees') return employeesMenu;
     if (userRole === 'student') {
       if (studentCategory === 'academy') return academyMenu;
       if (studentCategory === 'library') return libraryMenu;
@@ -64,7 +64,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     user: <FiUser className="w-5 h-5" />,
     users: <FiUsers className="w-5 h-5" />,
     groups: <MdGroups className="w-5 h-5" />,
-    adminstaff: <FaUserTie className="w-5 h-5" />,
+    adminemployees: <FaUserTie className="w-5 h-5" />,
     teacher: <GiTeacher className="w-5 h-5" />,
     student: <FaUserGraduate className="w-5 h-5" />,
     creditCard: <FiCreditCard className="w-5 h-5" />,

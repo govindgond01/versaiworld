@@ -118,7 +118,7 @@ const Profile = () => {
   const getRoleIcon = () => {
     if (!user) return <FiUser />;
     if (user.role === 'admin') return <FiUser className="w-8 h-8" />;
-    if (user.role === 'staff') return <BsPersonWorkspace className="w-8 h-8" />;
+    if (user.role === 'employees') return <BsPersonWorkspace className="w-8 h-8" />;
     if (user.studentCategory === 'academy') return <GiGraduateCap className="w-8 h-8" />;
     if (user.studentCategory === 'library') return <MdLocalLibrary className="w-8 h-8" />;
     return <FiUser className="w-8 h-8" />;
@@ -127,7 +127,7 @@ const Profile = () => {
   const getRoleBadge = () => {
     if (!user) return '';
     if (user.role === 'admin') return 'bg-purple-100 text-purple-700';
-    if (user.role === 'staff') return 'bg-blue-100 text-blue-700';
+    if (user.role === 'employees') return 'bg-blue-100 text-blue-700';
     if (user.studentCategory === 'academy') return 'bg-green-100 text-green-700';
     if (user.studentCategory === 'library') return 'bg-yellow-100 text-yellow-700';
     return 'bg-gray-100 text-gray-700';
@@ -136,7 +136,7 @@ const Profile = () => {
   const getRoleText = () => {
     if (!user) return '';
     if (user.role === 'admin') return 'Administrator';
-    if (user.role === 'staff') return user.staffRole || 'Staff Member';
+    if (user.role === 'employees') return user.employeesRole || 'employees Member';
     if (user.studentCategory === 'academy') return 'Academy Student';
     if (user.studentCategory === 'library') return 'Library Member';
     return 'User';
@@ -301,11 +301,11 @@ const Profile = () => {
                   </>
                 )}
 
-                {user?.role === 'staff' && (
+                {user?.role === 'employees' && (
                   <>
                     <div className="flex items-center gap-3 text-sm">
                       <GiTeacher className="w-4 h-4 text-gray-400" />
-                      <span>Role: {user?.staffRole || 'Staff'}</span>
+                      <span>Role: {user?.employeesRole || 'employees'}</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <FiBook className="w-4 h-4 text-gray-400" />

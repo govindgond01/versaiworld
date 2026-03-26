@@ -107,7 +107,7 @@ const EditStudent = () => {
 
       if (res.data.success) {
         setSuccess('Student updated!');
-        setTimeout(() => navigate(`/admin-dashboard/students/${id}`), 1500);
+        setTimeout(() => navigate(`/admin/students/${id}`), 1500);
       } else setError(res.data.message || 'Update failed');
     } catch (error) {
       console.error('Update student error:', error);
@@ -139,7 +139,7 @@ const EditStudent = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/admin-dashboard/students/${id}`)} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+          <button onClick={() => navigate(`/admin/students/${id}`)} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <FaArrowLeft className="w-4 h-4 text-gray-600" />
           </button>
           <div className="p-2.5 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-md">
@@ -330,11 +330,11 @@ const EditStudent = () => {
               {loading ? <Loader type="inline" size="small" /> : <FaSave className="w-4 h-4" />}
               {loading ? 'Saving...' : 'Save Changes'}
             </button>
-            <button type="button" onClick={() => navigate(`/admin-dashboard/students/${id}`)} className="px-6 py-2.5 border bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+            <button type="button" onClick={() => navigate(`/admin/students/${id}`)} className="px-6 py-2.5 border bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
               Cancel
             </button>
           </div>
-          <button type="button" onClick={() => navigate('/admin-dashboard/students')} className="text-sm text-blue-600 hover:text-blue-700 font-medium">
+          <button type="button" onClick={() => navigate('/admin/students')} className="text-sm text-blue-600 hover:text-blue-700 font-medium">
             Back to All Students
           </button>
         </div>

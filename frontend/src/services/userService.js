@@ -1,4 +1,4 @@
-import api from './api'; // Your axios instance
+import api from './api'; 
 
 const userService = {
   // Get all users with filters

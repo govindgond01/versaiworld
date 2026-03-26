@@ -10,7 +10,7 @@ import AdminAttendanceFilters from '../../../components/admin/attendance/AdminAt
 import AdminAttendanceTable from '../../../components/admin/attendance/AdminAttendanceTable';
 import AdminAttendanceEditor from '../../../components/admin/attendance/AdminAttendanceEditor';
 
-const AdminStaffAttendance = () => {
+const AdminEmployeesAttendance = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [attendanceMap, setAttendanceMap] = useState({});
@@ -32,8 +32,8 @@ const AdminStaffAttendance = () => {
     try {
       setLoading(true);
 
-      const usersRes = await api.get('/staff');
-      const usersData = usersRes.data?.staff || [];
+      const usersRes = await api.get('/employees');
+      const usersData = usersRes.data?.employees || [];
       setUsers(usersData);
 
       const dateStr = selectedDate.toISOString().split('T')[0];
@@ -43,7 +43,7 @@ const AdminStaffAttendance = () => {
       let present = 0, absent = 0, halfDay = 0;
 
       attendanceRes.data.data?.forEach(record => {
-        if (record.userId?.userType === 'staff') {
+        if (record.userId?.userType === 'employees') {
           map[record.userId._id] = record;
           if (record.status === 'present') present++;
           else if (record.status === 'absent') absent++;
@@ -116,7 +116,7 @@ const AdminStaffAttendance = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <Loader type="spinner" size="medium" />
-          <p className="mt-4 text-gray-600">Loading staff attendance...</p>
+          <p className="mt-4 text-gray-600">Loading employees attendance...</p>
         </div>
       </div>
     );
@@ -130,8 +130,8 @@ const AdminStaffAttendance = () => {
             <BsPersonWorkspace className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Staff Attendance</h1>
-            <p className="text-sm text-gray-500">Manage attendance for staff members</p>
+            <h1 className="text-2xl font-bold text-gray-900">employees Attendance</h1>
+            <p className="text-sm text-gray-500">Manage attendance for employees members</p>
           </div>
         </div>
         <button
@@ -152,14 +152,14 @@ const AdminStaffAttendance = () => {
         onSearchChange={setSearchTerm}
         statusFilter={statusFilter}
         onStatusChange={setStatusFilter}
-        category="Staff"
+        category="employees"
       />
 
       <AdminAttendanceTable
         users={filteredUsers}
         attendanceMap={attendanceMap}
         onEdit={handleEdit}
-        category="staff"
+        category="employees"
       />
 
       <AdminAttendanceEditor
@@ -176,4 +176,4 @@ const AdminStaffAttendance = () => {
   );
 };
 
-export default AdminStaffAttendance;
+export default AdminEmployeesAttendance;

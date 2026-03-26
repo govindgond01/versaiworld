@@ -8,7 +8,7 @@ import Loader from '../../components/common/Loader';
 import UserEmptyState from '../../components/user/UserEmptyState';
 import UserActivityItem from '../../components/user/UserActivityItem';
 
-const StaffActivity = () => {
+const EmployeesActivity = () => {
   const [loading, setLoading] = useState(true);
   const [activities, setActivities] = useState([]);
 
@@ -62,4 +62,4 @@ const StaffActivity = () => {
   );
 };
 
-export default StaffActivity;
+export default EmployeesActivity;

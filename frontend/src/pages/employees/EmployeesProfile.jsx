@@ -7,7 +7,7 @@ import Loader from '../../components/common/Loader';
 import UserProfileInfo from '../../components/user/UserProfileInfo';
 import ProfileImageUpload from '../../components/common/ProfileImageUpload';
 
-const StaffProfile = () => {
+const EmployeesProfile = () => {
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState({});
   const [editMode, setEditMode] = useState(false);
@@ -23,11 +23,11 @@ const StaffProfile = () => {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const res = await api.get(`staff/${userId}`);
+      const res = await api.get(`employees/${userId}`);
 
       if (res.data.success) {
-        setUserData(res.data.staff);
-        setFormData(res.data.staff);
+        setUserData(res.data.employees);
+        setFormData(res.data.employees);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -53,10 +53,10 @@ const StaffProfile = () => {
 
   const handleUpdate = async () => {
     try {
-      const res = await api.put(`staff/${userId}`, formData);
+      const res = await api.put(`employees/${userId}`, formData);
 
       if (res.data.success) {
-        setUserData(res.data.staff);
+        setUserData(res.data.employees);
         setEditMode(false);
         toast.success('Profile updated successfully');
       }
@@ -91,7 +91,7 @@ const StaffProfile = () => {
           <div className="mt-4 flex items-center gap-2">
             <BsPersonWorkspace className="text-purple-600" />
             <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
-              Staff Member
+              employees Member
             </span>
           </div>
         </div>
@@ -146,21 +146,21 @@ const StaffProfile = () => {
             </div>
 
             <div>
-              <label className="text-sm text-gray-500">Staff Role</label>
+              <label className="text-sm text-gray-500">employees Role</label>
               {editMode ? (
                 <select
-                  name="staffRole"
-                  value={formData.staffRole || ''}
+                  name="employeesRole"
+                  value={formData.employeesRole || ''}
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded mt-1"
                 >
                   <option value="teacher">Teacher</option>
                   <option value="librarian">Librarian</option>
-                  <option value="admin_staff">Admin Staff</option>
+                  <option value="admin_employees">Admin employees</option>
                   <option value="other">Other</option>
                 </select>
               ) : (
-                <p className="font-medium capitalize">{userData?.staffRole || 'N/A'}</p>
+                <p className="font-medium capitalize">{userData?.employeesRole || 'N/A'}</p>
               )}
             </div>
           </div>
@@ -169,8 +169,8 @@ const StaffProfile = () => {
             <h3 className="font-semibold text-gray-700 border-b pb-2">Employment Details</h3>
             
             <div>
-              <label className="text-sm text-gray-500">Staff ID</label>
-              <p className="font-medium">{userData?.staffId || userData?.userId}</p>
+              <label className="text-sm text-gray-500">employees ID</label>
+              <p className="font-medium">{userData?.employeesId || userData?.userId}</p>
             </div>
 
             <div>
@@ -222,4 +222,4 @@ const StaffProfile = () => {
   );
 };
 
-export default StaffProfile;
+export default EmployeesProfile;

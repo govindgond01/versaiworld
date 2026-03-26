@@ -1,6 +1,4 @@
 import axios from 'axios';
-
-// Vite uses import.meta.env, not process.env
 const API_URL = import.meta.env.VITE_API_URL;
 
 if (!API_URL) {
@@ -12,11 +10,8 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Enable sending cookies with requests
+  withCredentials: true, 
 });
-
-// Remove manual token setting since we're using httpOnly cookies
-// Add token to requests - REMOVED: tokens are in httpOnly cookies
 
 // Response interceptor for error handling
 api.interceptors.response.use(

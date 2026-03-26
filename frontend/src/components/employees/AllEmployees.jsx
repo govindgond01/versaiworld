@@ -19,56 +19,56 @@ import {
   GiTeacher, GiPayMoney, GiExpense, GiReceiveMoney
 } from 'react-icons/gi';
 
-const AllStaff = () => {
+const AllEmployees = () => {
   const debouncedNavigate = useDebouncedNavigation(300);
-  const [staff, setStaff] = useState([]);
+  const [employees, setemployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [roleFilter, setRoleFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalStaff, setTotalStaff] = useState(0);
+  const [totalemployees, setTotalemployees] = useState(0);
 
-  useEffect(() => { fetchStaff(); }, [currentPage, statusFilter, roleFilter]);
+  useEffect(() => { fetchemployees(); }, [currentPage, statusFilter, roleFilter]);
 
-  const fetchStaff = async () => {
+  const fetchemployees = async () => {
     try {
       setLoading(true);
       const params = {
         page: currentPage, limit: 10, search: searchTerm,
         status: statusFilter !== 'all' ? statusFilter : '',
-        staffRole: roleFilter !== 'all' ? roleFilter : ''
+        employeesRole: roleFilter !== 'all' ? roleFilter : ''
       };
-      const res = await api.get('/staff', { params });
+      const res = await api.get('/employees', { params });
 
       if (res.data.success) {
-        setStaff(res.data.staff || []);
-        setTotalStaff(res.data.total || 0);
+        setemployees(res.data.employees || []);
+        setTotalemployees(res.data.total || 0);
         setTotalPages(res.data.pages || 1);
       }
-    } catch { alert('Failed to fetch staff'); }
+    } catch { alert('Failed to fetch employees'); }
     finally { setLoading(false); }
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchStaff();
+    fetchemployees();
   };
 
   const handleDelete = async (id, name) => {
     if (!window.confirm(`Delete ${name}?`)) return;
     try {
-      await api.delete(`/staff/${id}`);
+      await api.delete(`/employees/${id}`);
       alert('Deleted!');
-      fetchStaff();
+      fetchemployees();
     } catch { alert('Delete failed'); }
   };
 
   const handleExport = async () => {
     try {
-      const res = await api.get('/staff/export');
+      const res = await api.get('/employees/export');
       if (res.data.success) {
         const csv = [Object.keys(res.data.data[0] || {}).join(',')];
         res.data.data.forEach(row => csv.push(Object.values(row).join(',')));
@@ -76,7 +76,7 @@ const AllStaff = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `staff_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `employees_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
       }
     } catch { alert('Export failed'); }
@@ -88,7 +88,7 @@ const AllStaff = () => {
       case 'librarian': return { name: 'Librarian', icon: <MdLocalLibrary className="w-4 h-4" />, color: 'purple', bg: 'bg-purple-100', text: 'text-purple-700' };
       case 'accountant': return { name: 'Accountant', icon: <BsCashStack className="w-4 h-4" />, color: 'green', bg: 'bg-green-100', text: 'text-green-700' };
       case 'admin': return { name: 'Admin', icon: <FaUserTie className="w-4 h-4" />, color: 'red', bg: 'bg-red-100', text: 'text-red-700' };
-      default: return { name: 'Staff', icon: <BsPersonWorkspace className="w-4 h-4" />, color: 'gray', bg: 'bg-gray-100', text: 'text-gray-700' };
+      default: return { name: 'employees', icon: <BsPersonWorkspace className="w-4 h-4" />, color: 'gray', bg: 'bg-gray-100', text: 'text-gray-700' };
     }
   };
 
@@ -103,20 +103,20 @@ const AllStaff = () => {
             <BsPersonWorkspace className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">Staff Members</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">employees Members</h1>
             <p className="text-sm text-gray-600 flex items-center gap-1.5">
-              <FaUserGraduate className="w-4 h-4" /> {totalStaff} total staff
+              <FaUserGraduate className="w-4 h-4" /> {totalemployees} total employees
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-3">
-          <button onClick={() => debouncedNavigate('/admin-dashboard/staff/add')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+          <button onClick={() => debouncedNavigate('/admin/employees/add')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             <FaPlus className="w-4 h-4" /> Add
           </button>
           <button onClick={handleExport} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700">
             <FaDownload className="w-4 h-4" /> Export
           </button>
-          <button onClick={() => debouncedNavigate('/admin-dashboard/staff-dashboard')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700">
+          <button onClick={() => debouncedNavigate('/admin/employees')} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700">
             <FaChartLine className="w-4 h-4" /> Dashboard
           </button>
         </div>
@@ -164,14 +164,14 @@ const AllStaff = () => {
         </div>
       </form>
 
-      {/* Staff Table/Cards */}
+      {/* employees Table/Cards */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="text-center"><Loader type="spinner" size="large" /><p className="mt-3">Loading...</p></div>
           </div>
-        ) : !staff.length ? (
-          <div className="text-center py-12"><p className="text-gray-500">No staff found</p></div>
+        ) : !employees.length ? (
+          <div className="text-center py-12"><p className="text-gray-500">No employees found</p></div>
         ) : (
           <>
             {/* Desktop Table */}
@@ -185,12 +185,12 @@ const AllStaff = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {staff.map(s => {
-                    const role = getRoleConfig(s.staffRole);
+                  {employees.map(s => {
+                    const role = getRoleConfig(s.employeesRole);
                     return (
                       <tr key={s._id} className="hover:bg-gray-50">
                         <td className="px-5 py-4">
-                          <p className="font-medium text-blue-600 text-sm">{s.staffId || s.userId}</p>
+                          <p className="font-medium text-blue-600 text-sm">{s.employeesId || s.userId}</p>
                           <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
                             <FaCalendarAlt className="w-3 h-3" /> {s.joinDate ? new Date(s.joinDate).toLocaleDateString() : 'N/A'}
                           </p>
@@ -223,8 +223,8 @@ const AllStaff = () => {
                         </td>
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-2">
-                            <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/${s._id}`)} className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><FaEye className="w-4 h-4" /></button>
-                            <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${s._id}`)} className="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100"><FaEdit className="w-4 h-4" /></button>
+                            <button onClick={() => debouncedNavigate(`/admin/employees/${s._id}`)} className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><FaEye className="w-4 h-4" /></button>
+                            <button onClick={() => debouncedNavigate(`/admin/employees/edit/${s._id}`)} className="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100"><FaEdit className="w-4 h-4" /></button>
                             <button onClick={() => handleDelete(s._id, s.name)} className="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100"><FaTrash className="w-4 h-4" /></button>
                           </div>
                         </td>
@@ -237,8 +237,8 @@ const AllStaff = () => {
 
             {/* Mobile Cards */}
             <div className="lg:hidden space-y-4 p-4">
-              {staff.map(s => {
-                const role = getRoleConfig(s.staffRole);
+              {employees.map(s => {
+                const role = getRoleConfig(s.employeesRole);
                 return (
                   <div key={s._id} className="bg-white border border-gray-200 rounded-xl p-4">
                     <div className="flex items-start justify-between mb-3">
@@ -246,7 +246,7 @@ const AllStaff = () => {
                         <div className={`p-2 rounded-lg ${role.bg}`}>{role.icon}</div>
                         <div>
                           <p className="font-semibold text-gray-900">{s.name}</p>
-                          <p className="text-xs text-blue-600">{s.staffId || s.userId}</p>
+                          <p className="text-xs text-blue-600">{s.employeesId || s.userId}</p>
                         </div>
                       </div>
                       <span className={`px-2.5 py-1.5 text-xs font-medium rounded-full ${
@@ -283,8 +283,8 @@ const AllStaff = () => {
                         {role.icon} {role.name}
                       </span>
                       <div className="flex gap-2">
-                        <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/${s._id}`)} className="p-2 bg-blue-50 text-blue-600 rounded-lg"><FaEye className="w-4 h-4" /></button>
-                        <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${s._id}`)} className="p-2 bg-green-50 text-green-600 rounded-lg"><FaEdit className="w-4 h-4" /></button>
+                        <button onClick={() => debouncedNavigate(`/admin/employees/${s._id}`)} className="p-2 bg-blue-50 text-blue-600 rounded-lg"><FaEye className="w-4 h-4" /></button>
+                        <button onClick={() => debouncedNavigate(`/admin/employees/edit/${s._id}`)} className="p-2 bg-green-50 text-green-600 rounded-lg"><FaEdit className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete(s._id, s.name)} className="p-2 bg-red-50 text-red-600 rounded-lg"><FaTrash className="w-4 h-4" /></button>
                       </div>
                     </div>
@@ -296,7 +296,7 @@ const AllStaff = () => {
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="px-4 md:px-6 py-3 md:py-4 border-t bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <p className="text-sm text-gray-600">Page {currentPage} of {totalPages} • {totalStaff} staff</p>
+                <p className="text-sm text-gray-600">Page {currentPage} of {totalPages} • {totalemployees} employees</p>
                 <div className="flex gap-2">
                   <button onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}
                     className="flex items-center gap-1 px-3 md:px-4 py-2 border bg-white text-gray-700 text-sm rounded-lg disabled:opacity-50">
@@ -316,4 +316,4 @@ const AllStaff = () => {
   );
 };
 
-export default AllStaff;
+export default AllEmployees;

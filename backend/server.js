@@ -18,7 +18,7 @@ const apiVersioning = require("./middleware/versioning");
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
-const staffRoutes = require('./routes/staffRoutes');
+const employeesRoutes = require('./routes/employeesRoutes');
 const studentRoutes = require('./routes/studentRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
@@ -26,13 +26,13 @@ const settingsRoutes = require('./routes/settingsRoutes');
 const exportRoutes = require('./routes/exportRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 
-// 👇 YEH LINE IMPORT KARO (new)
+
 const uploadRoutes = require('./routes/uploadRoutes');
 
 // App
 const app = express();
 
-// Trust proxy for rate limiting (important for deployment)
+
 app.set('trust proxy', 1);
 
 // Security
@@ -58,14 +58,12 @@ app.use((req, res, next) => {
 // ==========================================
 //  API VERSIONING - INDUSTRY STANDARD
 // ==========================================
-// Apply versioning middleware early
 app.use(apiVersioning);
 
-// Versioned API Routes (Preferred - /api/v1/)
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/attendance", attendanceRoutes);
-app.use('/api/v1/staff', staffRoutes); 
+app.use('/api/v1/employees', employeesRoutes); 
 app.use('/api/v1/students', studentRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
@@ -74,14 +72,8 @@ app.use('/api/v1/export', exportRoutes);
 app.use('/api/v1/search', searchRoutes);
 app.use('/api/v1/upload', uploadRoutes);
 
-// ==========================================
 //   BACKWARD COMPATIBILITY - DEPRECATED
-// ==========================================
-// Old /api/ endpoints maintained for backward compatibility
-// These will continue working but send deprecation warnings
-// Remove after 6 months or when all clients migrate
-
-// Health check (still available at old path)
+// Health check
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
@@ -93,7 +85,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Test routes (still available at old paths)
+// Test routes 
 app.get("/api/attendance/test", (req, res) => {
   res.json({
     success: true,
@@ -122,12 +114,11 @@ app.get("/api/export/test", (req, res) => {
   });
 });
 
-// Legacy API routes (will be removed in future)
-// These automatically get deprecation headers from versioning middleware
+// Legacy API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/attendance", attendanceRoutes);
-app.use('/api/staff', staffRoutes); 
+app.use('/api/employees', employeesRoutes); 
 app.use('/api/students', studentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);

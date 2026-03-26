@@ -40,7 +40,7 @@ const protect = async (req, res, next) => {
       userType: user.userType,
       userId: user.userId,
       studentCategory: user.studentCategory,
-      staffRole: user.staffRole
+      employeesRole: user.employeesRole
     };
 
     next();
@@ -71,7 +71,7 @@ const adminOnly = (req, res, next) => {
   }
 };
 
-const staffOnly = (req, res, next) => {
+const employeesOnly = (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({
       success: false,
@@ -79,13 +79,13 @@ const staffOnly = (req, res, next) => {
     });
   }
 
-  const allowedRoles = ['admin', 'teacher', 'librarian', 'accountant', 'staff'];
+  const allowedRoles = ['admin', 'teacher', 'librarian', 'accountant', 'employees'];
   if (allowedRoles.includes(req.user.userType)) {
     next();
   } else {
     res.status(403).json({
       success: false,
-      message: 'Access denied. Staff only.'
+      message: 'Access denied. employees only.'
     });
   }
 };
@@ -126,4 +126,4 @@ const superAdminOnly = (req, res, next) => {
   }
 };
 
-module.exports = { protect, adminOnly, staffOnly, studentOnly, superAdminOnly };
+module.exports = { protect, adminOnly, employeesOnly, studentOnly, superAdminOnly };

@@ -134,10 +134,10 @@ const LibraryDashboard = () => {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold mb-6">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-4 md:gap-6">
-              <UserQuickAction icon={FaBook} label="Books" path="/library-dashboard/books" color="blue" />
-              <UserQuickAction icon={FaCalendarAlt} label="Attendance" path="/library-dashboard/attendance" color="green" />
-              <UserQuickAction icon={FaRupeeSign} label="Pay Fees" path="/library-dashboard/payments" color="purple" />
-              <UserQuickAction icon={FaUserCheck} label="Profile" path="/library-dashboard/profile" color="orange" />
+              <UserQuickAction icon={FaBook} label="Books" path="/library/books" color="blue" />
+              <UserQuickAction icon={FaCalendarAlt} label="Attendance" path="/library/attendance" color="green" />
+              <UserQuickAction icon={FaRupeeSign} label="Pay Fees" path="/library/payments" color="purple" />
+              <UserQuickAction icon={FaUserCheck} label="Profile" path="/library/profile" color="orange" />
             </div>
           </div>
         </div>

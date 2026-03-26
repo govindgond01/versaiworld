@@ -45,7 +45,7 @@
     // Role Management
     userType: { 
       type: String, 
-      enum: ["superAdmin", "admin", "student", "staff"], 
+      enum: ["superAdmin", "admin", "student", "employees"], 
       default: "student",
       index: true
     },
@@ -53,7 +53,7 @@
       type: String, 
       enum: ["academy", "library", "both"] 
     },
-    staffRole: { 
+    employeesRole: { 
       type: String, 
       enum: ["teacher", "Digital Marketer", "Web Developer","Front-End Developer","Back-End Developer","Full-Stack Developer", "other"] 
     },
@@ -115,7 +115,7 @@
     joinDate: { 
       type: Date, 
       default: function() {
-        return this.userType === 'staff' ? Date.now() : undefined;
+        return this.userType === 'employees' ? Date.now() : undefined;
       }
     },
     membershipDuration: { 
@@ -202,8 +202,8 @@
     return this.userType === 'student';
   });
 
-  UserSchema.virtual('isStaff').get(function() {
-    return this.userType === 'staff';
+  UserSchema.virtual('isemployees').get(function() {
+    return this.userType === 'employees';
   });
 
   UserSchema.virtual('isAdmin').get(function() {
@@ -246,15 +246,15 @@
         "student_academy": "ACAD",
         "student_library": "LIB",
         "student_both": "STU",
-        "staff_teacher": "TCH",
-        "staff_librarian": "LIBR",
-        "staff_accountant": "ACC",
-        "staff_receptionist": "REC",
-        "staff_other": "STF",
+        "employees_teacher": "TCH",
+        "employees_librarian": "LIBR",
+        "employees_accountant": "ACC",
+        "employees_receptionist": "REC",
+        "employees_other": "STF",
         "admin": "ADM"
       };
       
-      const category = this.userType === 'student' ? this.studentCategory : (this.staffRole || 'other');
+      const category = this.userType === 'student' ? this.studentCategory : (this.employeesRole || 'other');
       const key = `${this.userType}_${category}`;
       const prefix = prefixMap[key] || "USR";
       
@@ -274,7 +274,7 @@
     // Auto-calculate due amounts
     if (this.userType === 'student') {
       this.fees.dueFee = (this.fees.totalFee || 0) - (this.fees.paidFee || 0);
-    } else if (this.userType === 'staff') {
+    } else if (this.userType === 'employees') {
       this.fees.dueSalary = (this.fees.salary || 0) - (this.fees.paidSalary || 0);
     }
     
@@ -313,7 +313,7 @@
         due: this.fees.dueFee || 0,
         paymentHistory: this.fees.paymentHistory || []
       };
-    } else if (this.userType === 'staff') {
+    } else if (this.userType === 'employees') {
       return {
         amount: this.fees.salary || 0,
         paid: this.fees.paidSalary || 0,
@@ -351,7 +351,7 @@
     if (payment.type === 'fee' && this.userType === 'student') {
       this.fees.paidFee += payment.amount;
       this.fees.dueFee = this.fees.totalFee - this.fees.paidFee;
-    } else if (payment.type === 'salary' && this.userType === 'staff') {
+    } else if (payment.type === 'salary' && this.userType === 'employees') {
       this.fees.paidSalary += payment.amount;
       this.fees.dueSalary = this.fees.salary - this.fees.paidSalary;
     }
@@ -367,7 +367,7 @@
   UserSchema.methods.getDueAmount = function() {
     if (this.userType === 'student') {
       return this.fees.dueFee;
-    } else if (this.userType === 'staff') {
+    } else if (this.userType === 'employees') {
       return this.fees.dueSalary;
     }
     return 0;
@@ -385,7 +385,7 @@
       summary.total = this.fees.totalFee;
       summary.paid = this.fees.paidFee;
       summary.due = this.fees.dueFee;
-    } else if (this.userType === 'staff') {
+    } else if (this.userType === 'employees') {
       summary.total = this.fees.salary;
       summary.paid = this.fees.paidSalary;
       summary.due = this.fees.dueSalary;

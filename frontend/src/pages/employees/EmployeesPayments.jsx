@@ -9,7 +9,7 @@ import Loader from '../../components/common/Loader';
 import UserEmptyState from '../../components/user/UserEmptyState';
 import UserPaymentCard from '../../components/user/UserPaymentCard';
 
-const StaffPayments = () => {
+const EmployeesPayments = () => {
   const [loading, setLoading] = useState(true);
   const [payments, setPayments] = useState([]);
   const [summary, setSummary] = useState({ total: 0, paid: 0, due: 0 });
@@ -23,10 +23,10 @@ const StaffPayments = () => {
     try {
       setLoading(true);
       
-      const userRes = await api.get(`staff/${userId}`);
+      const userRes = await api.get(`employees/${userId}`);
 
       if (userRes.data.success) {
-        const data = userRes.data.staff;
+        const data = userRes.data.employees;
         setSummary({
           total: data.fees?.salary || 0,
           paid: data.fees?.paidSalary || 0,
@@ -77,4 +77,4 @@ const StaffPayments = () => {
   );
 };
 
-export default StaffPayments;
+export default EmployeesPayments;

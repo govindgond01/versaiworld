@@ -16,7 +16,7 @@ const SignUpPage = () => {
     password: "",
     userType: "student",
     studentCategory: "academy",
-    staffRole: "teacher",
+    employeesRole: "teacher",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +34,7 @@ const SignUpPage = () => {
       ...prev,
       userType: value,
       studentCategory: value === 'student' ? 'academy' : undefined,
-      staffRole: value === 'staff' ? 'teacher' : undefined
+      employeesRole: value === 'employees' ? 'teacher' : undefined
     }));
   };
 
@@ -72,14 +72,14 @@ const SignUpPage = () => {
 
         // Use debounced navigation
         if (userRole === "admin" || userRole === "superAdmin") {
-          debouncedNavigate("/admin-dashboard", { replace: true });
-        } else if (userRole === "staff") {
-          debouncedNavigate("/staff-dashboard", { replace: true });
+          debouncedNavigate("/admin", { replace: true });
+        } else if (userRole === "employees") {
+          debouncedNavigate("/employees", { replace: true });
         } else if (userRole === "student") {
           if (data.user.studentCategory === "academy") {
-            debouncedNavigate("/academy-dashboard", { replace: true });
+            debouncedNavigate("/academy", { replace: true });
           } else if (data.user.studentCategory === "library") {
-            debouncedNavigate("/library-dashboard", { replace: true });
+            debouncedNavigate("/library", { replace: true });
           } else {
             debouncedNavigate("/login", { replace: true });
           }
@@ -202,7 +202,7 @@ const SignUpPage = () => {
                         className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none pr-10"
                       >
                         <option value="student">Student</option>
-                        <option value="staff">Staff</option>
+                        <option value="employees">employees</option>
                       </select>
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
                         <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,7 +216,7 @@ const SignUpPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {formData.userType === "student" ? "Student Category" : "Staff Role"} <span className="text-red-500">*</span>
+                      {formData.userType === "student" ? "Student Category" : "employees Role"} <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       {formData.userType === "student" ? (
@@ -232,8 +232,8 @@ const SignUpPage = () => {
                         </select>
                       ) : (
                         <select
-                          name="staffRole"
-                          value={formData.staffRole}
+                          name="employeesRole"
+                          value={formData.employeesRole}
                           onChange={handleChange}
                           className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none pr-10"
                         >

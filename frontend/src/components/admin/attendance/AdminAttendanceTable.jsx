@@ -51,7 +51,7 @@ const AdminAttendanceTable = ({
   };
 
   const getUserIcon = (user) => {
-    if (category === 'staff' || user.userType === 'staff') {
+    if (category === 'employees' || user.userType === 'employees') {
       return <BsPersonWorkspace className="w-5 h-5 text-purple-600" />;
     } else if (category === 'academy' || user.studentCategory === 'academy') {
       return <GiTeacher className="w-5 h-5 text-blue-600" />;
@@ -92,7 +92,7 @@ const AdminAttendanceTable = ({
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-lg ${
-                        category === 'staff' ? 'bg-purple-100' :
+                        category === 'employees' ? 'bg-purple-100' :
                         category === 'academy' ? 'bg-blue-100' :
                         'bg-green-100'
                       }`}>

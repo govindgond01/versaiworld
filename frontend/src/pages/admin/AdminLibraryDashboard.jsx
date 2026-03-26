@@ -26,7 +26,7 @@ const AdminLibraryDashboard = () => {
         api.get('/admin/students/stats?category=library')
       ]);
 
-      // 👇 FORCE FILTER - SIRF LIBRARY STUDENTS RAKHO
+      
       let students = studentsRes.data?.students || [];
       students = students.filter(s => s.studentCategory === 'library');
       console.log(' Library students after force filter:', students.length);
@@ -257,7 +257,7 @@ const AdminLibraryDashboard = () => {
                 <p className="text-sm text-gray-500 mt-1">Latest library enrollments</p>
               </div>
               <button
-                onClick={() => navigate('/admin-dashboard/students?studentCategory=library')}
+                onClick={() => navigate('/admin/students?studentCategory=library')}
                 className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm"
               >
                 View All →

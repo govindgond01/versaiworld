@@ -64,7 +64,7 @@ const DuePayments = () => {
       'User ID': u.userId || 'N/A',
       'Name': u.name || 'N/A',
       'Email': u.email || 'N/A',
-      'Type': u.userType === 'staff' ? u.staffRole : u.studentCategory,
+      'Type': u.userType === 'employees' ? u.employeesRole : u.studentCategory,
       'Total': u.totalAmount || 0,
       'Paid': u.paidAmount || 0,
       'Due': u.dueAmount || 0
@@ -83,7 +83,7 @@ const DuePayments = () => {
   const getCategoryIcon = (cat) => {
     if (cat === 'academy') return <GiTeacher className="w-4 h-4" />;
     if (cat === 'library') return <MdLocalLibrary className="w-4 h-4" />;
-    if (cat === 'staff') return <RiGovernmentLine className="w-4 h-4" />;
+    if (cat === 'employees') return <RiGovernmentLine className="w-4 h-4" />;
     return <FiUsers className="w-4 h-4" />;
   };
 
@@ -91,7 +91,7 @@ const DuePayments = () => {
     { value: 'all', label: 'All Categories', icon: <FiUsers className="w-4 h-4" /> },
     { value: 'academy', label: 'Academy', icon: <FaUserGraduate className="w-4 h-4" /> },
     { value: 'library', label: 'Library', icon: <BsPersonBadge className="w-4 h-4" /> },
-    { value: 'staff', label: 'Staff', icon: <BsPersonWorkspace className="w-4 h-4" /> }
+    { value: 'employees', label: 'employees', icon: <BsPersonWorkspace className="w-4 h-4" /> }
   ];
 
   if (loading) {
@@ -212,8 +212,8 @@ const DuePayments = () => {
                     <tr key={user._id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${user.userType === 'staff' ? 'bg-purple-100' : 'bg-blue-100'}`}>
-                            {user.userType === 'staff' ? <BsPersonWorkspace className="w-4 h-4 text-purple-600" /> : <FaUserGraduate className="w-4 h-4 text-blue-600" />}
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${user.userType === 'employees' ? 'bg-purple-100' : 'bg-blue-100'}`}>
+                            {user.userType === 'employees' ? <BsPersonWorkspace className="w-4 h-4 text-purple-600" /> : <FaUserGraduate className="w-4 h-4 text-blue-600" />}
                           </div>
                           <div>
                             <p className="font-medium text-gray-900">{user.name}</p>
@@ -224,12 +224,12 @@ const DuePayments = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-full ${
-                          user.userType === 'staff' ? 'bg-purple-100 text-purple-700' : 
+                          user.userType === 'employees' ? 'bg-purple-100 text-purple-700' : 
                           user.studentCategory === 'academy' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
                         }`}>
-                          {user.userType === 'staff' ? <BsPersonWorkspace className="w-3.5 h-3.5" /> : 
+                          {user.userType === 'employees' ? <BsPersonWorkspace className="w-3.5 h-3.5" /> : 
                            user.studentCategory === 'academy' ? <GiTeacher className="w-3.5 h-3.5" /> : <MdLocalLibrary className="w-3.5 h-3.5" />}
-                          {user.userType === 'staff' ? user.staffRole || 'Staff' : 
+                          {user.userType === 'employees' ? user.employeesRole || 'employees' : 
                            user.studentCategory === 'academy' ? 'Academy' : 'Library'}
                         </span>
                       </td>
@@ -252,7 +252,7 @@ const DuePayments = () => {
                       </td>
                       <td className="px-6 py-4">
                         <Link
-                          to={`/admin-dashboard/payments/${user.userType === 'staff' ? 'staff' : user.studentCategory}`}
+                          to={`/admin/payments/${user.userType === 'employees' ? 'employees' : user.studentCategory}`}
                           className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-100"
                         >
                           <GiPayMoney className="w-4 h-4" /> Pay <FiArrowRight className="w-3.5 h-3.5" />
@@ -269,8 +269,8 @@ const DuePayments = () => {
               {filteredUsers.map(user => (
                 <div key={user._id} className="bg-white border border-gray-200 rounded-xl p-4">
                   <div className="flex items-start gap-3 mb-4">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${user.userType === 'staff' ? 'bg-purple-100' : 'bg-blue-100'}`}>
-                      {user.userType === 'staff' ? <BsPersonWorkspace className="w-5 h-5 text-purple-600" /> : <FaUserGraduate className="w-5 h-5 text-blue-600" />}
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${user.userType === 'employees' ? 'bg-purple-100' : 'bg-blue-100'}`}>
+                      {user.userType === 'employees' ? <BsPersonWorkspace className="w-5 h-5 text-purple-600" /> : <FaUserGraduate className="w-5 h-5 text-blue-600" />}
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-gray-900">{user.name}</p>
@@ -278,12 +278,12 @@ const DuePayments = () => {
                       <p className="text-xs text-gray-400 mt-0.5">{user.userId}</p>
                     </div>
                     <span className={`px-2.5 py-1.5 text-xs font-medium rounded-full flex items-center gap-1 ${
-                      user.userType === 'staff' ? 'bg-purple-100 text-purple-700' : 
+                      user.userType === 'employees' ? 'bg-purple-100 text-purple-700' : 
                       user.studentCategory === 'academy' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
                     }`}>
-                      {user.userType === 'staff' ? <BsPersonWorkspace className="w-3.5 h-3.5" /> : 
+                      {user.userType === 'employees' ? <BsPersonWorkspace className="w-3.5 h-3.5" /> : 
                        user.studentCategory === 'academy' ? <GiTeacher className="w-3.5 h-3.5" /> : <MdLocalLibrary className="w-3.5 h-3.5" />}
-                      {user.userType === 'staff' ? user.staffRole || 'Staff' : 
+                      {user.userType === 'employees' ? user.employeesRole || 'employees' : 
                        user.studentCategory === 'academy' ? 'Academy' : 'Library'}
                     </span>
                   </div>
@@ -314,7 +314,7 @@ const DuePayments = () => {
                       ) : <span className="text-xs text-gray-400">No payments</span>}
                     </div>
                     <Link
-                      to={`/admin-dashboard/payments/${user.userType === 'staff' ? 'staff' : user.studentCategory}`}
+                      to={`/admin/payments/${user.userType === 'employees' ? 'employees' : user.studentCategory}`}
                       className="flex items-center gap-1 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
                     >
                       <GiPayMoney className="w-4 h-4" /> Pay

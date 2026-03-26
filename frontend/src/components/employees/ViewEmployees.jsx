@@ -23,34 +23,34 @@ import {
 } from 'react-icons/gi';
 import Loader from '../common/Loader';
 
-const ViewStaff = () => {
+const ViewEmployees = () => {
   const { id } = useParams();
   const debouncedNavigate = useDebouncedNavigation(300);
-  const [staff, setStaff] = useState(null);
+  const [employees, setemployees] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('personal');
 
-  useEffect(() => { fetchStaffDetails(); }, [id]);
+  useEffect(() => { fetchemployeesDetails(); }, [id]);
 
-  const fetchStaffDetails = async () => {
+  const fetchemployeesDetails = async () => {
     try {
       setLoading(true);
-      const res = await api.get(`/staff/${id}`);
+      const res = await api.get(`/employees/${id}`);
 
-      if (res.data.success) setStaff(res.data.staff);
-      else { toast.error('Staff not found'); debouncedNavigate('/admin-dashboard/staff'); }
+      if (res.data.success) setemployees(res.data.employees);
+      else { toast.error('employees not found'); debouncedNavigate('/admin/employees'); }
     } catch {
-      toast.error('Failed to load staff');
-      debouncedNavigate('/admin-dashboard/staff');
+      toast.error('Failed to load employees');
+      debouncedNavigate('/admin/employees');
     } finally { setLoading(false); }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm(`Delete ${staff?.name}?`)) return;
+    if (!window.confirm(`Delete ${employees?.name}?`)) return;
     try {
-      await api.delete(`/staff/${id}`);
-      toast.success('Staff deleted');
-      debouncedNavigate('/admin-dashboard/staff');
+      await api.delete(`/employees/${id}`);
+      toast.success('employees deleted');
+      debouncedNavigate('/admin/employees');
     } catch { toast.error('Delete failed'); }
   };
 
@@ -60,7 +60,7 @@ const ViewStaff = () => {
       case 'librarian': return { name: 'Librarian', icon: <MdLocalLibrary className="w-5 h-5" />, color: 'purple' };
       case 'accountant': return { name: 'Accountant', icon: <BsCashStack className="w-5 h-5" />, color: 'green' };
       case 'admin': return { name: 'Admin', icon: <FaUserTie className="w-5 h-5" />, color: 'red' };
-      default: return { name: 'Staff', icon: <BsPersonWorkspace className="w-5 h-5" />, color: 'gray' };
+      default: return { name: 'employees', icon: <BsPersonWorkspace className="w-5 h-5" />, color: 'gray' };
     }
   };
 
@@ -73,7 +73,7 @@ const ViewStaff = () => {
 
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A';
   const formatCurrency = (amt) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(amt || 0);
-  const progress = staff ? Math.min(Math.round((staff.paidSalary || 0) / (staff.salary || 1) * 100), 100) : 0;
+  const progress = employees ? Math.min(Math.round((employees.paidSalary || 0) / (employees.salary || 1) * 100), 100) : 0;
 
   const tabs = [
     { id: 'personal', name: 'Personal', icon: <MdPerson className="w-4 h-4" /> },
@@ -90,31 +90,31 @@ const ViewStaff = () => {
     );
   }
 
-  if (!staff) return null;
+  if (!employees) return null;
 
-  const role = getRoleConfig(staff.staffRole);
-  const isActive = staff.status === 'active';
+  const role = getRoleConfig(employees.employeesRole);
+  const isActive = employees.status === 'active';
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="flex items-start gap-3">
-          <button onClick={() => debouncedNavigate('/admin-dashboard/staff')} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+          <button onClick={() => debouncedNavigate('/admin/employees')} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <FaArrowLeft className="w-4 h-4 text-gray-600" />
           </button>
           <div className="p-2 md:p-2.5 bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl shadow-md">
             <FaUserTie className="w-4 h-4 md:w-5 md:h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-bold text-gray-900">{staff.name}</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900">{employees.name}</h1>
             <p className="text-sm text-gray-600 flex items-center gap-1.5 mt-1">
-              <FaIdCard className="w-4 h-4" /> {staff.staffId || staff.userId}
+              <FaIdCard className="w-4 h-4" /> {employees.employeesId || employees.userId}
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+          <button onClick={() => debouncedNavigate(`/admin/employees/edit/${employees._id}`)} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             <FaEdit className="w-4 h-4" /> Edit
           </button>
           <button onClick={() => window.print()} className="flex items-center gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700">
@@ -132,7 +132,7 @@ const ViewStaff = () => {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="w-12 h-12 md:w-16 md:h-16 bg-white/20 rounded-2xl flex items-center justify-center text-xl md:text-3xl font-bold">
-                {staff.name?.charAt(0)}
+                {employees.name?.charAt(0)}
               </div>
               <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -141,15 +141,15 @@ const ViewStaff = () => {
                   </span>
                   <span className={`inline-flex items-center gap-1.5 px-2 md:px-3 py-1 md:py-1.5 text-xs font-medium rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`}>
                     {isActive ? <FaCheckCircle className="w-3 h-3" /> : <FaTimesCircle className="w-3 h-3" />}
-                    {staff.status}
+                    {employees.status}
                   </span>
                 </div>
-                <p className="text-sm opacity-90">Staff ID: {staff.staffId || staff.userId}</p>
+                <p className="text-sm opacity-90">employees ID: {employees.employeesId || employees.userId}</p>
               </div>
             </div>
             <div className="text-right">
               <p className="text-sm opacity-80">Joined</p>
-              <p className="text-base md:text-lg font-semibold">{formatDate(staff.joinDate)}</p>
+              <p className="text-base md:text-lg font-semibold">{formatDate(employees.joinDate)}</p>
             </div>
           </div>
         </div>
@@ -175,12 +175,12 @@ const ViewStaff = () => {
           {activeTab === 'personal' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {[
-                { label: 'Full Name', value: staff.name, icon: <FaUserTie className="w-4 h-4" /> },
-                { label: 'Email', value: staff.email, icon: <FaEnvelope className="w-4 h-4" /> },
-                { label: 'Phone', value: staff.phone || 'N/A', icon: <FaPhone className="w-4 h-4" /> },
-                { label: 'Department', value: staff.department || 'Not specified', icon: <FaBuilding className="w-4 h-4" /> },
-                { label: 'Join Date', value: formatDate(staff.joinDate), icon: <FaCalendarAlt className="w-4 h-4" /> },
-                { label: 'Address', value: formatAddress(staff.address), icon: <FaMapMarkerAlt className="w-4 h-4" /> }
+                { label: 'Full Name', value: employees.name, icon: <FaUserTie className="w-4 h-4" /> },
+                { label: 'Email', value: employees.email, icon: <FaEnvelope className="w-4 h-4" /> },
+                { label: 'Phone', value: employees.phone || 'N/A', icon: <FaPhone className="w-4 h-4" /> },
+                { label: 'Department', value: employees.department || 'Not specified', icon: <FaBuilding className="w-4 h-4" /> },
+                { label: 'Join Date', value: formatDate(employees.joinDate), icon: <FaCalendarAlt className="w-4 h-4" /> },
+                { label: 'Address', value: formatAddress(employees.address), icon: <FaMapMarkerAlt className="w-4 h-4" /> }
               ].map((item, i) => (
                 <div key={i} className="bg-gray-50 rounded-lg p-3 md:p-4">
                   <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">{item.icon} {item.label}</p>
@@ -195,9 +195,9 @@ const ViewStaff = () => {
             <div className="space-y-4 md:space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { label: 'Monthly', value: staff.salary, color: 'blue', icon: <FaRupeeSign className="w-4 h-4 md:w-5 md:h-5" /> },
-                  { label: 'Paid', value: staff.paidSalary, color: 'green', icon: <GiPayMoney className="w-4 h-4 md:w-5 md:h-5" /> },
-                  { label: 'Due', value: staff.dueSalary, color: staff.dueSalary > 0 ? 'red' : 'green', icon: <GiExpense className="w-4 h-4 md:w-5 md:h-5" /> }
+                  { label: 'Monthly', value: employees.salary, color: 'blue', icon: <FaRupeeSign className="w-4 h-4 md:w-5 md:h-5" /> },
+                  { label: 'Paid', value: employees.paidSalary, color: 'green', icon: <GiPayMoney className="w-4 h-4 md:w-5 md:h-5" /> },
+                  { label: 'Due', value: employees.dueSalary, color: employees.dueSalary > 0 ? 'red' : 'green', icon: <GiExpense className="w-4 h-4 md:w-5 md:h-5" /> }
                 ].map((item, i) => (
                   <div key={i} className={`bg-${item.color}-50 rounded-lg p-3 md:p-4`}>
                     <div className={`text-${item.color}-600 mb-2`}>{item.icon}</div>
@@ -220,12 +220,12 @@ const ViewStaff = () => {
           )}
 
           {/* Bank Tab */}
-          {activeTab === 'bank' && staff.bankDetails?.accountNumber ? (
+          {activeTab === 'bank' && employees.bankDetails?.accountNumber ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                { label: 'Account Number', value: staff.bankDetails.accountNumber, icon: <FaIdCard className="w-4 h-4" /> },
-                { label: 'Bank Name', value: staff.bankDetails.bankName, icon: <BsBank2 className="w-4 h-4" /> },
-                { label: 'IFSC Code', value: staff.bankDetails.ifsc, icon: <FaCreditCard className="w-4 h-4" /> },
+                { label: 'Account Number', value: employees.bankDetails.accountNumber, icon: <FaIdCard className="w-4 h-4" /> },
+                { label: 'Bank Name', value: employees.bankDetails.bankName, icon: <BsBank2 className="w-4 h-4" /> },
+                { label: 'IFSC Code', value: employees.bankDetails.ifsc, icon: <FaCreditCard className="w-4 h-4" /> },
                 { label: 'Account Type', value: 'Savings Account', icon: <MdAccountBalance className="w-4 h-4" /> }
               ].map((item, i) => (
                 <div key={i} className="bg-gray-50 rounded-lg p-3 md:p-4">
@@ -238,7 +238,7 @@ const ViewStaff = () => {
             <div className="text-center py-6 md:py-8">
               <FaCreditCard className="w-10 h-10 md:w-12 md:h-12 text-gray-300 mx-auto mb-3" />
               <p className="text-gray-500">No bank details</p>
-              <button onClick={() => debouncedNavigate(`/admin-dashboard/staff/edit/${staff._id}`)} className="mt-3 text-sm text-purple-600 hover:text-purple-700">
+              <button onClick={() => debouncedNavigate(`/admin/employees/edit/${employees._id}`)} className="mt-3 text-sm text-purple-600 hover:text-purple-700">
                 Add Details →
               </button>
             </div>
@@ -259,13 +259,13 @@ const ViewStaff = () => {
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 md:p-5">
         <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2"><FaClock className="w-4 h-4 text-gray-500" /> Timeline</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-          <div><span className="text-gray-500">Created</span><p className="font-medium mt-1">{formatDate(staff.createdAt)}</p></div>
-          <div><span className="text-gray-500">Updated</span><p className="font-medium mt-1">{formatDate(staff.updatedAt)}</p></div>
-          <div><span className="text-gray-500">Staff ID</span><p className="font-medium mt-1 font-mono">{staff.staffId || staff.userId}</p></div>
+          <div><span className="text-gray-500">Created</span><p className="font-medium mt-1">{formatDate(employees.createdAt)}</p></div>
+          <div><span className="text-gray-500">Updated</span><p className="font-medium mt-1">{formatDate(employees.updatedAt)}</p></div>
+          <div><span className="text-gray-500">employees ID</span><p className="font-medium mt-1 font-mono">{employees.employeesId || employees.userId}</p></div>
         </div>
       </div>
     </div>
   );
 };
 
-export default ViewStaff;
+export default ViewEmployees;

@@ -8,7 +8,7 @@ import {
 } from 'react-icons/fi';
 import Loader from '../../components/common/Loader';
 
-const StaffNotifications = () => {
+const EmployeesNotifications = () => {
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -415,4 +415,4 @@ const StaffNotifications = () => {
   );
 };
 
-export default StaffNotifications;
+export default EmployeesNotifications;

@@ -10,7 +10,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 // Admin Pages
 import AdminLibraryDashboard from "./pages/admin/AdminLibraryDashboard";
 import AdminAcademyDashboard from "./pages/admin/AdminAcademyDashboard";
-import AdminStaffDashboard from "./pages/admin/AdminStaffDashboard";
+import AdminEmployeesDashboard from "./pages/admin/AdminEmployeesDashboard";
 import AdminStats from "./pages/admin/AdminStats";
 import UserManagement from "./pages/admin/UserManagement";
 import AllStudents from "./pages/admin/students/AllStudents";
@@ -19,11 +19,11 @@ import StudentTypes from "./pages/admin/students/StudentTypes";
 import ExpiringSoon from "./pages/admin/students/ExpiringSoon";
 import ViewStudent from "./pages/admin/students/ViewStudent";
 import EditStudent from "./pages/admin/students/EditStudent";
-import AllStaff from "./components/staff/AllStaff";
-import AddStaff from "./components/staff/AddStaff";
-import ViewStaff from "./components/staff/ViewStaff";
-import EditStaff from "./components/staff/EditStaff";
-import StaffStats from "./components/staff/StaffStats";
+import Allemployees from "./components/employees/Allemployees";
+import Addemployees from "./components/employees/Addemployees";
+import Viewemployees from "./components/employees/Viewemployees";
+import Editemployees from "./components/employees/Editemployees";
+import employeesStats from "./components/employees/employeesStats";
 import PaymentsDashboard from "./pages/admin/payments/PaymentsDashboard";
 import PaymentHistory from "./components/payments/PaymentHistory";
 import AddPayment from "./pages/admin/payments/AddPayment";
@@ -52,22 +52,22 @@ import LibrarySettings from "./pages/library/LibrarySettings";
 import LibraryHelp from "./pages/library/LibraryHelp";
 import LibraryNotifications from "./pages/library/LibraryNotifications";
 
-// Staff pages
-import StaffDashboard from "./pages/staff/StaffDashboard";
-import StaffPayments from "./pages/staff/StaffPayments";
-import StaffActivity from "./pages/staff/StaffActivity";
-import StaffProfile from "./pages/staff/StaffProfile";
-import StaffSettings from "./pages/staff/StaffSettings";
-import StaffHelp from "./pages/staff/StaffHelp";
-import StaffNotifications from "./pages/staff/StaffNotifications";
+// employees pages
+import employeesDashboard from "./pages/employees/employeesDashboard";
+import employeesPayments from "./pages/employees/employeesPayments";
+import employeesActivity from "./pages/employees/employeesActivity";
+import employeesProfile from "./pages/employees/employeesProfile";
+import employeesSettings from "./pages/employees/employeesSettings";
+import employeesHelp from "./pages/employees/employeesHelp";
+import employeesNotifications from "./pages/employees/employeesNotifications";
 
 // Attendance pages
 import AcademyAttendance from "./pages/academy/AcademyAttendance";
 import LibraryAttendance from "./pages/library/LibraryAttendance";
-import StaffAttendance from "./pages/staff/StaffAttendance";
+import employeesAttendance from "./pages/employees/employeesAttendance";
 import AdminAcademyAttendance from "./pages/admin/attendance/AdminAcademyAttendance";
 import AdminLibraryAttendance from "./pages/admin/attendance/AdminLibraryAttendance";
-import AdminStaffAttendance from "./pages/admin/attendance/AdminStaffAttendance";
+import AdminEmployeesAttendance from "./pages/admin/attendance/AdminEmployeesAttendance";
 import Profile from "./pages/admin/Profile";
 
 function App() {
@@ -121,11 +121,11 @@ function App() {
   const getDashboardPath = useCallback(() => {
     if (!isLoggedIn) return '/login';
     
-    if (role === 'admin' || role === 'superAdmin') return '/admin-dashboard';
-    if (role === 'staff') return '/staff-dashboard';
+    if (role === 'admin' || role === 'superAdmin') return '/admin';
+    if (role === 'employees') return '/employees';
     if (role === 'student') {
-      if (studentCategory === 'academy') return '/academy-dashboard';
-      if (studentCategory === 'library') return '/library-dashboard';
+      if (studentCategory === 'academy') return '/academy';
+      if (studentCategory === 'library') return '/library';
     }
     return '/login';
   }, [isLoggedIn, role, studentCategory]);
@@ -151,13 +151,13 @@ function App() {
       } />
 
       {/* ========== ADMIN ROUTES ========== */}
-      <Route path="/admin-dashboard" element={
+      <Route path="/admin" element={
         isLoggedIn && (role === "admin" || role === "superAdmin") ? <MainLayout /> : <Navigate to="/login" replace />
       }>
         <Route index element={<AdminLibraryDashboard />} />
         <Route path="library-dash" element={<AdminLibraryDashboard />} />
         <Route path="academy-dash" element={<AdminAcademyDashboard />} />
-        <Route path="staff-dash" element={<AdminStaffDashboard />} />
+        <Route path="employees-dash" element={<AdminEmployeesDashboard />} />
         
         <Route path="students">
           <Route index element={<AllStudents />} />
@@ -174,7 +174,7 @@ function App() {
           <Route path="dashboard" element={<PaymentsDashboard />} />
           <Route path="academy" element={<CategoryPayments category="academy" />} />
           <Route path="library" element={<CategoryPayments category="library" />} />
-          <Route path="staff" element={<CategoryPayments category="staff" />} />
+          <Route path="employees" element={<CategoryPayments category="employees" />} />
           <Route path="add" element={<AddPayment />} />
           <Route path="history" element={<PaymentHistory isAdmin={true} />} />
           <Route path="due-payments" element={<DuePayments />} />
@@ -184,18 +184,18 @@ function App() {
           <Route index element={<AdminAcademyAttendance />} />
           <Route path="academy" element={<AdminAcademyAttendance />} />
           <Route path="library" element={<AdminLibraryAttendance />} />
-          <Route path="staff" element={<AdminStaffAttendance />} />
+          <Route path="employees" element={<AdminEmployeesAttendance />} />
         </Route>
 
         <Route path="export" element={<ExportData />} />
         
-        <Route path="staff">
-          <Route index element={<AllStaff />} />
-          <Route path="all" element={<AllStaff />} />
-          <Route path="add" element={<AddStaff />} />
-          <Route path=":id" element={<ViewStaff />} />
-          <Route path="edit/:id" element={<EditStaff />} />
-          <Route path="analytics" element={<StaffStats />} />
+        <Route path="employees">
+          <Route index element={<Allemployees />} />
+          <Route path="all" element={<Allemployees />} />
+          <Route path="add" element={<Addemployees />} />
+          <Route path=":id" element={<Viewemployees />} />
+          <Route path="edit/:id" element={<Editemployees />} />
+          <Route path="analytics" element={<employeesStats />} />
         </Route>
         <Route path="profile" element={<Profile/>} />
         <Route path="settings" element={<SystemSettings />} />
@@ -210,7 +210,7 @@ function App() {
       </Route>
 
       {/* ========== ACADEMY STUDENT ROUTES ========== */}
-      <Route path="/academy-dashboard" element={
+      <Route path="/academy" element={
         isLoggedIn && role === "student" && studentCategory === "academy" ? 
         <MainLayout /> : <Navigate to="/login" replace />
       }>
@@ -225,7 +225,7 @@ function App() {
       </Route>
 
       {/* ========== LIBRARY STUDENT ROUTES ========== */}
-      <Route path="/library-dashboard" element={
+      <Route path="/library" element={
         isLoggedIn && role === "student" && studentCategory === "library" ? 
         <MainLayout /> : <Navigate to="/login" replace />
       }>
@@ -239,18 +239,18 @@ function App() {
         <Route path="help" element={<LibraryHelp />} />
       </Route>
 
-      {/* ========== STAFF ROUTES ========== */}
-      <Route path="/staff-dashboard" element={
-        isLoggedIn && role === "staff" ? <MainLayout /> : <Navigate to="/login" replace />
+      {/* ========== employees ROUTES ========== */}
+      <Route path="/employees" element={
+        isLoggedIn && role === "employees" ? <MainLayout /> : <Navigate to="/login" replace />
       }>
-        <Route index element={<StaffDashboard />} />
-        <Route path="attendance" element={<StaffAttendance />} />
-        <Route path="payments" element={<StaffPayments />} />
-        <Route path="activity" element={<StaffActivity />} />
-        <Route path="profile" element={<StaffProfile />} />
-        <Route path="settings" element={<StaffSettings />} />
-        <Route path="notifications" element={<StaffNotifications />} />
-        <Route path="help" element={<StaffHelp />} />
+        <Route index element={<employeesDashboard />} />
+        <Route path="attendance" element={<employeesAttendance />} />
+        <Route path="payments" element={<employeesPayments />} />
+        <Route path="activity" element={<employeesActivity />} />
+        <Route path="profile" element={<employeesProfile />} />
+        <Route path="settings" element={<employeesSettings />} />
+        <Route path="notifications" element={<employeesNotifications />} />
+        <Route path="help" element={<employeesHelp />} />
       </Route>
     </Routes>
   );

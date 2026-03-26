@@ -36,15 +36,15 @@ const dashboardService = {
     }
   },
 
-  // Staff dashboard stats
-  getStaffStats: async () => {
+  // employees dashboard stats
+  getemployeesStats: async () => {
     try {
-      const response = await api.get('/dashboard/staff/stats');
+      const response = await api.get('/dashboard/employees/stats');
       return response.data;
     } catch (error) {
       return {
         data: [
-          { label: 'Total Staff', value: 0, icon: 'staff', type: 'number' },
+          { label: 'Total employees', value: 0, icon: 'employees', type: 'number' },
           { label: 'Present Today', value: 0, icon: 'attendance', type: 'number' },
           { label: 'Total Salary', value: 0, icon: 'salary', type: 'currency' },
           { label: 'Pending Tasks', value: 0, icon: 'pending', type: 'number' }

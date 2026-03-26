@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import Loader from '../../components/common/Loader';
 import UserSettingsForm from '../../components/user/UserSettingsForm';
 
-const StaffSettings = () => {
+const EmployeesSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState({ emailNotifications: true, smsNotifications: false, showProfile: true });
@@ -57,4 +57,4 @@ const StaffSettings = () => {
   );
 };
 
-export default StaffSettings;
+export default EmployeesSettings;

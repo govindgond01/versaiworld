@@ -20,7 +20,7 @@ import {
   PieChart, Pie, Cell, CartesianGrid 
 } from 'recharts';
 
-const StaffStats = () => {
+const EmployeesStats = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 });
   const [roles, setRoles] = useState([]);
@@ -33,7 +33,7 @@ const StaffStats = () => {
   const fetchStats = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/staff/stats', {
+      const res = await api.get('/employees/stats', {
         params: { timeFilter, departmentFilter }
       });
       
@@ -57,7 +57,7 @@ const StaffStats = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `staff_stats_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `employees_stats_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     toast.success('Exported!');
   };
@@ -68,7 +68,7 @@ const StaffStats = () => {
       case 'librarian': return { name: 'Librarians', icon: <MdLocalLibrary className="w-5 h-5" />, color: '#8B5CF6', bg: 'bg-purple-100', text: 'text-purple-600' };
       case 'accountant': return { name: 'Accountants', icon: <BsCashStack className="w-5 h-5" />, color: '#10B981', bg: 'bg-green-100', text: 'text-green-600' };
       case 'admin': return { name: 'Admins', icon: <FaUserTie className="w-5 h-5" />, color: '#EF4444', bg: 'bg-red-100', text: 'text-red-600' };
-      default: return { name: 'Staff', icon: <BsPersonWorkspace className="w-5 h-5" />, color: '#6B7280', bg: 'bg-gray-100', text: 'text-gray-600' };
+      default: return { name: 'employees', icon: <BsPersonWorkspace className="w-5 h-5" />, color: '#6B7280', bg: 'bg-gray-100', text: 'text-gray-600' };
     }
   };
 
@@ -104,9 +104,9 @@ const StaffStats = () => {
             <FaChartPie className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Staff Analytics</h1>
+            <h1 className="text-2xl font-bold text-gray-900">employees Analytics</h1>
             <p className="text-sm text-gray-600 flex items-center gap-1.5">
-              <FaUsers className="w-4 h-4" /> {stats.total} total staff
+              <FaUsers className="w-4 h-4" /> {stats.total} total employees
             </p>
           </div>
         </div>
@@ -146,7 +146,7 @@ const StaffStats = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {[
-          { label: 'Total Staff', value: stats.total, icon: <FaUsers className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-blue-100', text: 'text-blue-600' },
+          { label: 'Total employees', value: stats.total, icon: <FaUsers className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-blue-100', text: 'text-blue-600' },
           { label: 'Active', value: stats.active, icon: <FaCheckCircle className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-green-100', text: 'text-green-600' },
           { label: 'Inactive', value: stats.inactive, icon: <FaTimesCircle className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-red-100', text: 'text-red-600' },
           { label: 'Departments', value: departments.length, icon: <FaBuilding className="w-5 h-5 md:w-6 md:h-6" />, bg: 'bg-purple-100', text: 'text-purple-600' }
@@ -213,7 +213,7 @@ const StaffStats = () => {
                       <div className={`p-2 rounded-lg ${r.bg} ${r.text}`}>{r.icon}</div>
                       <div>
                         <p className="text-sm font-medium text-gray-900">{r.name}</p>
-                        <p className="text-xs text-gray-500">{r.count} staff</p>
+                        <p className="text-xs text-gray-500">{r.count} employees</p>
                       </div>
                     </div>
                     <div className="text-right">
@@ -244,7 +244,7 @@ const StaffStats = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-900">{d.name}</p>
-                      <p className="text-xs text-gray-500">{d.count} staff</p>
+                      <p className="text-xs text-gray-500">{d.count} employees</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -280,4 +280,4 @@ const StaffStats = () => {
   );
 };
 
-export default StaffStats;
+export default EmployeesStats;

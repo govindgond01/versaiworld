@@ -171,8 +171,8 @@ const Header = ({ toggleSidebar }) => {
     const category = localStorage.getItem('studentCategory');
     
     let path = '/';
-    if (role === 'admin') path = '/admin-dashboard/notifications';
-    else if (role === 'staff') path = '/staff-dashboard/notifications';
+    if (role === 'admin') path = '/admin/notifications';
+    else if (role === 'employees') path = '/employees/notifications';
     else if (role === 'student' && category) path = `/${category}-dashboard/notifications`;
     
     debouncedNavigate(path);
@@ -188,11 +188,11 @@ const Header = ({ toggleSidebar }) => {
     const category = localStorage.getItem('studentCategory');
 
     let path = '/';
-    if (role === 'admin') path = '/admin-dashboard/profile';
-    else if (role === 'staff') path = '/staff-dashboard/profile';
+    if (role === 'admin') path = '/admin/profile';
+    else if (role === 'employees') path = '/employees/profile';
     else if (role === 'student') {
-      if (category === 'academy') path = '/academy-dashboard/profile';
-      else if (category === 'library') path = '/library-dashboard/profile';
+      if (category === 'academy') path = '/academy/profile';
+      else if (category === 'library') path = '/library/profile';
     }
     
     debouncedNavigate(path);
@@ -204,11 +204,11 @@ const Header = ({ toggleSidebar }) => {
     const category = localStorage.getItem('studentCategory');
 
     let path = '/';
-    if (role === 'admin') path = '/admin-dashboard/settings';
-    else if (role === 'staff') path = '/staff-dashboard/settings';
+    if (role === 'admin') path = '/admin/settings';
+    else if (role === 'employees') path = '/employees/settings';
     else if (role === 'student') {
-      if (category === 'academy') path = '/academy-dashboard/settings';
-      else if (category === 'library') path = '/library-dashboard/settings';
+      if (category === 'academy') path = '/academy/settings';
+      else if (category === 'library') path = '/library/settings';
     }
     
     debouncedNavigate(path);
@@ -220,11 +220,11 @@ const Header = ({ toggleSidebar }) => {
     const category = localStorage.getItem('studentCategory');
 
     let path = '/';
-    if (role === 'admin') path = '/admin-dashboard/help';
-    else if (role === 'staff') path = '/staff-dashboard/help';
+    if (role === 'admin') path = '/admin/help';
+    else if (role === 'employees') path = '/employees/help';
     else if (role === 'student') {
-      if (category === 'academy') path = '/academy-dashboard/help';
-      else if (category === 'library') path = '/library-dashboard/help';
+      if (category === 'academy') path = '/academy/help';
+      else if (category === 'library') path = '/library/help';
     }
     
     debouncedNavigate(path);
@@ -239,7 +239,7 @@ const Header = ({ toggleSidebar }) => {
   const getUserRoleDisplay = useCallback(() => {
     if (!user) return '';
     if (user.role === 'admin') return 'Admin';
-    if (user.role === 'staff') return user.staffRole || 'Staff';
+    if (user.role === 'employees') return user.employeesRole || 'employees';
     if (user.studentCategory === 'academy') return 'Academy Student';
     if (user.studentCategory === 'library') return 'Library Student';
     return 'User';
@@ -249,8 +249,8 @@ const Header = ({ toggleSidebar }) => {
     const role = localStorage.getItem('role');
     const category = localStorage.getItem('studentCategory');
 
-    if (role === 'admin') return 'Search users, students, staff...';
-    if (role === 'staff') return 'Search salary, attendance, students...';
+    if (role === 'admin') return 'Search users, students, employees...';
+    if (role === 'employees') return 'Search salary, attendance, students...';
     if (category === 'academy') return 'Search fees, courses, attendance...';
     if (category === 'library') return 'Search books, membership, fees...';
     return 'Search...';

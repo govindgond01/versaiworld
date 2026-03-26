@@ -2,43 +2,43 @@ const academyMenu = [
   {
     items: [
       {
-        path: "/academy-dashboard",
+        path: "/academy",
         icon: "dashboard",
         label: "Dashboard"
       },
       {
-        path: "/academy-dashboard/attendance",
+        path: "/academy/attendance",
         icon: "attendance",
         label: "Attendance"
       },
       {
-        path: "/academy-dashboard/payments",
+        path: "/academy/payments",
         icon: "rupees", 
         label: "Payments"
       },
       {
-        path: "/academy-dashboard/activity",
+        path: "/academy/activity",
         icon: "report",
         label: "Activity Reports"
       },
       {
-        path: "/academy-dashboard/profile",
-        icon: "adminstaff",
+        path: "/academy/profile",
+        icon: "adminemployees",
         label: "My Profile"
       },
       {
-        path: "/academy-dashboard/settings",
+        path: "/academy/settings",
         icon: "setting",
         label: "Settings"
       },
       {
-        path: "/academy-dashboard/notifications",
+        path: "/academy/notifications",
         icon: "bell",
         label: "Notifications",
         badge: "5"
       },
       {
-        path: "/academy-dashboard/help",
+        path: "/academy/help",
         icon: "help",
         label: "Help & Support"
       }

@@ -113,7 +113,7 @@ const AddStudent = () => {
             <p className="text-sm text-gray-600 flex items-center gap-1"><BsPersonWorkspace className="w-4 h-4" /> Create new student</p>
           </div>
         </div>
-        <button onClick={() => navigate('/admin-dashboard/students')} className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+        <button onClick={() => navigate('/admin/students')} className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200">
           <FaArrowLeft className="w-4 h-4" /> Back
         </button>
       </div>
@@ -274,7 +274,7 @@ const AddStudent = () => {
               {loading ? <Loader type="inline" size="small" /> : <GiTeacher className="w-4 h-4" />}
               {loading ? 'Creating...' : 'Create Student'}
             </button>
-            <button type="button" onClick={() => navigate('/admin-dashboard/students')} className="px-6 py-2.5 border bg-white rounded-lg hover:bg-gray-50">
+            <button type="button" onClick={() => navigate('/admin/students')} className="px-6 py-2.5 border bg-white rounded-lg hover:bg-gray-50">
               Cancel
             </button>
           </div>

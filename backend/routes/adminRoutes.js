@@ -10,8 +10,8 @@ const {
   getExpiringStudents,
   getStudentTypes,
   getStudentStats,
-  getAllStaff,
-  addStaff,
+  getAllemployees,
+  addemployees,
   renewMembership,
   // Super admin functions
   getAllUsers,
@@ -40,9 +40,9 @@ router.get('/students/types', getStudentTypes); // Deprecated - use /stats inste
 router.get('/students/stats', getStudentStats); //  NEW ENDPOINT FOR DASHBOARDS
 router.put('/students/:id/renew', renewMembership); //  NEW ROUTE
 
-// Staff Management
-router.get('/staff', getAllStaff);
-router.post('/staff', addStaff);
+// employees Management
+router.get('/employees', getAllemployees);
+router.post('/employees', addemployees);
 
 // Super Admin Routes (require superAdmin role)
 router.use('/users', superAdminOnly);

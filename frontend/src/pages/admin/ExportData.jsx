@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import {
-  FiDownload,FiClock, FiFile, FiFileText, FiCalendar,
+  FiDownload, FiClock, FiFile, FiFileText, FiCalendar,
   FiUsers, FiCreditCard, FiBookOpen, FiCheckCircle,
   FiFilter, FiArrowRight, FiUserCheck,
   FiUserX, FiUsers as FiUsersAll, FiRefreshCw,
@@ -29,7 +29,7 @@ const ExportData = () => {
   const [fetchingFilters, setFetchingFilters] = useState(true);
   const [filterOptions, setFilterOptions] = useState({
     studentCategories: [],
-    staffRoles: [],
+    employeesRoles: [],
     departments: [],
     courses: []
   });
@@ -77,19 +77,19 @@ const ExportData = () => {
     const today = new Date();
     let start = null, end = null;
 
-    switch(formData.dateRange) {
+    switch (formData.dateRange) {
       case 'today':
-        start = new Date(today.setHours(0,0,0,0));
-        end = new Date(today.setHours(23,59,59,999));
+        start = new Date(today.setHours(0, 0, 0, 0));
+        end = new Date(today.setHours(23, 59, 59, 999));
         setFormData(prev => ({ ...prev, startDate: start, endDate: end }));
         setShowDatePicker(false);
         break;
       case 'week':
         start = new Date(today.setDate(today.getDate() - today.getDay()));
-        start.setHours(0,0,0,0);
+        start.setHours(0, 0, 0, 0);
         end = new Date(start);
         end.setDate(start.getDate() + 6);
-        end.setHours(23,59,59,999);
+        end.setHours(23, 59, 59, 999);
         setFormData(prev => ({ ...prev, startDate: start, endDate: end }));
         setShowDatePicker(false);
         break;
@@ -116,7 +116,7 @@ const ExportData = () => {
       if (res.data.success) {
         setFilterOptions({
           studentCategories: res.data.categories?.students || [],
-          staffRoles: res.data.categories?.staff || [],
+          employeesRoles: res.data.categories?.employees || [],
           departments: res.data.categories?.departments || [],
           courses: res.data.categories?.courses || []
         });
@@ -149,9 +149,9 @@ const ExportData = () => {
         if (formData.category !== 'all') payload.studentCategory = formData.category;
         if (formData.course !== 'all') payload.course = formData.course;
       }
-      else if (formData.dataType === 'staff') {
+      else if (formData.dataType === 'employees') {
         if (formData.status !== 'all') payload.status = formData.status;
-        if (formData.category !== 'all') payload.staffRole = formData.category;
+        if (formData.category !== 'all') payload.employeesRole = formData.category;
         if (formData.department !== 'all') payload.department = formData.department;
       }
       else if (formData.dataType === 'payments' || formData.dataType === 'attendance') {
@@ -159,15 +159,15 @@ const ExportData = () => {
         if (formData.category === 'students' && formData.subCategory !== 'all') {
           payload.userType = 'student';
           payload.studentCategory = formData.subCategory;
-        } else if (formData.category === 'staff' && formData.subCategory !== 'all') {
-          payload.userType = 'staff';
-          payload.staffRole = formData.subCategory;
+        } else if (formData.category === 'employees' && formData.subCategory !== 'all') {
+          payload.userType = 'employees';
+          payload.employeesRole = formData.subCategory;
         } else if (formData.category === 'students') {
           payload.userType = 'student';
-        } else if (formData.category === 'staff') {
-          payload.userType = 'staff';
+        } else if (formData.category === 'employees') {
+          payload.userType = 'employees';
         }
-        if (formData.department !== 'all' && (formData.category === 'staff' || formData.subCategory?.includes('staff'))) {
+        if (formData.department !== 'all' && (formData.category === 'employees' || formData.subCategory?.includes('employees'))) {
           payload.department = formData.department;
         }
       }
@@ -188,7 +188,7 @@ const ExportData = () => {
       link.href = url;
 
       const ext = res.headers['content-type'].includes('csv') ? 'csv' :
-                  res.headers['content-type'].includes('pdf') ? 'pdf' : 'xlsx';
+        res.headers['content-type'].includes('pdf') ? 'pdf' : 'xlsx';
 
       const dateSuffix = formData.dateRange !== 'all' ? `_${formData.dateRange}` : '';
       const statusSuffix = formData.status !== 'all' ? `_${formData.status}` : '';
@@ -209,7 +209,7 @@ const ExportData = () => {
 
   const dataTypes = [
     { value: 'students', label: 'Students', icon: <FiUsers className="w-5 h-5" />, desc: 'Student records with fees', color: 'blue' },
-    { value: 'staff', label: 'Staff', icon: <FiUsers className="w-5 h-5" />, desc: 'Staff details & salary', color: 'purple' },
+    { value: 'employees', label: 'employees', icon: <FiUsers className="w-5 h-5" />, desc: 'employees details & salary', color: 'purple' },
     { value: 'payments', label: 'Payments', icon: <FiCreditCard className="w-5 h-5" />, desc: 'Payment transactions', color: 'green' },
     { value: 'courses', label: 'Courses', icon: <FiBookOpen className="w-5 h-5" />, desc: 'Course catalog', color: 'orange' },
     { value: 'attendance', label: 'Attendance', icon: <FiCheckCircle className="w-5 h-5" />, desc: 'Attendance records', color: 'yellow' }
@@ -231,10 +231,10 @@ const ExportData = () => {
           icon: cat.value === 'academy' ? <GiTeacher className="w-4 h-4" /> : <MdLocalLibrary className="w-4 h-4" />
         }))
       ];
-    } else if (formData.dataType === 'staff') {
+    } else if (formData.dataType === 'employees') {
       return [
-        { value: 'all', label: 'All Staff', icon: <BsPersonWorkspace className="w-4 h-4" /> },
-        ...filterOptions.staffRoles.map(role => ({
+        { value: 'all', label: 'All employees', icon: <BsPersonWorkspace className="w-4 h-4" /> },
+        ...filterOptions.employeesRoles.map(role => ({
           value: role.value,
           label: role.label,
           icon: <BsPersonBadge className="w-4 h-4" />
@@ -244,7 +244,7 @@ const ExportData = () => {
       return [
         { value: 'all', label: 'All Users', icon: <FiUsersAll className="w-4 h-4" /> },
         { value: 'students', label: 'Students', icon: <GiTeacher className="w-4 h-4" /> },
-        { value: 'staff', label: 'Staff', icon: <BsPersonWorkspace className="w-4 h-4" /> }
+        { value: 'employees', label: 'employees', icon: <BsPersonWorkspace className="w-4 h-4" /> }
       ];
     } else if (formData.dataType === 'courses') {
       return [
@@ -287,10 +287,10 @@ const ExportData = () => {
           icon: cat.value === 'academy' ? <GiTeacher className="w-4 h-4" /> : <MdLocalLibrary className="w-4 h-4" />
         }))
       ];
-    } else if (formData.category === 'staff') {
+    } else if (formData.category === 'employees') {
       return [
-        { value: 'all', label: 'All Staff', icon: <BsPersonWorkspace className="w-4 h-4" /> },
-        ...filterOptions.staffRoles.map(role => ({
+        { value: 'all', label: 'All employees', icon: <BsPersonWorkspace className="w-4 h-4" /> },
+        ...filterOptions.employeesRoles.map(role => ({
           value: role.value,
           label: role.label,
           icon: <BsPersonBadge className="w-4 h-4" />
@@ -310,10 +310,10 @@ const ExportData = () => {
   const showPaymentStatusFilter = formData.dataType === 'payments';
   const showCategoryFilter = true;
   const showSubCategoryFilter = (formData.dataType === 'payments' || formData.dataType === 'attendance') &&
-                                formData.category !== 'all' && formData.category !== 'all';
-  const showDepartmentFilter = formData.dataType === 'staff' ||
-                               (formData.dataType === 'payments' && formData.category === 'staff') ||
-                               (formData.dataType === 'attendance' && formData.category === 'staff');
+    formData.category !== 'all' && formData.category !== 'all';
+  const showDepartmentFilter = formData.dataType === 'employees' ||
+    (formData.dataType === 'payments' && formData.category === 'employees') ||
+    (formData.dataType === 'attendance' && formData.category === 'employees');
   const showCourseFilter = formData.dataType === 'students' || formData.dataType === 'courses';
 
   return (
@@ -362,11 +362,10 @@ const ExportData = () => {
                     course: 'all',
                     status: 'all'
                   })}
-                  className={`p-4 rounded-xl border-2 transition-all text-left ${
-                    formData.dataType === type.value
+                  className={`p-4 rounded-xl border-2 transition-all text-left ${formData.dataType === type.value
                       ? `border-${type.color}-500 bg-${type.color}-50`
                       : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className={`p-2 rounded-lg bg-${type.color}-100 text-${type.color}-600`}>
@@ -392,12 +391,11 @@ const ExportData = () => {
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => setFormData({...formData, dateRange: opt.value})}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${
-                    formData.dateRange === opt.value
+                  onClick={() => setFormData({ ...formData, dateRange: opt.value })}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all ${formData.dateRange === opt.value
                       ? 'border-blue-500 bg-blue-50 text-blue-700'
                       : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                    }`}
                 >
                   {opt.icon}
                   <span className="text-sm font-medium">{opt.label}</span>
@@ -413,7 +411,7 @@ const ExportData = () => {
                 <label className="block text-xs text-gray-500 mb-1">Start Date</label>
                 <DatePicker
                   selected={formData.startDate}
-                  onChange={(date) => setFormData({...formData, startDate: date})}
+                  onChange={(date) => setFormData({ ...formData, startDate: date })}
                   selectsStart
                   startDate={formData.startDate}
                   endDate={formData.endDate}
@@ -426,7 +424,7 @@ const ExportData = () => {
                 <label className="block text-xs text-gray-500 mb-1">End Date</label>
                 <DatePicker
                   selected={formData.endDate}
-                  onChange={(date) => setFormData({...formData, endDate: date})}
+                  onChange={(date) => setFormData({ ...formData, endDate: date })}
                   selectsEnd
                   startDate={formData.startDate}
                   endDate={formData.endDate}
@@ -447,7 +445,7 @@ const ExportData = () => {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
               >
                 {statusOptions.map(opt => (
@@ -465,7 +463,7 @@ const ExportData = () => {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
               >
                 {paymentStatusOptions.map(opt => (
@@ -483,7 +481,7 @@ const ExportData = () => {
               </label>
               <select
                 value={formData.category}
-                onChange={(e) => setFormData({...formData, category: e.target.value, subCategory: 'all'})}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value, subCategory: 'all' })}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
                 disabled={fetchingFilters}
               >
@@ -499,11 +497,11 @@ const ExportData = () => {
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
                 {formData.category === 'students' ? <GiTeacher className="w-4 h-4" /> : <BsPersonBadge className="w-4 h-4" />}
-                {formData.category === 'students' ? 'Student Category' : 'Staff Role'}
+                {formData.category === 'students' ? 'Student Category' : 'employees Role'}
               </label>
               <select
                 value={formData.subCategory}
-                onChange={(e) => setFormData({...formData, subCategory: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
                 disabled={fetchingFilters}
               >
@@ -514,7 +512,7 @@ const ExportData = () => {
             </div>
           )}
 
-          {/* Department Filter - ONLY FOR STAFF */}
+          {/* Department Filter - ONLY FOR employees */}
           {showDepartmentFilter && (
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
@@ -522,7 +520,7 @@ const ExportData = () => {
               </label>
               <select
                 value={formData.department}
-                onChange={(e) => setFormData({...formData, department: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
                 disabled={fetchingFilters}
               >
@@ -541,7 +539,7 @@ const ExportData = () => {
               </label>
               <select
                 value={formData.course}
-                onChange={(e) => setFormData({...formData, course: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, course: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white"
                 disabled={fetchingFilters}
               >
@@ -562,12 +560,11 @@ const ExportData = () => {
                 <button
                   key={f.value}
                   type="button"
-                  onClick={() => setFormData({...formData, format: f.value})}
-                  className={`flex-1 min-w-[100px] flex items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${
-                    formData.format === f.value
+                  onClick={() => setFormData({ ...formData, format: f.value })}
+                  className={`flex-1 min-w-[100px] flex items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${formData.format === f.value
                       ? `border-${f.color}-500 bg-${f.color}-50 text-${f.color}-700`
                       : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
+                    }`}
                 >
                   <span className={`text-${f.color}-600`}>{f.icon}</span>
                   <span className="font-medium text-sm">{f.label}</span>
@@ -633,13 +630,12 @@ const ExportData = () => {
           {formData.status !== 'all' && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-500">Status:</span>
-              <span className={`text-sm font-medium flex items-center gap-1 px-2 py-1 rounded-full ${
-                formData.status === 'active' ? 'bg-green-100 text-green-700' :
-                formData.status === 'inactive' ? 'bg-red-100 text-red-700' :
-                formData.status === 'paid' ? 'bg-green-100 text-green-700' :
-                formData.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                'bg-gray-100 text-gray-700'
-              }`}>
+              <span className={`text-sm font-medium flex items-center gap-1 px-2 py-1 rounded-full ${formData.status === 'active' ? 'bg-green-100 text-green-700' :
+                  formData.status === 'inactive' ? 'bg-red-100 text-red-700' :
+                    formData.status === 'paid' ? 'bg-green-100 text-green-700' :
+                      formData.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-gray-100 text-gray-700'
+                }`}>
                 {formData.status}
               </span>
             </div>

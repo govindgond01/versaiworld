@@ -86,7 +86,7 @@ const ExportPayments = () => {
               <option value="all">All Categories</option>
               <option value="academy">Academy</option>
               <option value="library">Library</option>
-              <option value="staff">Staff</option>
+              <option value="employees">employees</option>
             </select>
           </div>
           <div>

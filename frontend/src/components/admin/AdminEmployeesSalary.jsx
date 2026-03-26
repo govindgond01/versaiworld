@@ -3,10 +3,10 @@ import api from '../../services/api';  //  Using api instance instead of axios
 import { toast } from 'react-hot-toast';
 import Loader from '../common/Loader';
 
-const AdminStaffSalary = () => {
-  const [staffList, setStaffList] = useState([]);
+const AdminEmployeesSalary = () => {
+  const [employeesList, setemployeesList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedStaff, setSelectedStaff] = useState(null);
+  const [selectedemployees, setSelectedemployees] = useState(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   
@@ -24,45 +24,45 @@ const AdminStaffSalary = () => {
   });
 
   useEffect(() => {
-    fetchStaff();
+    fetchemployees();
   }, []);
 
-  const fetchStaff = async () => {
+  const fetchemployees = async () => {
     try {
-      const response = await api.get('/staff');  
+      const response = await api.get('/employees');  
       
-      const staffData = response.data.staff || [];
+      const employeesData = response.data.employees || [];
       
-      const mappedStaff = staffData.map(staff => ({
-        ...staff,
-        salary: staff.salary || staff.financials?.amount || 0,
-        paidSalary: staff.paidSalary || staff.financials?.paid || 0,
-        dueSalary: staff.dueSalary || staff.financials?.due || 0
+      const mappedemployees = employeesData.map(employees => ({
+        ...employees,
+        salary: employees.salary || employees.financials?.amount || 0,
+        paidSalary: employees.paidSalary || employees.financials?.paid || 0,
+        dueSalary: employees.dueSalary || employees.financials?.due || 0
       }));
       
-      setStaffList(mappedStaff);
+      setemployeesList(mappedemployees);
     } catch (error) {
-      console.error('Fetch staff error:', error);
-      toast.error('Failed to fetch staff');
+      console.error('Fetch employees error:', error);
+      toast.error('Failed to fetch employees');
     } finally {
       setLoading(false);
     }
   };
 
   const handleMakePayment = async () => {
-    if (!selectedStaff) return;
+    if (!selectedemployees) return;
     
     try {
       await api.post('/payments/make', {  //  Using api instance
-        userId: selectedStaff._id,
+        userId: selectedemployees._id,
         ...paymentData,
         type: 'salary'
       });
 
       toast.success('Payment successful');
       setShowPaymentModal(false);
-      fetchStaff();
-      setSelectedStaff(null);
+      fetchemployees();
+      setSelectedemployees(null);
       setPaymentData({
         amount: '',
         paymentMethod: 'cash',
@@ -78,16 +78,16 @@ const AdminStaffSalary = () => {
   };
 
   const handleUpdateSalary = async () => {
-    if (!selectedStaff) return;
+    if (!selectedemployees) return;
     
     try {
-      await api.put(`/payments/update-total/${selectedStaff._id}`, {  //  Using api instance
+      await api.put(`/payments/update-total/${selectedemployees._id}`, {  //  Using api instance
         totalAmount: updateData.salary
       });
 
       toast.success('Salary updated successfully');
       setShowUpdateModal(false);
-      fetchStaff();
+      fetchemployees();
       setUpdateData({ salary: '' });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Update failed');
@@ -109,7 +109,7 @@ const AdminStaffSalary = () => {
     }).format(amount || 0);
   };
 
-  const getStaffRoleBadgeColor = (role) => {
+  const getemployeesRoleBadgeColor = (role) => {
     switch(role?.toLowerCase()) {
       case 'teacher': return 'bg-blue-100 text-blue-800';
       case 'librarian': return 'bg-purple-100 text-purple-800';
@@ -130,8 +130,8 @@ const AdminStaffSalary = () => {
   return (
     <div className="p-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Staff Salary Management</h1>
-        <p className="text-gray-600 mt-2">Manage salary payments for all staff members</p>
+        <h1 className="text-3xl font-bold text-gray-900">employees Salary Management</h1>
+        <p className="text-gray-600 mt-2">Manage salary payments for all employees members</p>
       </div>
 
       {/* Stats Cards */}
@@ -144,8 +144,8 @@ const AdminStaffSalary = () => {
               </svg>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Total Staff</p>
-              <p className="text-2xl font-bold text-gray-900">{staffList.length}</p>
+              <p className="text-sm text-gray-600">Total employees</p>
+              <p className="text-2xl font-bold text-gray-900">{employeesList.length}</p>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ const AdminStaffSalary = () => {
             <div>
               <p className="text-sm text-gray-600">Total Paid</p>
               <p className="text-2xl font-bold text-green-600">
-                {formatCurrency(staffList.reduce((sum, staff) => sum + (staff.paidSalary || 0), 0))}
+                {formatCurrency(employeesList.reduce((sum, employees) => sum + (employees.paidSalary || 0), 0))}
               </p>
             </div>
           </div>
@@ -176,20 +176,20 @@ const AdminStaffSalary = () => {
             <div>
               <p className="text-sm text-gray-600">Total Due</p>
               <p className="text-2xl font-bold text-red-600">
-                {formatCurrency(staffList.reduce((sum, staff) => sum + (staff.dueSalary || 0), 0))}
+                {formatCurrency(employeesList.reduce((sum, employees) => sum + (employees.dueSalary || 0), 0))}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Staff Table */}
+      {/* employees Table */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-bold text-gray-900">Staff Members</h2>
+            <h2 className="text-xl font-bold text-gray-900">employees Members</h2>
             <div className="text-sm text-gray-600">
-              {staffList.length} staff members
+              {employeesList.length} employees members
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@ const AdminStaffSalary = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Staff Details
+                  employees Details
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Role & Status
@@ -216,30 +216,30 @@ const AdminStaffSalary = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {staffList.map((staff) => {
-                const progress = calculateProgress(staff.paidSalary || 0, staff.salary || 0);
+              {employeesList.map((employees) => {
+                const progress = calculateProgress(employees.paidSalary || 0, employees.salary || 0);
                 
                 return (
-                  <tr key={staff._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={employees._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <div className="font-medium text-gray-900">{staff.name}</div>
-                        <div className="text-sm text-gray-500">{staff.email}</div>
-                        <div className="text-sm text-gray-500">ID: {staff.staffId || staff.userId}</div>
+                        <div className="font-medium text-gray-900">{employees.name}</div>
+                        <div className="text-sm text-gray-500">{employees.email}</div>
+                        <div className="text-sm text-gray-500">ID: {employees.employeesId || employees.userId}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="space-y-2">
-                        <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getStaffRoleBadgeColor(staff.staffRole)}`}>
-                          {staff.staffRole || 'Staff'}
+                        <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${getemployeesRoleBadgeColor(employees.employeesRole)}`}>
+                          {employees.employeesRole || 'employees'}
                         </span>
                         <div>
                           <span className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
-                            staff.status === 'active' 
+                            employees.status === 'active' 
                               ? 'bg-green-100 text-green-800' 
                               : 'bg-red-100 text-red-800'
                           }`}>
-                            {staff.status || 'active'}
+                            {employees.status || 'active'}
                           </span>
                         </div>
                       </div>
@@ -248,16 +248,16 @@ const AdminStaffSalary = () => {
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Monthly:</span>
-                          <span className="font-semibold">{formatCurrency(staff.salary || 0)}</span>
+                          <span className="font-semibold">{formatCurrency(employees.salary || 0)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Paid:</span>
-                          <span className="text-green-600 font-semibold">{formatCurrency(staff.paidSalary || 0)}</span>
+                          <span className="text-green-600 font-semibold">{formatCurrency(employees.paidSalary || 0)}</span>
                         </div>
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-600">Due:</span>
-                          <span className={`font-semibold ${(staff.dueSalary || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                            {formatCurrency(staff.dueSalary || 0)}
+                          <span className={`font-semibold ${(employees.dueSalary || 0) > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            {formatCurrency(employees.dueSalary || 0)}
                           </span>
                         </div>
                       </div>
@@ -289,8 +289,8 @@ const AdminStaffSalary = () => {
                       <div className="flex flex-col space-y-2">
                         <button
                           onClick={() => {
-                            setSelectedStaff(staff);
-                            setUpdateData({ salary: staff.salary || '' });
+                            setSelectedemployees(employees);
+                            setUpdateData({ salary: employees.salary || '' });
                             setShowUpdateModal(true);
                           }}
                           className="px-3 py-2 bg-yellow-500 text-white text-sm font-medium rounded hover:bg-yellow-600 transition-colors"
@@ -299,16 +299,16 @@ const AdminStaffSalary = () => {
                         </button>
                         <button
                           onClick={() => {
-                            setSelectedStaff(staff);
+                            setSelectedemployees(employees);
                             setPaymentData(prev => ({
                               ...prev,
-                              amount: Math.min(staff.dueSalary || 0, staff.salary || 0)
+                              amount: Math.min(employees.dueSalary || 0, employees.salary || 0)
                             }));
                             setShowPaymentModal(true);
                           }}
-                          disabled={!staff.dueSalary || staff.dueSalary <= 0}
+                          disabled={!employees.dueSalary || employees.dueSalary <= 0}
                           className={`px-3 py-2 text-sm font-medium rounded transition-colors ${
-                            staff.dueSalary > 0 
+                            employees.dueSalary > 0 
                               ? 'bg-green-500 text-white hover:bg-green-600' 
                               : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                           }`}
@@ -326,11 +326,11 @@ const AdminStaffSalary = () => {
       </div>
 
       {/* Payment Modal */}
-      {showPaymentModal && selectedStaff && (
+      {showPaymentModal && selectedemployees && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900">Pay Salary to {selectedStaff.name}</h3>
+              <h3 className="text-lg font-bold text-gray-900">Pay Salary to {selectedemployees.name}</h3>
             </div>
             
             <div className="p-6">
@@ -339,15 +339,15 @@ const AdminStaffSalary = () => {
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between">
                     <span className="text-blue-700">Monthly Salary:</span>
-                    <span className="font-semibold">{formatCurrency(selectedStaff.salary || 0)}</span>
+                    <span className="font-semibold">{formatCurrency(selectedemployees.salary || 0)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-blue-700">Already Paid:</span>
-                    <span className="font-semibold text-green-600">{formatCurrency(selectedStaff.paidSalary || 0)}</span>
+                    <span className="font-semibold text-green-600">{formatCurrency(selectedemployees.paidSalary || 0)}</span>
                   </div>
                   <div className="flex justify-between border-t border-blue-200 pt-2 mt-2">
                     <span className="text-blue-700 font-bold">Due Amount:</span>
-                    <span className="font-bold text-red-600">{formatCurrency(selectedStaff.dueSalary || 0)}</span>
+                    <span className="font-bold text-red-600">{formatCurrency(selectedemployees.dueSalary || 0)}</span>
                   </div>
                 </div>
               </div>
@@ -363,11 +363,11 @@ const AdminStaffSalary = () => {
                     onChange={(e) => setPaymentData({...paymentData, amount: e.target.value})}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                     placeholder="Enter amount"
-                    max={selectedStaff.dueSalary || 0}
+                    max={selectedemployees.dueSalary || 0}
                     min="0"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Maximum: {formatCurrency(selectedStaff.dueSalary || 0)}
+                    Maximum: {formatCurrency(selectedemployees.dueSalary || 0)}
                   </p>
                 </div>
 
@@ -436,11 +436,11 @@ const AdminStaffSalary = () => {
       )}
 
       {/* Update Salary Modal */}
-      {showUpdateModal && selectedStaff && (
+      {showUpdateModal && selectedemployees && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-900">Update Salary for {selectedStaff.name}</h3>
+              <h3 className="text-lg font-bold text-gray-900">Update Salary for {selectedemployees.name}</h3>
             </div>
             
             <div className="p-6">
@@ -457,7 +457,7 @@ const AdminStaffSalary = () => {
                   min="0"
                 />
                 <p className="text-sm text-gray-500 mt-2">
-                  Current salary: <span className="font-semibold">{formatCurrency(selectedStaff.salary || 0)}</span>
+                  Current salary: <span className="font-semibold">{formatCurrency(selectedemployees.salary || 0)}</span>
                 </p>
               </div>
             </div>
@@ -484,4 +484,4 @@ const AdminStaffSalary = () => {
   );
 };
 
-export default AdminStaffSalary;
+export default AdminEmployeesSalary;

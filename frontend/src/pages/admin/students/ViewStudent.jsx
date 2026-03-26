@@ -80,7 +80,7 @@ const ViewStudent = () => {
         <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
           <FaTimesCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
           <p className="text-red-800 font-medium">{error || 'Student not found'}</p>
-          <button onClick={() => navigate('/admin-dashboard/students')} className="mt-4 flex items-center gap-2 text-blue-600 mx-auto">
+          <button onClick={() => navigate('/admin/students')} className="mt-4 flex items-center gap-2 text-blue-600 mx-auto">
             <FaArrowLeft /> Back
           </button>
         </div>
@@ -97,7 +97,7 @@ const ViewStudent = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/admin-dashboard/students')} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+          <button onClick={() => navigate('/admin/students')} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <FaArrowLeft className="w-4 h-4 text-gray-600" />
           </button>
           <div className="p-2.5 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-md">
@@ -111,7 +111,7 @@ const ViewStudent = () => {
           </div>
         </div>
         <button 
-          onClick={() => navigate(`/admin-dashboard/students/edit/${student._id}`)}
+          onClick={() => navigate(`/admin/students/edit/${student._id}`)}
           className="flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 w-full sm:w-auto"
         >
           <FaEdit className="w-4 h-4" /> Edit
@@ -244,7 +244,7 @@ const ViewStudent = () => {
           </div>
 
           <div className="bg-white rounded-xl border border-gray-200 p-4 flex justify-end">
-            <button onClick={() => navigate('/admin-dashboard/students')}
+            <button onClick={() => navigate('/admin/students')}
               className="flex items-center gap-2 px-5 py-2.5 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700">
               <FaArrowLeft className="w-4 h-4" /> Back
             </button>

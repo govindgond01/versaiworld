@@ -103,7 +103,7 @@ const AllStudents = () => {
           </div>
         </div>
         <button
-          onClick={() => navigate('/admin-dashboard/students/add')}
+          onClick={() => navigate('/admin/students/add')}
           className="flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 w-full sm:w-auto"
         >
           <FaPlus className="w-4 h-4" /> Add Student
@@ -229,8 +229,8 @@ const AllStudents = () => {
                       </td>
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <button onClick={() => navigate(`/admin-dashboard/students/${s._id}`)} className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><FaEye className="w-4 h-4" /></button>
-                          <button onClick={() => navigate(`/admin-dashboard/students/edit/${s._id}`)} className="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100"><FaEdit className="w-4 h-4" /></button>
+                          <button onClick={() => navigate(`/admin/students/${s._id}`)} className="p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100"><FaEye className="w-4 h-4" /></button>
+                          <button onClick={() => navigate(`/admin/students/edit/${s._id}`)} className="p-2 text-green-600 bg-green-50 rounded-lg hover:bg-green-100"><FaEdit className="w-4 h-4" /></button>
                           <button onClick={() => handleDelete(s._id, s.name)} className="p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100"><FaTrash className="w-4 h-4" /></button>
                         </div>
                       </td>
@@ -285,8 +285,8 @@ const AllStudents = () => {
                       <GiPayMoney className="inline mr-1 w-3 h-3" /> Due: ₹{s.feesDue || 0}
                     </span>
                     <div className="flex gap-2">
-                      <button onClick={() => navigate(`/admin-dashboard/students/${s._id}`)} className="p-2 bg-blue-50 text-blue-600 rounded-lg"><FaEye className="w-4 h-4" /></button>
-                      <button onClick={() => navigate(`/admin-dashboard/students/edit/${s._id}`)} className="p-2 bg-green-50 text-green-600 rounded-lg"><FaEdit className="w-4 h-4" /></button>
+                      <button onClick={() => navigate(`/admin/students/${s._id}`)} className="p-2 bg-blue-50 text-blue-600 rounded-lg"><FaEye className="w-4 h-4" /></button>
+                      <button onClick={() => navigate(`/admin/students/edit/${s._id}`)} className="p-2 bg-green-50 text-green-600 rounded-lg"><FaEdit className="w-4 h-4" /></button>
                       <button onClick={() => handleDelete(s._id, s.name)} className="p-2 bg-red-50 text-red-600 rounded-lg"><FaTrash className="w-4 h-4" /></button>
                     </div>
                   </div>

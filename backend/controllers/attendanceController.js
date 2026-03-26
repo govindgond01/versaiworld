@@ -411,7 +411,7 @@ exports.getAllAttendances = async (req, res) => {
     if (userId) query.userId = userId;
     
     const attendances = await Attendance.find(query)
-      .populate('userId', 'name email userId userType studentCategory staffRole')
+      .populate('userId', 'name email userId userType studentCategory employeesRole')
       .sort({ date: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -451,7 +451,7 @@ exports.getAllAttendanceByDate = async (req, res) => {
     
     const attendance = await Attendance.find({
       date: { $gte: startDate, $lte: endDate }
-    }).populate('userId', 'name email userId userType studentCategory staffRole');
+    }).populate('userId', 'name email userId userType studentCategory employeesRole');
     
     res.json({ 
       success: true, 

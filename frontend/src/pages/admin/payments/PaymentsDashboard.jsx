@@ -160,14 +160,14 @@ const PaymentsDashboard = () => {
       icon2: <BsPersonBadge className="w-5 h-5" />
     },
     { 
-      title: 'Staff', 
-      path: 'staff', 
+      title: 'employees', 
+      path: 'employees', 
       icon: <RiGovernmentLine className="w-8 h-8 text-white" />,
       color: 'bg-purple-600',
       lightBg: 'bg-purple-50',
       text: 'text-purple-700',
       count: summary?.financials?.totalDueSalary || 0,
-      desc: 'Staff salaries',
+      desc: 'employees salaries',
       icon2: <BsPersonWorkspace className="w-5 h-5" />
     }
   ];
@@ -213,7 +213,7 @@ const PaymentsDashboard = () => {
         {categories.map((cat) => (
           <Link
             key={cat.path}
-            to={`/admin-dashboard/payments/${cat.path}`}
+            to={`/admin/payments/${cat.path}`}
             className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
           >
             <div className="p-5 sm:p-6">
@@ -250,7 +250,7 @@ const PaymentsDashboard = () => {
         <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-5">Quick Actions</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
-            to="/admin-dashboard/payments/add"
+            to="/admin/payments/add"
             className="p-5 border-2 border-dashed border-gray-300 rounded-xl text-center hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-200 group"
           >
             <div className="flex flex-col items-center gap-2">
@@ -263,7 +263,7 @@ const PaymentsDashboard = () => {
           </Link>
           
           <Link
-            to="/admin-dashboard/payments/history"
+            to="/admin/payments/history"
             className="p-5 border-2 border-dashed border-gray-300 rounded-xl text-center hover:border-green-500 hover:bg-green-50/50 transition-all duration-200 group"
           >
             <div className="flex flex-col items-center gap-2">
@@ -276,7 +276,7 @@ const PaymentsDashboard = () => {
           </Link>
           
           <Link
-            to="/admin-dashboard/payments/due-payments"
+            to="/admin/payments/due-payments"
             className="p-5 border-2 border-dashed border-gray-300 rounded-xl text-center hover:border-yellow-500 hover:bg-yellow-50/50 transition-all duration-200 group"
           >
             <div className="flex flex-col items-center gap-2">
@@ -300,7 +300,7 @@ const PaymentsDashboard = () => {
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">Pending Due Payments</h3>
           </div>
           <Link 
-            to="/admin-dashboard/payments/due-payments" 
+            to="/admin/payments/due-payments" 
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors w-fit"
           >
             View All
@@ -323,9 +323,9 @@ const PaymentsDashboard = () => {
                 <div key={user._id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all gap-4">
                   <div className="flex items-center gap-3 sm:gap-4">
                     <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      user.userType === 'staff' ? 'bg-purple-100' : 'bg-blue-100'
+                      user.userType === 'employees' ? 'bg-purple-100' : 'bg-blue-100'
                     }`}>
-                      {user.userType === 'staff' ? 
+                      {user.userType === 'employees' ? 
                         <BsPersonWorkspace className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" /> : 
                         <FaUserGraduate className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
                       }
@@ -335,9 +335,9 @@ const PaymentsDashboard = () => {
                       <p className="text-xs sm:text-sm text-gray-600 mt-0.5">{user.userId} • {user.email}</p>
                       <p className="text-xs text-gray-500 mt-1 capitalize flex items-center gap-1">
                         <span className={`px-2 py-0.5 rounded-full text-xs ${
-                          user.userType === 'staff' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                          user.userType === 'employees' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
                         }`}>
-                          {user.userType === 'staff' ? user.staffRole : user.studentCategory}
+                          {user.userType === 'employees' ? user.employeesRole : user.studentCategory}
                         </span>
                       </p>
                     </div>
@@ -348,7 +348,7 @@ const PaymentsDashboard = () => {
                       <p className="text-lg sm:text-xl font-bold text-red-600">{formatCurrency(user.dueAmount)}</p>
                     </div>
                     <Link
-                      to={`/admin-dashboard/payments/${user.userType === 'staff' ? 'staff' : user.studentCategory}`}
+                      to={`/admin/payments/${user.userType === 'employees' ? 'employees' : user.studentCategory}`}
                       className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors"
                     >
                       Pay Now
@@ -361,7 +361,7 @@ const PaymentsDashboard = () => {
               {duePayments.length > 5 && (
                 <div className="text-center pt-4">
                   <Link 
-                    to="/admin-dashboard/payments/due-payments" 
+                    to="/admin/payments/due-payments" 
                     className="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900"
                   >
                     View all {duePayments.length} due payments

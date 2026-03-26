@@ -288,29 +288,29 @@ exports.getStudentStats = async (req, res) => {
   }
 };
 
-// Staff Management
-exports.getAllStaff = async (req, res) => {
+// employees Management
+exports.getAllemployees = async (req, res) => {
   try {
-    const staff = await User.find({ userType: 'staff' }).select('-password');
-    res.json({ success: true, staff });
+    const employees = await User.find({ userType: 'employees' }).select('-password');
+    res.json({ success: true, employees });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
 };
 
-exports.addStaff = async (req, res) => {
+exports.addemployees = async (req, res) => {
   try {
-    const { name, email, password, staffRole, phone } = req.body;
+    const { name, email, password, employeesRole, phone } = req.body;
     
     if (await User.findOne({ email })) {
       return res.status(400).json({ success: false, error: 'User already exists' });
     }
     
     const user = await User.create({ 
-      name, email, password, userType: 'staff', staffRole: staffRole || 'teacher', phone 
+      name, email, password, userType: 'employees', employeesRole: employeesRole || 'teacher', phone 
     });
     
-    res.status(201).json({ success: true, message: 'Staff added successfully', staff: user });
+    res.status(201).json({ success: true, message: 'employees added successfully', employees: user });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
@@ -359,9 +359,9 @@ exports.getAllUsers = async (req, res) => {
 exports.updateUserRole = async (req, res) => {
   try {
     const { id } = req.params;
-    const { userType, studentCategory, staffRole } = req.body;
+    const { userType, studentCategory, employeesRole } = req.body;
 
-    const allowedRoles = ['superAdmin', 'admin', 'staff', 'student'];
+    const allowedRoles = ['superAdmin', 'admin', 'employees', 'student'];
     if (!allowedRoles.includes(userType)) {
       return res.status(400).json({ success: false, error: 'Invalid user type' });
     }
@@ -379,15 +379,15 @@ exports.updateUserRole = async (req, res) => {
     
     if (userType === 'student') {
       user.studentCategory = studentCategory || 'academy';
-      user.staffRole = undefined;
+      user.employeesRole = undefined;
     } 
-    else if (userType === 'staff') {
-      user.staffRole = staffRole;
+    else if (userType === 'employees') {
+      user.employeesRole = employeesRole;
       user.studentCategory = undefined;
     } 
     else {
       user.studentCategory = undefined;
-      user.staffRole = undefined;
+      user.employeesRole = undefined;
     }
 
     await user.save({ validateBeforeSave: false });
@@ -401,7 +401,7 @@ exports.updateUserRole = async (req, res) => {
         email: user.email,
         userType: user.userType,
         studentCategory: user.studentCategory,
-        staffRole: user.staffRole
+        employeesRole: user.employeesRole
       }
     });
   } catch (error) {
@@ -474,7 +474,7 @@ exports.getAdminStats = async (req, res) => {
       activeUsers,
       superAdmins,
       admins,
-      staff,
+      employees,
       students,
       blockedUsers,
       recentLogins
@@ -483,7 +483,7 @@ exports.getAdminStats = async (req, res) => {
       User.countDocuments({ isActive: true }),
       User.countDocuments({ userType: 'superAdmin' }),
       User.countDocuments({ userType: 'admin' }),
-      User.countDocuments({ userType: 'staff' }),
+      User.countDocuments({ userType: 'employees' }),
       User.countDocuments({ userType: 'student' }),
       User.countDocuments({ isActive: false }),
       User.countDocuments({ lastLogin: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } })
@@ -508,7 +508,7 @@ exports.getAdminStats = async (req, res) => {
         activeUsers,
         superAdmins,
         admins,
-        staff,
+        employees,
         students,
         blockedUsers,
         recentLogins,

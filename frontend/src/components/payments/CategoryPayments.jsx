@@ -61,8 +61,8 @@ const CategoryPayments = ({ category }) => {
         return { title: 'Academy Payments', color: 'blue', icon: <GiTeacher className="w-5 h-5" />, icon2: <FaUserGraduate className="w-4 h-4" /> };
       case 'library': 
         return { title: 'Library Payments', color: 'green', icon: <MdLocalLibrary className="w-5 h-5" />, icon2: <BsPersonBadge className="w-4 h-4" /> };
-      case 'staff': 
-        return { title: 'Staff Payments', color: 'purple', icon: <RiGovernmentLine className="w-5 h-5" />, icon2: <BsPersonWorkspace className="w-4 h-4" /> };
+      case 'employees': 
+        return { title: 'employees Payments', color: 'purple', icon: <RiGovernmentLine className="w-5 h-5" />, icon2: <BsPersonWorkspace className="w-4 h-4" /> };
       default: 
         return { title: 'Payments', color: 'gray', icon: <MdPayments className="w-5 h-5" />, icon2: <FiUsers className="w-4 h-4" /> };
     }

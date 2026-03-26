@@ -197,7 +197,7 @@ const ExpiringSoon = () => {
                         <FaWhatsapp className="w-4 h-4" /> WhatsApp
                       </button>
                     )}
-                    <button onClick={() => debouncedNavigate(`/admin-dashboard/students/${s._id}`)} className="flex items-center gap-1.5 px-4 py-2 border border-gray-600 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 ml-auto">
+                    <button onClick={() => debouncedNavigate(`/admin/students/${s._id}`)} className="flex items-center gap-1.5 px-4 py-2 border border-gray-600 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 ml-auto">
                       Details <FaArrowRight className="w-4 h-4" />
                     </button>
                   </div>

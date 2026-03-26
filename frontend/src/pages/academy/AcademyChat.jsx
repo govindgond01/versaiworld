@@ -57,7 +57,7 @@ const AcademyChat = () => {
       {/* Header */}
       <div className="bg-white border-b border-gray-200 p-4 flex items-center gap-3">
         <button
-          onClick={() => navigate('/academy-dashboard/notifications')}
+          onClick={() => navigate('/academy/notifications')}
           className="p-2 hover:bg-gray-100 rounded-lg"
         >
           <FiArrowLeft className="w-5 h-5" />

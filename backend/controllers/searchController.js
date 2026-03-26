@@ -37,7 +37,7 @@ exports.globalSearch = async (req, res) => {
           { department: { $regex: q, $options: 'i' } }
         ]
       })
-      .select('name email userId userType studentCategory staffRole phone course profileImage')
+      .select('name email userId userType studentCategory employeesRole phone course profileImage')
       .limit(10);
 
       console.log(' Admin Search Results:', users.length);
@@ -46,14 +46,14 @@ exports.globalSearch = async (req, res) => {
         id: u._id,
         type: 'user',
         userType: u.userType,
-        category: u.studentCategory || u.staffRole,
+        category: u.studentCategory || u.employeesRole,
         title: u.name,
         subtitle: `${u.email} • ${u.userId}`,
         image: u.profileImage,
         url: u.userType === 'student' 
-          ? `/admin-dashboard/students/${u._id}`
-          : u.userType === 'staff'
-            ? `/admin-dashboard/staff/${u._id}`
+          ? `/admin/students/${u._id}`
+          : u.userType === 'employees'
+            ? `/admin/employees/${u._id}`
             : '#'
       }));
     }
@@ -69,7 +69,7 @@ exports.globalSearch = async (req, res) => {
           type: 'profile',
           title: user.name,
           subtitle: user.email,
-          url: '/academy-dashboard/profile'
+          url: '/academy/profile'
         }
       ];
 
@@ -80,7 +80,7 @@ exports.globalSearch = async (req, res) => {
           type: 'payment',
           title: `Total Fees: ₹${user.fees.totalFee}`,
           subtitle: `Paid: ₹${user.fees.paidFee} | Due: ₹${user.fees.dueFee}`,
-          url: '/academy-dashboard/payments'
+          url: '/academy/payments'
         });
       }
     }
@@ -96,35 +96,35 @@ exports.globalSearch = async (req, res) => {
           type: 'profile',
           title: user.name,
           subtitle: user.email,
-          url: '/library-dashboard/profile'
+          url: '/library/profile'
         },
         {
           id: 'membership',
           type: 'membership',
           title: 'Membership',
           subtitle: user.membershipDuration || 'Active',
-          url: '/library-dashboard/profile'
+          url: '/library/profile'
         }
       ];
     }
 
-    // ===== STAFF SEARCH =====
-    else if (userType === 'staff') {
-      // Simplified staff search
-      const user = await User.findById(userId).select('name email staffRole department');
+    // ===== employees SEARCH =====
+    else if (userType === 'employees') {
+      // Simplified employees search
+      const user = await User.findById(userId).select('name email employeesRole department');
       
       results = [
         {
           id: user._id,
           type: 'profile',
           title: user.name,
-          subtitle: `${user.staffRole || 'Staff'} • ${user.department || 'General'}`,
-          url: '/staff-dashboard/profile'
+          subtitle: `${user.employeesRole || 'employees'} • ${user.department || 'General'}`,
+          url: '/employees/profile'
         }
       ];
 
       // Search students if teacher
-      if (user.staffRole === 'teacher') {
+      if (user.employeesRole === 'teacher') {
         const students = await User.find({
           userType: 'student',
           course: { $regex: q, $options: 'i' }

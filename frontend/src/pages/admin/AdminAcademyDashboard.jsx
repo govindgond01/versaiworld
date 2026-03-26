@@ -264,7 +264,7 @@ const AdminAcademyDashboard = () => {
                 <p className="text-sm text-gray-500">Latest academy enrollments</p>
               </div>
               <button
-                onClick={() => navigate('/admin-dashboard/students?category=academy')}
+                onClick={() => navigate('/admin/students?category=academy')}
                 className="px-4 py-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg text-sm font-medium"
               >
                 View All

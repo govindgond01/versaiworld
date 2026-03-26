@@ -11,7 +11,7 @@ import UserActivityItem from '../../components/user/UserActivityItem';
 import UserQuickAction from '../../components/user/UserQuickAction';
 // import UserAttendanceCalendar from '../../components/user/UserAttendanceCalendar';
 
-const StaffDashboard = () => {
+const EmployeesDashboard = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState({});
@@ -29,10 +29,10 @@ const StaffDashboard = () => {
     try {
       setLoading(true);
       
-      const userRes = await api.get(`staff/${userId}`);
+      const userRes = await api.get(`employees/${userId}`);
 
       if (userRes.data.success) {
-        const data = userRes.data.staff;
+        const data = userRes.data.employees;
         setUserData(data);
         setStats({
           totalSalary: data.fees?.salary || 0,
@@ -87,7 +87,7 @@ const StaffDashboard = () => {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Staff Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">employees Dashboard</h1>
         <p className="text-gray-600">Welcome back, {userData.name}</p>
       </div>
 
@@ -133,10 +133,10 @@ const StaffDashboard = () => {
           <div className="bg-white rounded-xl border border-gray-200 p-6">
             <h2 className="text-lg font-semibold mb-6">Quick Actions</h2>
             <div className="grid grid-cols-2 gap-4 md:gap-6">
-              <UserQuickAction icon={FaUserCheck} label="Attendance" path="/staff-dashboard/attendance" color="blue" />
-              <UserQuickAction icon={FaCalendarAlt} label="Schedule" path="/staff-dashboard/schedule" color="green" />
-              <UserQuickAction icon={FaRupeeSign} label="Salary" path="/staff-dashboard/payments" color="purple" />
-              <UserQuickAction icon={FaTasks} label="Tasks" path="/staff-dashboard/tasks" color="orange" />
+              <UserQuickAction icon={FaUserCheck} label="Attendance" path="/employees/attendance" color="blue" />
+              <UserQuickAction icon={FaCalendarAlt} label="Schedule" path="/employees/schedule" color="green" />
+              <UserQuickAction icon={FaRupeeSign} label="Salary" path="/employees/payments" color="purple" />
+              <UserQuickAction icon={FaTasks} label="Tasks" path="/employees/tasks" color="orange" />
             </div>
           </div>
         </div>
@@ -145,4 +145,4 @@ const StaffDashboard = () => {
   );
 };
 
-export default StaffDashboard;
+export default EmployeesDashboard;

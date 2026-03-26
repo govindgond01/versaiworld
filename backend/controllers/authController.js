@@ -24,7 +24,7 @@ exports.register = async (req, res) => {
       userType,
       phone,
       studentCategory,
-      staffRole,
+      employeesRole,
       course
     } = req.body;
     
@@ -44,22 +44,22 @@ exports.register = async (req, res) => {
     }
     
     const finalUserType = userType || role || 'student';
-    const allowedUserTypes = ['admin', 'student', 'staff'];
+    const allowedUserTypes = ['admin', 'student', 'employees'];
     
     // Role-based access control for user creation
     if (req.user.userType === 'admin') {
-      // Admin can only create students and staff (not other admins)
+      // Admin can only create students and employees (not other admins)
       if (finalUserType === 'admin') {
         return res.status(403).json({ 
           success: false,
           message: 'Admin users cannot create other admins. Only super admin can create admins.' 
         });
       }
-      // Admin can create students and staff
-      if (!['student', 'staff'].includes(finalUserType)) {
+      // Admin can create students and employees
+      if (!['student', 'employees'].includes(finalUserType)) {
         return res.status(403).json({ 
           success: false,
-          message: 'Admin can only create students and staff' 
+          message: 'Admin can only create students and employees' 
         });
       }
     } else if (req.user.userType !== 'superAdmin') {
@@ -84,10 +84,10 @@ exports.register = async (req, res) => {
       });
     }
     
-    if (finalUserType === 'staff' && !staffRole) {
+    if (finalUserType === 'employees' && !employeesRole) {
       return res.status(400).json({ 
         success: false,
-        message: 'Staff role is required for staff' 
+        message: 'employees role is required for employees' 
       });
     }
     
@@ -101,7 +101,7 @@ exports.register = async (req, res) => {
       isActive: true,
       profileImage: req.body.profileImage || '',
       studentCategory: finalUserType === 'student' ? studentCategory : undefined,
-      staffRole: finalUserType === 'staff' ? staffRole : undefined
+      employeesRole: finalUserType === 'employees' ? employeesRole : undefined
     };
     
     if (finalUserType === 'student' && studentCategory === 'academy') {
@@ -114,7 +114,7 @@ exports.register = async (req, res) => {
       userData.membershipDuration = '1_month';
     }
     
-    if (finalUserType === 'staff') {
+    if (finalUserType === 'employees') {
       userData.salaryType = 'monthly';
     }
     
@@ -145,8 +145,8 @@ exports.register = async (req, res) => {
       userResponse.admissionDate = user.admissionDate;
     }
     
-    if (user.userType === 'staff') {
-      userResponse.staffRole = user.staffRole;
+    if (user.userType === 'employees') {
+      userResponse.employeesRole = user.employeesRole;
       userResponse.salaryType = user.salaryType;
     }
     
@@ -278,8 +278,8 @@ exports.login = async (req, res) => {
       userResponse.expiryDate = user.expiryDate;
     }
     
-    if (user.userType === 'staff') {
-      userResponse.staffRole = user.staffRole;
+    if (user.userType === 'employees') {
+      userResponse.employeesRole = user.employeesRole;
       userResponse.salaryType = user.financials?.salaryType;
     }
     
@@ -352,8 +352,8 @@ exports.getMe = async (req, res) => {
       userResponse.financials = user.financials || {};
     }
     
-    if (user.userType === 'staff') {
-      userResponse.staffRole = user.staffRole;
+    if (user.userType === 'employees') {
+      userResponse.employeesRole = user.employeesRole;
       userResponse.salaryType = user.financials?.salaryType;
       userResponse.joinDate = user.joinDate;
       userResponse.financials = user.financials || {};

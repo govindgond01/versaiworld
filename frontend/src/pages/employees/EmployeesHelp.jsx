@@ -4,9 +4,9 @@ import { FaBook, FaVideo, FaEnvelope, FaPhone } from 'react-icons/fa';
 
 import UserHelpCard from '../../components/user/UserHelpCard';
 
-const StaffHelp = () => {
+const EmployeesHelp = () => {
   const helpItems = [
-    { icon: FaBook, title: 'Staff Guide', description: 'Learn how to use the staff portal', action: 'Read Guide' },
+    { icon: FaBook, title: 'employees Guide', description: 'Learn how to use the employees portal', action: 'Read Guide' },
     { icon: FaVideo, title: 'Video Tutorials', description: 'Watch tutorials', action: 'Watch Now' },
     { icon: FaEnvelope, title: 'Email Support', description: 'Get help via email', action: 'Send Email' },
     { icon: FaPhone, title: 'Contact Admin', description: 'Call the administrator', action: 'Call Now' }
@@ -24,4 +24,4 @@ const StaffHelp = () => {
   );
 };
 
-export default StaffHelp;
+export default EmployeesHelp;

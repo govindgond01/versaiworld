@@ -13,8 +13,8 @@ export const fetchDashboardStats = createAsyncThunk(
       case 'library':
         response = await dashboardService.getLibraryStats();
         break;
-      case 'staff':
-        response = await dashboardService.getStaffStats();
+      case 'employees':
+        response = await dashboardService.getemployeesStats();
         break;
       default:
         response = { data: [] };

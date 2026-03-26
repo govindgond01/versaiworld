@@ -70,8 +70,8 @@ exports.addPayment = async (req, res) => {
       user.fees.paymentHistory.push(paymentData);
     }
     
-    // ===== STAFF PAYMENT =====
-    else if (user.userType === 'staff') {
+    // ===== employees PAYMENT =====
+    else if (user.userType === 'employees') {
       if (!user.financials) {
         user.financials = { amount: 0, paid: 0, due: 0, paymentHistory: [] };
       }
@@ -135,11 +135,11 @@ exports.getPaymentsByCategory = async (req, res) => {
     let userFilter = {};
     if (category === 'academy') userFilter = { userType: 'student', studentCategory: 'academy' };
     else if (category === 'library') userFilter = { userType: 'student', studentCategory: 'library' };
-    else if (category === 'staff') userFilter = { userType: 'staff' };
+    else if (category === 'employees') userFilter = { userType: 'employees' };
     else return res.status(400).json({ success: false, message: "Invalid category" });
     
     const users = await User.find(userFilter)
-      .select('name email userId studentCategory staffRole financials fees')
+      .select('name email userId studentCategory employeesRole financials fees')
       .lean();
     
     let allPayments = [];
@@ -153,7 +153,7 @@ exports.getPaymentsByCategory = async (req, res) => {
       
       let userTotal = 0, userPaid = 0, userDue = 0;
       
-      if (category === 'staff') {
+      if (category === 'employees') {
         userTotal = financials.amount || fees.salary || 0;
         userPaid = financials.paid || fees.paidSalary || 0;
         userDue = financials.due || fees.dueSalary || 0;
@@ -178,7 +178,7 @@ exports.getPaymentsByCategory = async (req, res) => {
             userId: user.userId,
             userType: user.userType,
             studentCategory: user.studentCategory,
-            staffRole: user.staffRole
+            employeesRole: user.employeesRole
           }
         });
       });
@@ -192,7 +192,7 @@ exports.getPaymentsByCategory = async (req, res) => {
         paidAmount: userPaid,
         dueAmount: userDue,
         studentCategory: user.studentCategory,
-        staffRole: user.staffRole
+        employeesRole: user.employeesRole
       };
     });
     
@@ -249,7 +249,7 @@ exports.getMyPayments = async (req, res) => {
         userId: user.userId,
         userType: user.userType,
         studentCategory: user.studentCategory,
-        staffRole: user.staffRole
+        employeesRole: user.employeesRole
       }
     });
     
@@ -271,7 +271,7 @@ exports.getPaymentHistory = async (req, res) => {
     if (userType) userFilter.userType = userType;
     
     const users = await User.find(userFilter)
-      .select('name email userId userType studentCategory staffRole financials fees');
+      .select('name email userId userType studentCategory employeesRole financials fees');
     
     let allPayments = [];
     users.forEach(user => {
@@ -286,7 +286,7 @@ exports.getPaymentHistory = async (req, res) => {
             userId: user.userId,
             userType: user.userType,
             studentCategory: user.studentCategory,
-            staffRole: user.staffRole
+            employeesRole: user.employeesRole
           }
         });
       });
@@ -354,9 +354,9 @@ exports.getUsersWithDuePayments = async (req, res) => {
           { 'fees.dueFee': { $gt: 0 } }
         ]
       };
-    } else if (category === 'staff') {
+    } else if (category === 'employees') {
       filter = { 
-        userType: 'staff',
+        userType: 'employees',
         $or: [
           { 'financials.due': { $gt: 0 } },
           { 'fees.dueSalary': { $gt: 0 } }
@@ -373,7 +373,7 @@ exports.getUsersWithDuePayments = async (req, res) => {
     }
     
     const users = await User.find(filter)
-      .select('name email userId userType studentCategory staffRole financials fees')
+      .select('name email userId userType studentCategory employeesRole financials fees')
       .limit(50);
     
     const formattedUsers = users.map(user => {
@@ -387,14 +387,14 @@ exports.getUsersWithDuePayments = async (req, res) => {
         userId: user.userId,
         userType: user.userType,
         studentCategory: user.studentCategory,
-        staffRole: user.staffRole,
-        totalAmount: user.userType === 'staff' 
+        employeesRole: user.employeesRole,
+        totalAmount: user.userType === 'employees' 
           ? (financials.amount || fees.salary || 0)
           : (financials.amount || fees.totalFee || 0),
-        paidAmount: user.userType === 'staff'
+        paidAmount: user.userType === 'employees'
           ? (financials.paid || fees.paidSalary || 0)
           : (financials.paid || fees.paidFee || 0),
-        dueAmount: user.userType === 'staff'
+        dueAmount: user.userType === 'employees'
           ? (financials.due || fees.dueSalary || 0)
           : (financials.due || fees.dueFee || 0),
         lastPayment: (() => {
@@ -443,7 +443,7 @@ exports.getPaymentSummary = async (req, res) => {
         totalFees += financials.amount || fees.totalFee || 0;
         totalPaidFees += financials.paid || fees.paidFee || 0;
         totalDueFees += financials.due || fees.dueFee || 0;
-      } else if (user.userType === 'staff') {
+      } else if (user.userType === 'employees') {
         totalSalary += financials.amount || fees.salary || 0;
         totalPaidSalary += financials.paid || fees.paidSalary || 0;
         totalDueSalary += financials.due || fees.dueSalary || 0;

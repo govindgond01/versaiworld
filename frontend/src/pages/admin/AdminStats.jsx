@@ -141,8 +141,8 @@ const AdminStats = () => {
           color="bg-purple-600"
         />
         <StatCard
-          title="Staff Members"
-          value={stats.staff}
+          title="employees Members"
+          value={stats.employees}
           icon={<FaUser className="w-full h-full" />}
           color="bg-green-600"
         />
@@ -182,7 +182,7 @@ const AdminStats = () => {
           {[
             { label: 'Super Admins', value: stats.superAdmins, color: 'bg-red-500', percentage: Math.round((stats.superAdmins / stats.totalUsers) * 100) },
             { label: 'Admins', value: stats.admins, color: 'bg-purple-500', percentage: Math.round((stats.admins / stats.totalUsers) * 100) },
-            { label: 'Staff', value: stats.staff, color: 'bg-green-500', percentage: Math.round((stats.staff / stats.totalUsers) * 100) },
+            { label: 'employees', value: stats.employees, color: 'bg-green-500', percentage: Math.round((stats.employees / stats.totalUsers) * 100) },
             { label: 'Students', value: stats.students, color: 'bg-indigo-500', percentage: Math.round((stats.students / stats.totalUsers) * 100) }
           ].map((item, index) => (
             <div key={index} className="flex items-center justify-between">

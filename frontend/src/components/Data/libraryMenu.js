@@ -3,42 +3,42 @@ const libraryMenu = [
   {
     items: [
       {
-        path: "/library-dashboard",
+        path: "/library",
         icon: "dashboard",
         label: "Dashboard"
       },
       {
-        path: "/library-dashboard/attendance",
+        path: "/library/attendance",
         icon: "attendance",
         label: "Attendance"
       },
       {
-        path: "/library-dashboard/payments",
+        path: "/library/payments",
         icon: "rupees", 
         label: "Payments"
       },
       {
-        path: "/library-dashboard/activity",
+        path: "/library/activity",
         icon: "report",
         label: "Activity Reports"
       },
       {
-        path: "/library-dashboard/profile",
-        icon: "adminstaff",
+        path: "/library/profile",
+        icon: "adminemployees",
         label: "My Profile"
       },
       {
-        path: "/library-dashboard/settings",
+        path: "/library/settings",
         icon: "setting",
         label: "Settings"
       },
       {
-        path: "/library-dashboard/notifications",
+        path: "/library/notifications",
         icon: "bell",
         label: "Notifications"
       },
       {
-        path: "/library-dashboard/help",
+        path: "/library/help",
         icon: "help",
         label: "Help & Support"
       }

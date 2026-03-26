@@ -8,7 +8,7 @@ const paymentService = {
     return response.data;
   },
 
-  //  Get users by category (academy/library/staff)
+  //  Get users by category (academy/library/employees)
   getUsersByCategory: async (category, search = '') => {
     const response = await api.get(
       `/payments/${category}${search ? `?search=${search}` : ''}`

@@ -4,36 +4,36 @@ const adminMenu = [
        {
         type: "dropdown",
         key: "super-admin",
-        icon: "adminstaff",
+        icon: "adminemployees",
         label: "Super Admin",
         subItems: [
           {
-            path: "/admin-dashboard/super-admin/stats",
+            path: "/admin/super-admin/stats",
             label: "Admin Statistics",
           },
           {
-            path: "/admin-dashboard/super-admin/users",
+            path: "/admin/super-admin/users",
             label: "User Management",
           },
         ],
       },
        {
         type: "dropdown",
-        path: "/admin-dashboard",
+        path: "/admin",
         icon: "dashboard",
         label: "Dashboard",
         subItems: [
           {
-            path: "/admin-dashboard/library-dash",
+            path: "/admin/library-dash",
             label: "Library",
           },
           {
-            path: "/admin-dashboard/academy-dash",
+            path: "/admin/academy-dash",
             label: "Academy",
           },
           {
-            path: "/admin-dashboard/staff-dash",
-            label: "Staff",
+            path: "/admin/employees-dash",
+            label: "employees",
           },
         ],
       },
@@ -44,31 +44,31 @@ const adminMenu = [
         label: "Payments",
         subItems: [
           {
-            path: "/admin-dashboard/payments/dashboard",
+            path: "/admin/payments/dashboard",
             label: "Dashboard Payments",
           },
           {
-            path: "/admin-dashboard/payments/academy",
+            path: "/admin/payments/academy",
             label: "Academy Payments",
           },
           {
-            path: "/admin-dashboard/payments/library",
+            path: "/admin/payments/library",
             label: "Library Payments",
           },
           {
-            path: "/admin-dashboard/payments/staff",
-            label: "Staff Payments",
+            path: "/admin/payments/employees",
+            label: "employees Payments",
           },
           {
-            path: "/admin-dashboard/payments/add",
+            path: "/admin/payments/add",
             label: "Add Payment",
           },
           {
-            path: "/admin-dashboard/payments/history",
+            path: "/admin/payments/history",
             label: "History Payments",
           },
           {
-            path: "/admin-dashboard/payments/due-payments",
+            path: "/admin/payments/due-payments",
             label: "Due Payments",
           }
         ],
@@ -77,45 +77,45 @@ const adminMenu = [
       {
         type: "dropdown",
         key: "students",
-        path: "/admin-dashboard/students",
+        path: "/admin/students",
         icon: "users",
         label: "Students",
         subItems: [
           {
-            path: "/admin-dashboard/students/all",
+            path: "/admin/students/all",
             label: "All Students",
           },
           {
-            path: "/admin-dashboard/students/add",
+            path: "/admin/students/add",
             label: "Add Student",
           },
           {
-            path: "/admin-dashboard/students/types",
+            path: "/admin/students/types",
             label: "Student Types",
           },
           {
-            path: "/admin-dashboard/students/expiring-soon",
+            path: "/admin/students/expiring-soon",
             label: "Expiring Soon",
           },
         ],
       },
       {
         type: "dropdown",
-        key: "staff",
-        icon: "adminstaff",
-        label: "Staff Management",
+        key: "employees",
+        icon: "adminemployees",
+        label: "employees Management",
         subItems: [
           {
-            path: "/admin-dashboard/staff/all",
-            label: "All Staffs",
+            path: "/admin/employees/all",
+            label: "All employeess",
           },
           {
-            path: "/admin-dashboard/staff/add",
-            label: "Add Staff",
+            path: "/admin/employees/add",
+            label: "Add employees",
           },
           {
-            path: "/admin-dashboard/staff/analytics",
-            label: "Staffs Analytics",
+            path: "/admin/employees/analytics",
+            label: "employeess Analytics",
           }
         ],
       },
@@ -126,42 +126,42 @@ const adminMenu = [
         label: "Attendance",
         subItems: [
           {
-            path: "/admin-dashboard/attendance/academy",
+            path: "/admin/attendance/academy",
             label: "Attendance Academy",
           },
           {
-            path: "/admin-dashboard/attendance/library",
+            path: "/admin/attendance/library",
             label: "Attendance Library",
           },
           {
-            path: "/admin-dashboard/attendance/staff",
-            label: "Attendance Staffs",
+            path: "/admin/attendance/employees",
+            label: "Attendance employeess",
           }
         ],
       },
       {
-        path: "/admin-dashboard/export",
+        path: "/admin/export",
         icon: "database",
         label: "Export Data",
       },
       {
-        path: "/admin-dashboard/profile",
-        icon: "adminstaff",
+        path: "/admin/profile",
+        icon: "adminemployees",
         label: "Admin Profile"
       },
       {
-        path: "/admin-dashboard/settings",
+        path: "/admin/settings",
         icon: "setting",
         label: "System Settings",
       },
       {
-        path: "/admin-dashboard/notifications",
+        path: "/admin/notifications",
         icon: "bell",
         label: "Notifications",
         badge: "5",
       },
       {
-        path: "/admin-dashboard/help",
+        path: "/admin/help",
         icon: "help",
         label: "Help & Support",
       },
