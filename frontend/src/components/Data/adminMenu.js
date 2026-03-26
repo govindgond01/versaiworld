@@ -33,7 +33,7 @@ const adminMenu = [
           },
           {
             path: "/admin/employees-dash",
-            label: "employees",
+            label: "Employees",
           },
         ],
       },
@@ -57,7 +57,7 @@ const adminMenu = [
           },
           {
             path: "/admin/payments/employees",
-            label: "employees Payments",
+            label: "Employees Payments",
           },
           {
             path: "/admin/payments/add",
@@ -103,19 +103,19 @@ const adminMenu = [
         type: "dropdown",
         key: "employees",
         icon: "adminemployees",
-        label: "employees Management",
+        label: "Employees Management",
         subItems: [
           {
             path: "/admin/employees/all",
-            label: "All employeess",
+            label: "All Employees",
           },
           {
             path: "/admin/employees/add",
-            label: "Add employees",
+            label: "Add Employees",
           },
           {
             path: "/admin/employees/analytics",
-            label: "employeess Analytics",
+            label: "Employees Analytics",
           }
         ],
       },
@@ -135,7 +135,7 @@ const adminMenu = [
           },
           {
             path: "/admin/attendance/employees",
-            label: "Attendance employeess",
+            label: "Attendance Employees",
           }
         ],
       },
