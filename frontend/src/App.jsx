@@ -71,13 +71,13 @@ import AdminEmployeesAttendance from "./pages/admin/attendance/AdminEmployeesAtt
 import Profile from "./pages/admin/Profile";
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(() => 
+  const [isLoggedIn, setIsLoggedIn] = useState(() =>
     localStorage.getItem("isLoggedIn") === "true"
   );
-  const [role, setRole] = useState(() => 
+  const [role, setRole] = useState(() =>
     localStorage.getItem("role") || ''
   );
-  const [studentCategory, setStudentCategory] = useState(() => 
+  const [studentCategory, setStudentCategory] = useState(() =>
     localStorage.getItem("studentCategory") || ''
   );
 
@@ -120,8 +120,9 @@ function App() {
 
   const getDashboardPath = useCallback(() => {
     if (!isLoggedIn) return '/login';
-    
-    if (role === 'admin' || role === 'superAdmin') return '/admin';
+
+    if (role === 'superAdmin') return '/admin/super-admin/stats';
+    if (role === 'admin') return '/admin/library-dash';
     if (role === 'employees') return '/employees';
     if (role === 'student') {
       if (studentCategory === 'academy') return '/academy';
@@ -158,7 +159,7 @@ function App() {
         <Route path="library-dash" element={<AdminLibraryDashboard />} />
         <Route path="academy-dash" element={<AdminAcademyDashboard />} />
         <Route path="employees-dash" element={<AdminEmployeesDashboard />} />
-        
+
         <Route path="students">
           <Route index element={<AllStudents />} />
           <Route path="all" element={<AllStudents />} />
@@ -168,7 +169,7 @@ function App() {
           <Route path="edit/:id" element={<EditStudent />} />
           <Route path="expiring-soon" element={<ExpiringSoon />} />
         </Route>
-        
+
         <Route path="payments">
           <Route index element={<CategoryPayments category="academy" />} />
           <Route path="dashboard" element={<PaymentsDashboard />} />
@@ -179,7 +180,7 @@ function App() {
           <Route path="history" element={<PaymentHistory isAdmin={true} />} />
           <Route path="due-payments" element={<DuePayments />} />
         </Route>
-        
+
         <Route path="attendance">
           <Route index element={<AdminAcademyAttendance />} />
           <Route path="academy" element={<AdminAcademyAttendance />} />
@@ -188,7 +189,7 @@ function App() {
         </Route>
 
         <Route path="export" element={<ExportData />} />
-        
+
         <Route path="employees">
           <Route index element={<AllEmployees />} />
           <Route path="all" element={<AllEmployees />} />
@@ -197,22 +198,28 @@ function App() {
           <Route path="edit/:id" element={<EditEmployees />} />
           <Route path="analytics" element={<EmployeesStats />} />
         </Route>
-        <Route path="profile" element={<Profile/>} />
+        <Route path="profile" element={<Profile />} />
         <Route path="settings" element={<SystemSettings />} />
         <Route path="notifications" element={<AdminNotifications />} />
         <Route path="help" element={<HelpSupport />} />
 
         <Route path="super-admin">
-          <Route index element={<AdminStats />} />
-          <Route path="stats" element={<AdminStats />} />
-          <Route path="users" element={<UserManagement />} />
+          <Route index element={
+            role === "superAdmin" ? <AdminStats /> : <Navigate to="/admin" replace />
+          } />
+          <Route path="stats" element={
+            role === "superAdmin" ? <AdminStats /> : <Navigate to="/admin" replace />
+          } />
+          <Route path="users" element={
+            role === "superAdmin" ? <UserManagement /> : <Navigate to="/admin" replace />
+          } />
         </Route>
       </Route>
 
       {/* ========== ACADEMY STUDENT ROUTES ========== */}
       <Route path="/academy" element={
-        isLoggedIn && role === "student" && studentCategory === "academy" ? 
-        <MainLayout /> : <Navigate to="/login" replace />
+        isLoggedIn && role === "student" && studentCategory === "academy" ?
+          <MainLayout /> : <Navigate to="/login" replace />
       }>
         <Route index element={<AcademyDashboard />} />
         <Route path="attendance" element={<AcademyAttendance />} />
@@ -226,8 +233,8 @@ function App() {
 
       {/* ========== LIBRARY STUDENT ROUTES ========== */}
       <Route path="/library" element={
-        isLoggedIn && role === "student" && studentCategory === "library" ? 
-        <MainLayout /> : <Navigate to="/login" replace />
+        isLoggedIn && role === "student" && studentCategory === "library" ?
+          <MainLayout /> : <Navigate to="/login" replace />
       }>
         <Route index element={<LibraryDashboard />} />
         <Route path="attendance" element={<LibraryAttendance />} />
@@ -235,7 +242,7 @@ function App() {
         <Route path="activity" element={<LibraryActivity />} />
         <Route path="profile" element={<LibraryProfile />} />
         <Route path="settings" element={<LibrarySettings />} />
-        <Route path="notifications" element={<LibraryNotifications />} /> 
+        <Route path="notifications" element={<LibraryNotifications />} />
         <Route path="help" element={<LibraryHelp />} />
       </Route>
 
