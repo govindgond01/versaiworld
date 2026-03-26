@@ -350,7 +350,7 @@ UserSchema.pre("save", async function (next) {
     this.endDate = endDate;
   }
 
-  next();
+  typeof next === 'function' && next();
 });
 
 // Virtual financials field
