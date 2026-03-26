@@ -23,7 +23,7 @@ import Allemployees from "./components/employees/Allemployees";
 import Addemployees from "./components/employees/Addemployees";
 import Viewemployees from "./components/employees/Viewemployees";
 import Editemployees from "./components/employees/Editemployees";
-import employeesStats from "./components/employees/employeesStats";
+import EmployeesStats from "./components/employees/EmployeesStats";
 import PaymentsDashboard from "./pages/admin/payments/PaymentsDashboard";
 import PaymentHistory from "./components/payments/PaymentHistory";
 import AddPayment from "./pages/admin/payments/AddPayment";
@@ -53,18 +53,18 @@ import LibraryHelp from "./pages/library/LibraryHelp";
 import LibraryNotifications from "./pages/library/LibraryNotifications";
 
 // employees pages
-import employeesDashboard from "./pages/employees/employeesDashboard";
-import employeesPayments from "./pages/employees/employeesPayments";
-import employeesActivity from "./pages/employees/employeesActivity";
-import employeesProfile from "./pages/employees/employeesProfile";
-import employeesSettings from "./pages/employees/employeesSettings";
-import employeesHelp from "./pages/employees/employeesHelp";
-import employeesNotifications from "./pages/employees/employeesNotifications";
+import EmployeesDashboard from "./pages/employees/EmployeesDashboard";
+import EmployeesPayments from "./pages/employees/EmployeesPayments";
+import EmployeesActivity from "./pages/employees/EmployeesActivity";
+import EmployeesProfile from "./pages/employees/EmployeesProfile";
+import EmployeesSettings from "./pages/employees/EmployeesSettings";
+import EmployeesHelp from "./pages/employees/EmployeesHelp";
+import EmployeesNotifications from "./pages/employees/EmployeesNotifications";
 
 // Attendance pages
 import AcademyAttendance from "./pages/academy/AcademyAttendance";
 import LibraryAttendance from "./pages/library/LibraryAttendance";
-import employeesAttendance from "./pages/employees/employeesAttendance";
+import EmployeesAttendance from "./pages/employees/EmployeesAttendance";
 import AdminAcademyAttendance from "./pages/admin/attendance/AdminAcademyAttendance";
 import AdminLibraryAttendance from "./pages/admin/attendance/AdminLibraryAttendance";
 import AdminEmployeesAttendance from "./pages/admin/attendance/AdminEmployeesAttendance";
@@ -195,7 +195,7 @@ function App() {
           <Route path="add" element={<Addemployees />} />
           <Route path=":id" element={<Viewemployees />} />
           <Route path="edit/:id" element={<Editemployees />} />
-          <Route path="analytics" element={<employeesStats />} />
+          <Route path="analytics" element={<EmployeesStats />} />
         </Route>
         <Route path="profile" element={<Profile/>} />
         <Route path="settings" element={<SystemSettings />} />
@@ -243,14 +243,14 @@ function App() {
       <Route path="/employees" element={
         isLoggedIn && role === "employees" ? <MainLayout /> : <Navigate to="/login" replace />
       }>
-        <Route index element={<employeesDashboard />} />
-        <Route path="attendance" element={<employeesAttendance />} />
-        <Route path="payments" element={<employeesPayments />} />
-        <Route path="activity" element={<employeesActivity />} />
-        <Route path="profile" element={<employeesProfile />} />
-        <Route path="settings" element={<employeesSettings />} />
-        <Route path="notifications" element={<employeesNotifications />} />
-        <Route path="help" element={<employeesHelp />} />
+        <Route index element={<EmployeesDashboard />} />
+        <Route path="attendance" element={<EmployeesAttendance />} />
+        <Route path="payments" element={<EmployeesPayments />} />
+        <Route path="activity" element={<EmployeesActivity />} />
+        <Route path="profile" element={<EmployeesProfile />} />
+        <Route path="settings" element={<EmployeesSettings />} />
+        <Route path="notifications" element={<EmployeesNotifications />} />
+        <Route path="help" element={<EmployeesHelp />} />
       </Route>
     </Routes>
   );
