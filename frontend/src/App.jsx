@@ -20,9 +20,9 @@ import ExpiringSoon from "./pages/admin/students/ExpiringSoon";
 import ViewStudent from "./pages/admin/students/ViewStudent";
 import EditStudent from "./pages/admin/students/EditStudent";
 import AllEmployees from "./components/employees/AllEmployees";
-import Addemployees from "./components/employees/Addemployees";
-import Viewemployees from "./components/employees/Viewemployees";
-import Editemployees from "./components/employees/Editemployees";
+import AddEmployees from "./components/employees/AddEmployees";
+import VieweEployees from "./components/employees/ViewEmployees";
+import EditEmployees from "./components/employees/EditEmployees";
 import EmployeesStats from "./components/employees/EmployeesStats";
 import PaymentsDashboard from "./pages/admin/payments/PaymentsDashboard";
 import PaymentHistory from "./components/payments/PaymentHistory";
@@ -192,9 +192,9 @@ function App() {
         <Route path="employees">
           <Route index element={<AllEmployees />} />
           <Route path="all" element={<AllEmployees />} />
-          <Route path="add" element={<Addemployees />} />
-          <Route path=":id" element={<Viewemployees />} />
-          <Route path="edit/:id" element={<Editemployees />} />
+          <Route path="add" element={<AddEmployees />} />
+          <Route path=":id" element={<VieweEployees />} />
+          <Route path="edit/:id" element={<EditEmployees />} />
           <Route path="analytics" element={<EmployeesStats />} />
         </Route>
         <Route path="profile" element={<Profile/>} />
